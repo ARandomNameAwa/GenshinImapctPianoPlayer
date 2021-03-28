@@ -1,0 +1,3 @@
+# GenshinImapctPianoPlayer
+一个原神的自动弹琴脚本
+新人第一次在github上上传项目 请大佬们多多指教
