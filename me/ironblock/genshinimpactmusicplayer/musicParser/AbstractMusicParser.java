@@ -1,5 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.musicParser;
 
+import me.ironblock.genshinimpactmusicplayer.exceptions.ExceptionNeedToBeDisplayed;
 import me.ironblock.genshinimpactmusicplayer.music.AbstractMusic;
 import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
 
@@ -9,6 +10,6 @@ import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
  * @param <K> 返回的音乐的音符类型
  */
 public abstract class AbstractMusicParser<T,K extends AbstractNoteMessage> {
-    public abstract AbstractMusic<K> parseMusic(T music);
+    public abstract AbstractMusic<K> parseMusic(T music) throws ExceptionNeedToBeDisplayed;
 
 }

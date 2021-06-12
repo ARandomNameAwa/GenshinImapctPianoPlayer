@@ -6,4 +6,9 @@ public class MidiNoteMessage extends AbstractNoteMessage{
     public int octave;
     public int note;
     public int velocity;
+
+    @Override
+    public String toString() {
+        return "MidiNoteMessage{" + "command=" + command + ", key=" + key + ", octave=" + octave + ", note=" + note + ", velocity=" + velocity + '}';
+    }
 }

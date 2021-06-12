@@ -26,6 +26,7 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
         currentTick++;
         List<T> toReturn = new ArrayList<>();
         for (Map<Long, List<T>> track : tracks) {
+            if (track.containsKey(currentTick))
             toReturn.addAll(track.get(currentTick));
         }
         return toReturn;
@@ -36,6 +37,7 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
      * @return 是或否
      */
     public boolean isMusicFinished() {
+
         return length <= currentTick;
     }
 
@@ -62,10 +64,10 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
         }
         if (!tracks.get(track).containsKey(tick)) { //在这个音轨的tick位置没有找到其他音符
             //添加一个只有一个音符的List
-            tracks.get(track).put(tick, Arrays.asList(message));
+            tracks.get(track).put(tick, new ArrayList<>(Arrays.asList(message)));
         } else {    //有其他音符
             //向已有的List添加音符
-            tracks.get(track).get(tick).addAll(Arrays.asList(message));
+            tracks.get(track).get(tick).addAll(new ArrayList<>(Arrays.asList(message)));
         }
     }
 
@@ -82,6 +84,10 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
      */
     public void jumpToTick(long tick){
         currentTick = tick;
+    }
+
+    public long getCurrentTick(){
+        return currentTick;
     }
 
 }

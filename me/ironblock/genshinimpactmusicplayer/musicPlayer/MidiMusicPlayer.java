@@ -8,14 +8,15 @@ import java.awt.*;
 
 public class MidiMusicPlayer extends AbstractMusicPlayer<MidiMusic, MidiNoteMessage>{
     private Robot robot;
+    public static final int NOTE_ON = 0x90;
+    public static final int NOTE_OFF = 0x80;
     @Override
     public void playNote(MidiNoteMessage note) {
-
         switch (note.command){
-            case 0: //note_on
+            case NOTE_ON: //note_on
                 robot.keyPress(KeyMap.getVKCodeFromNoteOctaveAndName(note));
                 break;
-            case 1: //note off
+            case NOTE_OFF: //note off
                 robot.keyRelease(KeyMap.getVKCodeFromNoteOctaveAndName(note));
                 break;
         }

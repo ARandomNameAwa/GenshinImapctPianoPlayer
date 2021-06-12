@@ -17,11 +17,11 @@ public class StringMusicParser extends AbstractMusicParser<String, CommonNoteMes
         Stack<Character> stack = new Stack<>();
         boolean enableStack = false;
         for (char c : musicIn.toCharArray()) {
-            currentTick++;
+
             if (c == ')') {
+                currentTick++;
                 enableStack = false;
                 music.addNoteToTrack(0, currentTick, getKeyMessage(stack.toArray(new Character[0])).toArray(new CommonNoteMessage[0]));
-                System.out.println(Arrays.toString(stack.toArray(new Character[0])));
                 stack.clear();
                 continue;
 
@@ -37,10 +37,9 @@ public class StringMusicParser extends AbstractMusicParser<String, CommonNoteMes
                 continue;
             }
             if (c != '\n' && c != ' ') {
+                currentTick++;
                 music.addNoteToTrack(0, currentTick, getKeyMessage(c).toArray(new CommonNoteMessage[0]));
-                System.out.println(c);
             }
-            currentTick++;
 
         }
         music.length = currentTick + 1;
