@@ -90,6 +90,7 @@ public class ControllerFrame extends JFrame {
     }
 
     private void onPauseButtonClicked(){
+        playController.setSpeed(Integer.parseInt(textField_speed.getText()));
         playController.switchPause();
         if (button_pause.getText().equals("Pause")){
             button_pause.setText("Resume");
