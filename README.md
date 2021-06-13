@@ -1,5 +1,5 @@
-# GenshinImapctPianoPlayer
-一个原神的自动弹琴脚本
+# GenshinImapctPianoPlayer #
+#### <s>一个原神的自动弹琴脚本</s>    基本能用在所有能用键盘弹琴的游戏的自动弹琴脚本 ####     
 新人第一次在github上上传项目 请大佬们多多指教
 ### 用法:
   File Path: 要加载的mid或txt文件的路径   
