@@ -4,11 +4,12 @@ import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
 
 import java.util.*;
 
+/**
+ * 抽象的音乐类
+ *
+ * @param <T> 这个音乐使用的音符
+ */
 public abstract class AbstractMusic<T extends AbstractNoteMessage> {
-    /**
-     * 当前播放的进度
-     */
-    protected long currentTick;
     /**
      * 音乐时长
      */
@@ -17,9 +18,14 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
      * 音轨列表
      */
     public List<Map<Long, List<T>>> tracks = new ArrayList<>();
+    /**
+     * 当前播放的进度
+     */
+    protected long currentTick;
 
     /**
      * 获取下一tick的所有音符
+     *
      * @return 下一tick的所有音符
      */
     public List<T> getNextTickNote() {
@@ -27,13 +33,14 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
         List<T> toReturn = new ArrayList<>();
         for (Map<Long, List<T>> track : tracks) {
             if (track.containsKey(currentTick))
-            toReturn.addAll(track.get(currentTick));
+                toReturn.addAll(track.get(currentTick));
         }
         return toReturn;
     }
 
     /**
      * 判断音乐是否播放完了
+     *
      * @return 是或否
      */
     public boolean isMusicFinished() {
@@ -74,19 +81,25 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
     /**
      * 重新开始这段音乐
      */
-    public void reset(){
+    public void reset() {
         jumpToTick(0);
     }
 
     /**
      * 调整当前音乐的进度
+     *
      * @param tick 音乐的进度
      */
-    public void jumpToTick(long tick){
+    public void jumpToTick(long tick) {
         currentTick = tick;
     }
 
-    public long getCurrentTick(){
+    /**
+     * 获取现在播放的进度
+     *
+     * @return 现在播放的进度
+     */
+    public long getCurrentTick() {
         return currentTick;
     }
 

@@ -1,52 +1,51 @@
 package me.ironblock.genshinimpactmusicplayer.playController;
 
-import me.ironblock.genshinimpactmusicplayer.exceptions.ExceptionNeedToBeDisplayed;
+import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicPlayer.AbstractMusicPlayer;
 
 import java.io.File;
 
+
+/**
+ * 演奏控制器
+ */
 public class PlayController {
     private AbstractMusicParser parser;
     private AbstractMusicPlayer player;
+
     /**
      * 开始演奏
+     *
      * @param file 文件名
      */
-    public void startPlay(String file) throws ExceptionNeedToBeDisplayed {
-        try {
-            File file1 = new File(file);
-            //获取后缀
-            String[] tmp = file1.getName().split("\\.");
-            SuffixDealerRegistry.MusicDealers dealers = SuffixDealerRegistry.getSuffixDealer(tmp[tmp.length - 1]);
-            parser = dealers.parser;
-            player = dealers.player;
-            player.playMusic(parser.parseMusic(file));
-
-        }catch (ExceptionNeedToBeDisplayed e1){
-            throw e1;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ExceptionNeedToBeDisplayed(e);
-        }
-
+    public void startPlay(String file, AbstractMusicParser parser, AbstractMusicPlayer player) throws Exception {
+        File file1 = new File(file);
+        this.parser = parser;
+        this.player = player;
+        this.player.playMusic(this.parser.parseMusic(file));
     }
 
     /**
      * 停止播放
      */
-    public void stopPlay(){
+    public void stopPlay() {
         player.stop();
     }
 
     /**
      * 切换播放状态
      */
-    public void switchPause(){
+    public void switchPause() {
         player.switchPause();
     }
 
-    public void setSpeed(int speed){
+    public void setSpeed(int speed) {
         player.setSpeed(speed);
+    }
+
+    public void setActiveKeyMap(KeyMap activeKeyMap) {
+
+        player.setActiveKeyMap(activeKeyMap);
     }
 }
