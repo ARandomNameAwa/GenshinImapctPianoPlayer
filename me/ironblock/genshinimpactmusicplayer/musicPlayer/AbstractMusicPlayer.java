@@ -1,6 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.musicPlayer;
 
-import me.ironblock.genshinimpactmusicplayer.exceptions.ExceptionNeedToBeDisplayed;
+import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.music.AbstractMusic;
 import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
 import me.ironblock.genshinimpactmusicplayer.ui.ControllerFrame;
@@ -25,10 +25,11 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
      * 播放歌曲的速度(tps)
      */
     protected int speed;
+    protected KeyMap activeKeyMap;
     //与线程执行有关的变量
     private boolean isPlaying, paused;
     //计时器
-    private Timer timer = new Timer(20);
+    private final Timer timer = new Timer(20);
 
     public void setSpeed(int speedIn) {
         speed = speedIn;
@@ -37,7 +38,7 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
 
     public abstract void playNote(K note);
 
-    public void playMusic(T music) throws ExceptionNeedToBeDisplayed {
+    public void playMusic(T music) throws Exception {
 
         if (musicPlayed!=null&&musicPlayed.equals(music)) {
             if (isPlaying) {
@@ -126,4 +127,11 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
         }
     }
 
+    public KeyMap getActiveKeyMap() {
+        return activeKeyMap;
+    }
+
+    public void setActiveKeyMap(KeyMap activeKeyMap) {
+        this.activeKeyMap = activeKeyMap;
+    }
 }

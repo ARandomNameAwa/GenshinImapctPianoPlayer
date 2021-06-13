@@ -1,6 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.playController;
 
-import me.ironblock.genshinimpactmusicplayer.exceptions.ExceptionNeedToBeDisplayed;
+import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicPlayer.AbstractMusicPlayer;
 
@@ -13,21 +13,17 @@ public class PlayController {
      * 开始演奏
      * @param file 文件名
      */
-    public void startPlay(String file) throws ExceptionNeedToBeDisplayed {
+    public void startPlay(String file,AbstractMusicParser parser,AbstractMusicPlayer player) throws Exception {
         try {
             File file1 = new File(file);
-            //获取后缀
-            String[] tmp = file1.getName().split("\\.");
-            SuffixDealerRegistry.MusicDealers dealers = SuffixDealerRegistry.getSuffixDealer(tmp[tmp.length - 1]);
-            parser = dealers.parser;
-            player = dealers.player;
-            player.playMusic(parser.parseMusic(file));
+            this.parser = parser;
+            this.player = player;
+            this.player.playMusic(this.parser.parseMusic(file));
 
-        }catch (ExceptionNeedToBeDisplayed e1){
-            throw e1;
+
         } catch (Exception e) {
             e.printStackTrace();
-            throw new ExceptionNeedToBeDisplayed(e);
+            throw e;
         }
 
     }
@@ -48,5 +44,9 @@ public class PlayController {
 
     public void setSpeed(int speed){
         player.setSpeed(speed);
+    }
+
+    public void setActiveKeyMap(KeyMap activeKeyMap){
+        player.setActiveKeyMap(activeKeyMap);
     }
 }

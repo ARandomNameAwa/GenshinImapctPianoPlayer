@@ -2,7 +2,7 @@ package me.ironblock.genshinimpactmusicplayer.musicPlayer;
 
 import me.ironblock.genshinimpactmusicplayer.music.CommonMusic;
 import me.ironblock.genshinimpactmusicplayer.note.CommonNoteMessage;
-import me.ironblock.genshinimpactmusicplayer.utils.KeyMap;
+import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ public class CommonMusicPlayer extends AbstractMusicPlayer<CommonMusic, CommonNo
     @Override
     public void playNote(CommonNoteMessage note) {
         keysToBeReleased.add(note.key);
-        robot.keyPress(KeyMap.getVKCodeFromKeyChar(note.key));
+        robot.keyPress(KeyMapUtils.getVKCodeFromKeyChar(note.key));
     }
 
     @Override
@@ -27,7 +27,7 @@ public class CommonMusicPlayer extends AbstractMusicPlayer<CommonMusic, CommonNo
         }
 
         for (Character character : keysToBeReleased) {
-            robot.keyRelease(KeyMap.getVKCodeFromKeyChar(character));
+            robot.keyRelease(KeyMapUtils.getVKCodeFromKeyChar(character));
         }
         keysToBeReleased.clear();
     }

@@ -2,7 +2,7 @@ package me.ironblock.genshinimpactmusicplayer.musicPlayer;
 
 import me.ironblock.genshinimpactmusicplayer.music.MidiMusic;
 import me.ironblock.genshinimpactmusicplayer.note.MidiNoteMessage;
-import me.ironblock.genshinimpactmusicplayer.utils.KeyMap;
+import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
 import java.awt.*;
 
@@ -14,10 +14,10 @@ public class MidiMusicPlayer extends AbstractMusicPlayer<MidiMusic, MidiNoteMess
     public void playNote(MidiNoteMessage note) {
         switch (note.command){
             case NOTE_ON: //note_on
-                robot.keyPress(KeyMap.getVKCodeFromNoteOctaveAndName(note));
+                robot.keyPress(activeKeyMap.getNoteKey(note.octave,note.note));
                 break;
             case NOTE_OFF: //note off
-                robot.keyRelease(KeyMap.getVKCodeFromNoteOctaveAndName(note));
+                robot.keyRelease(activeKeyMap.getNoteKey(note.octave,note.note));
                 break;
         }
 

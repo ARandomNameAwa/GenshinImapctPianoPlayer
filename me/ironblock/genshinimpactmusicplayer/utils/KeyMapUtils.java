@@ -7,11 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 import static java.awt.event.KeyEvent.*;
 
-public class KeyMap {
-    public static final String[] NOTE_NAMES = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+public class KeyMapUtils {
+    public static final String[] NOTE_NAMES = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#","A", "A#", "B"};
+    private static final Map<String, Integer> noteNameNoteIndexMap = new HashMap<>();
     private static final Map<Integer,Integer> keymap = new HashMap<>();
     private static final Map<Integer,Integer> noteNormalizeMap = new HashMap<>();
     static {
+        for (int i = 0; i < NOTE_NAMES.length; i++) {
+            noteNameNoteIndexMap.put(NOTE_NAMES[i],i);
+        }
         keymap.put(0, VK_Q);
         keymap.put(1,VK_W);
         keymap.put(2,VK_E);
@@ -75,6 +79,9 @@ public class KeyMap {
      */
     public static int getVKCodeFromKeyChar(char key){
         return KeyEvent.getExtendedKeyCodeForChar(key);
+    }
+    public static int getNoteIndexFromNoteName(String noteName){
+        return noteNameNoteIndexMap.get(noteName);
     }
 
 }
