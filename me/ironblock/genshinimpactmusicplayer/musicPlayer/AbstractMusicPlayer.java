@@ -13,6 +13,9 @@ import me.ironblock.genshinimpactmusicplayer.utils.Timer;
  * @param <K> 这个播放器播放音符的类型
  */
 public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends AbstractNoteMessage> {
+    //计时器
+    private final Timer timer = new Timer(20);
+    private final Timer updateTimer = new Timer(1);
     /**
      * 执行音乐播放的线程
      */
@@ -28,11 +31,11 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
     protected KeyMap activeKeyMap;
     //与线程执行有关的变量
     private boolean isPlaying, paused;
-    //计时器
-    private final Timer timer = new Timer(20);
+    private int speedTimer = 0;
 
     /**
      * 设置播放速度
+     *
      * @param speedIn 要设置的播放速度
      */
     public void setSpeed(int speedIn) {
@@ -42,18 +45,20 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
 
     /**
      * 播放音符的具体方法
+     *
      * @param note 要播放的音符
      */
     public abstract void playNote(K note);
 
     /**
      * 开始演奏音乐
+     *
      * @param music 要演奏的音乐
      * @throws Exception 抛出的异常
      */
     public void playMusic(T music) throws Exception {
 
-        if (musicPlayed!=null&&musicPlayed.equals(music)) {
+        if (musicPlayed != null && musicPlayed.equals(music)) {
             if (isPlaying) {
                 music.reset();
             } else {
@@ -94,18 +99,17 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
         isPlaying = false;
         updateInfo(true);
     }
-    private final Timer updateTimer = new Timer(1);
-    private int speedTimer = 0;
 
     /**
      * 更新ControllerFrame的TextArea_Info
+     *
      * @param forceUpdate 是否强制更新
      */
-    private void updateInfo(boolean forceUpdate){
+    private void updateInfo(boolean forceUpdate) {
         speedTimer++;
-        if (updateTimer.update()||forceUpdate){
-            ControllerFrame.instance.updateInfoTextField(speedTimer,musicPlayed.getCurrentTick(),musicPlayed.length,speed,musicPlayed.isMusicFinished()||!isPlaying);
-            speedTimer=0;
+        if (updateTimer.update() || forceUpdate) {
+            ControllerFrame.instance.updateInfoTextField(speedTimer, musicPlayed.getCurrentTick(), musicPlayed.length, speed, musicPlayed.isMusicFinished() || !isPlaying);
+            speedTimer = 0;
         }
     }
 
@@ -135,11 +139,10 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
      * 切换暂停或继续
      */
     public void switchPause() {
-        if (paused){
+        if (paused) {
             resume();
             System.out.println("继续!");
-        }
-        else{
+        } else {
             pause();
             System.out.println("暂停");
         }
@@ -147,6 +150,7 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
 
     /**
      * 获取当前正在使用的keyMap
+     *
      * @return
      */
     public KeyMap getActiveKeyMap() {
@@ -155,6 +159,7 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
 
     /**
      * 设置正在使用的keyMap
+     *
      * @param activeKeyMap 要设置的keyMap
      */
     public void setActiveKeyMap(KeyMap activeKeyMap) {

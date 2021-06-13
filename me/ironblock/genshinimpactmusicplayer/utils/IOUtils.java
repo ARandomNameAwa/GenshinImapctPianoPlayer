@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 public class IOUtils {
     /**
      * 把一个文件按字符串的方式读出来
+     *
      * @param inputStream 输入流
      * @return 字符串
      */

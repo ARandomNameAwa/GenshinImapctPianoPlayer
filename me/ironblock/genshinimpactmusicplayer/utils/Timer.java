@@ -17,19 +17,20 @@ public class Timer {
      * @param tps 一秒触发多少次
      */
     public Timer(int tps) {
-        sleepNanos = 1000000000/tps;
+        sleepNanos = 1000000000 / tps;
     }
 
     /**
      * 检查是经过了时间间隔
+     *
      * @return 是否经过了
      */
-    public boolean update(){
+    public boolean update() {
         long now = System.nanoTime();
-        if (now-lastResetTime>=sleepNanos){
+        if (now - lastResetTime >= sleepNanos) {
             lastResetTime = now;
             return true;
-        }else{
+        } else {
             return false;
         }
 
@@ -37,10 +38,11 @@ public class Timer {
 
     /**
      * 设置速度
+     *
      * @param tps 速度
      */
-    public void setTps(int tps){
-        this.sleepNanos = 1000000000/tps;
+    public void setTps(int tps) {
+        this.sleepNanos = 1000000000 / tps;
     }
 
 }

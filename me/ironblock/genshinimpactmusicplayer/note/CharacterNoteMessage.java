@@ -2,8 +2,9 @@ package me.ironblock.genshinimpactmusicplayer.note;
 
 import java.util.Objects;
 
-public class CharacterNoteMessage extends AbstractNoteMessage{
+public class CharacterNoteMessage extends AbstractNoteMessage {
     public char key;
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -21,6 +22,6 @@ public class CharacterNoteMessage extends AbstractNoteMessage{
 
     @Override
     public String toString() {
-        return "CommonKeyMessage{" + "key=" + (char)key+'}';
+        return "CommonKeyMessage{" + "key=" + key + '}';
     }
 }

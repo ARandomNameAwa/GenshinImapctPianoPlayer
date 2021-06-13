@@ -7,9 +7,10 @@ import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 import java.awt.*;
 import java.util.HashSet;
 
-public class CharacterMusicPlayer extends AbstractMusicPlayer<CharacterMusic, CharacterNoteMessage>{
-    private Robot robot;
+public class CharacterMusicPlayer extends AbstractMusicPlayer<CharacterMusic, CharacterNoteMessage> {
     private final HashSet<Character> keysToBeReleased = new HashSet<>();
+    private Robot robot;
+
     @Override
     public void playNote(CharacterNoteMessage note) {
         keysToBeReleased.add(note.key);
@@ -21,7 +22,7 @@ public class CharacterMusicPlayer extends AbstractMusicPlayer<CharacterMusic, Ch
      */
     @Override
     public void preTick() {
-        if (robot == null){
+        if (robot == null) {
             try {
                 robot = new Robot();
             } catch (AWTException e) {

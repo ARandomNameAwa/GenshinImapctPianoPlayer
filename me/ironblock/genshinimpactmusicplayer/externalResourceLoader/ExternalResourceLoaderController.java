@@ -15,8 +15,9 @@ public class ExternalResourceLoaderController {
     public static final File keyMapPath;
     public static final File mouseMapPath;
     public static final File pluginPath;
-    public static final String[] preinstalledKeyMaps = new String[]{"resources/nbsKeyMap.txt","resources/GenshinImpactKeyMap.txt"};
-    public static final String[] preinstalledKeyMapNames = new String[]{"NbsEditor","GenshinImpact"};
+    public static final String[] preinstalledKeyMaps = new String[]{"resources/nbsKeyMap.txt", "resources/GenshinImpactKeyMap.txt"};
+    public static final String[] preinstalledKeyMapNames = new String[]{"NbsEditor", "GenshinImpact"};
+    private static ExternalResourceLoaderController instance;
 
     static {
         runPath = new File(ExternalResourceLoaderController.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getParentFile();
@@ -25,10 +26,17 @@ public class ExternalResourceLoaderController {
         pluginPath = new File(runPath, "plugins");
     }
 
+    public static ExternalResourceLoaderController getInstance() {
+        if (instance == null) {
+            instance = new ExternalResourceLoaderController();
+        }
+        return instance;
+    }
+
     /**
      * 加载全部外部资源
      */
-    public void loadAll(){
+    public void loadAll() {
         loadKeyMaps();
         loadMouseMaps();
     }
@@ -36,21 +44,21 @@ public class ExternalResourceLoaderController {
     /**
      * 加载keyMap
      */
-    private void loadKeyMaps(){
+    private void loadKeyMaps() {
         System.out.println("Loading default keyMap....");
         for (int i = 0; i < preinstalledKeyMaps.length; i++) {
-            KeyMapLoader.getInstance().loadKeyMapFromFile(ExternalResourceLoaderController.class.getClassLoader().getResourceAsStream(preinstalledKeyMaps[i]),preinstalledKeyMapNames[i]);
+            KeyMapLoader.getInstance().loadKeyMapFromFile(ExternalResourceLoaderController.class.getClassLoader().getResourceAsStream(preinstalledKeyMaps[i]), preinstalledKeyMapNames[i]);
         }
         System.out.println("KeyMap Path:" + keyMapPath);
-        if (!keyMapPath.exists()){
+        if (!keyMapPath.exists()) {
             keyMapPath.mkdirs();
         }
         File[] keyMaps = keyMapPath.listFiles();
 
-        if (keyMaps!=null&&keyMaps.length>0) {
+        if (keyMaps != null && keyMaps.length > 0) {
             for (File keyMap : keyMaps) {
-                if (keyMap.getName().endsWith("txt")){
-                    System.out.println("Loading KeyMap "+keyMap);
+                if (keyMap.getName().endsWith("txt")) {
+                    System.out.println("Loading KeyMap " + keyMap);
                     KeyMapLoader.getInstance().loadKeyMapFromFile(keyMap.getAbsolutePath());
                 }
             }
@@ -60,27 +68,15 @@ public class ExternalResourceLoaderController {
     /**
      * 以后做
      */
-    private void loadMouseMaps(){
+    private void loadMouseMaps() {
 
     }
 
     /**
      * 以后做
      */
-    private void loadPlugin(){
+    private void loadPlugin() {
 
-    }
-
-
-
-
-    private static ExternalResourceLoaderController instance;
-
-    public static ExternalResourceLoaderController getInstance() {
-        if (instance==null){
-            instance = new ExternalResourceLoaderController();
-        }
-        return instance;
     }
 
 }

@@ -4,8 +4,8 @@ import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicPlayer.AbstractMusicPlayer;
 import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
-import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
 import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
+import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
 import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
@@ -15,7 +15,6 @@ import java.awt.event.KeyEvent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +24,11 @@ import java.util.Set;
  */
 public class ControllerFrame extends JFrame {
     public static final String programName = "Genshin Impact Music Player";
-    public static final String programVersion = "v1.0";
+    public static final String programVersion = "v1.1.0";
     public static final String programAuthor = "Iron_Block";
     public static final int frameWidth = 650;
     public static final int frameHeight = 320;
-
+    public static ControllerFrame instance;
     private final JLabel label_file_path = new JLabel("File Path");
     private final JLabel label_speed = new JLabel("Speed");
     private final JLabel label_tps = new JLabel("tps");
@@ -39,16 +38,20 @@ public class ControllerFrame extends JFrame {
     private final JComboBox<String> comboBox_parser = new JComboBox<>();
     private final JComboBox<String> comboBox_player = new JComboBox<>();
     private final JComboBox<String> comboBox_keyMap = new JComboBox<>();
-
     private final JTextField textField_file_path = new JTextField();
     private final JTextField textField_speed = new JTextField();
     private final JTextArea textArea_info = new JTextArea();
     private final JButton button_start = new JButton("Start");
     private final JButton button_pause = new JButton("Pause");
     private final JButton button_stop = new JButton("Stop");
-
-
     private final PlayController playController = new PlayController();
+    private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
+    private final Map<String, AbstractMusicPlayer> playerNameMap = new HashMap<>();
+
+    public static void init() {
+        instance = new ControllerFrame();
+        instance.setup();
+    }
 
     /**
      * 初始化frame
@@ -86,11 +89,11 @@ public class ControllerFrame extends JFrame {
         button_pause.addActionListener(e -> this.onPauseButtonClicked());
         button_stop.addActionListener(e -> this.onStopButtonClicked());
         textField_file_path.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-                        onTextFieldAndComboBoxUpdate();
-                    }
-                }
+                                               @Override
+                                               public void keyTyped(KeyEvent e) {
+                                                   onTextFieldAndComboBoxUpdate();
+                                               }
+                                           }
 
         );
         comboBox_parser.addActionListener(l -> {
@@ -126,6 +129,7 @@ public class ControllerFrame extends JFrame {
 
     /**
      * 设置标题
+     *
      * @param title 标题
      */
     public void setTitle(String title) {
@@ -138,7 +142,7 @@ public class ControllerFrame extends JFrame {
     private void onStartButtonClicked() {
         try {
             playController.startPlay(textField_file_path.getText(), parserNameMap.get(comboBox_parser.getSelectedItem()), playerNameMap.get(comboBox_player.getSelectedItem()));
-            System.out.println("Setting keyMap to "+comboBox_keyMap.getSelectedItem());
+            System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
             playController.setSpeed(Integer.parseInt(textField_speed.getText()));
         } catch (Exception exceptionNeedToBeDisplayed) {
@@ -179,27 +183,26 @@ public class ControllerFrame extends JFrame {
 
     /**
      * 更新信息栏(由AbstractMusicPlayer.updateInfo()调用)
+     *
      * @param actualSpeed 真实速度
      * @param currentTick 目前的tick
-     * @param lengthTick 总tick
-     * @param speed 速度
-     * @param finished 是否播放完毕
+     * @param lengthTick  总tick
+     * @param speed       速度
+     * @param finished    是否播放完毕
      */
-    public void updateInfoTextField(int actualSpeed, long currentTick, long lengthTick,int speed, boolean finished) {
+    public void updateInfoTextField(int actualSpeed, long currentTick, long lengthTick, int speed, boolean finished) {
         if (!finished) {
-            textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick+"\n"+ TimeUtils.getMMSSFromS((int) (currentTick / speed))+TimeUtils.progressBar(((double) currentTick)/lengthTick,20)+TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
+            textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick + "\n" + TimeUtils.getMMSSFromS((int) (currentTick / speed)) + TimeUtils.progressBar(((double) currentTick) / lengthTick, 20) + TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
         } else {
             textArea_info.setText("Music Finished");
         }
 
 
     }
+
     private void onTextFieldAndComboBoxUpdate() {
         updateComboBox();
     }
-
-    private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
-    private final Map<String, AbstractMusicPlayer> playerNameMap = new HashMap<>();
 
     /**
      * 更新下拉框
@@ -248,14 +251,6 @@ public class ControllerFrame extends JFrame {
                 }
             }
         }
-    }
-
-
-    public static ControllerFrame instance;
-
-    public static void init() {
-        instance = new ControllerFrame();
-        instance.setup();
     }
 
 
