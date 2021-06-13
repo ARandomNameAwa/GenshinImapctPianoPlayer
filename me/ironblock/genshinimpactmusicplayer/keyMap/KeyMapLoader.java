@@ -14,12 +14,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 键映射文件加载器
+ */
 public class KeyMapLoader {
     private final Map<String, KeyMap> loadedKeyMap = new HashMap<>();
+
+    /**
+     * 加载keyMap
+     * @param inputStream 从这里加载
+     * @param name 加载后的keyMap的名字
+     * @return 加载的keyMap
+     */
     public KeyMap loadKeyMapFromFile(InputStream inputStream,String name){
 
         return loadKeyMapFromString(IOUtils.readStringFully(inputStream),name);
     }
+
+    /**
+     * 加载keyMap
+     * @param fileName 加载的文件路径
+     * @return 加载后的keyMap
+     */
     public KeyMap loadKeyMapFromFile(String fileName){
         File file = new File(fileName);
         try {
@@ -30,6 +46,12 @@ public class KeyMapLoader {
         return null;
     }
 
+    /**
+     * 加载keyMap
+     * @param text 从这个字符串里加载
+     * @param name 名字
+     * @return 加载后的keyMap
+     */
     public KeyMap loadKeyMapFromString(String text, String name){
         String[] lines = text.split("\n");
         KeyMap keyMap = new KeyMap();
@@ -70,9 +92,20 @@ public class KeyMapLoader {
         loadedKeyMap.put(name, keyMap);
         return keyMap;
     }
+
+    /**
+     * 通过名字获取加载过keyMap
+     * @param name 名字
+     * @return 如果加载过这个名字的keyMap,则返回keyMap,否则返回null
+     */
     public KeyMap getLoadedKeyMap(String name){
         return loadedKeyMap.get(name);
     }
+
+    /**
+     * 获取所有加载过的keyMap的名字
+     * @return 所有加载过的keyMap的名字
+     */
     public Set<String> getAllLoadedMapName(){
         return loadedKeyMap.keySet();
     }

@@ -4,6 +4,9 @@ import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
 
 import java.io.File;
 
+/**
+ * 外部资源加载器
+ */
 public class ExternalResourceLoaderController {
     /**
      * 目前只有keyMapPath和runPath有用

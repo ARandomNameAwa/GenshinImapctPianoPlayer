@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * 键映射
+ */
 public class KeyMap {
     static class NoteInfo{
         //在第几个八度

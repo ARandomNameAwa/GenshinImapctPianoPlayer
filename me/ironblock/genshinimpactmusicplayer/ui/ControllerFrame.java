@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 控制窗口(也是主窗口)
+ */
 public class ControllerFrame extends JFrame {
     public static final String programName = "Genshin Impact Music Player";
     public static final String programVersion = "v1.0";
@@ -47,6 +50,9 @@ public class ControllerFrame extends JFrame {
 
     private final PlayController playController = new PlayController();
 
+    /**
+     * 初始化frame
+     */
     private void setup() {
         //https://blog.csdn.net/qq_27870421/article/details/90710218
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -118,11 +124,17 @@ public class ControllerFrame extends JFrame {
         this.setVisible(true);
     }
 
+    /**
+     * 设置标题
+     * @param title 标题
+     */
     public void setTitle(String title) {
         super.setTitle(programName + " " + programVersion + " by " + programAuthor + ":" + title);
     }
 
-
+    /**
+     * 开始按钮被触发后的事件
+     */
     private void onStartButtonClicked() {
         try {
             playController.startPlay(textField_file_path.getText(), parserNameMap.get(comboBox_parser.getSelectedItem()), playerNameMap.get(comboBox_player.getSelectedItem()));
@@ -141,6 +153,9 @@ public class ControllerFrame extends JFrame {
         }
     }
 
+    /**
+     * 暂停按钮被触发的事件
+     */
     private void onPauseButtonClicked() {
         try {
             playController.setSpeed(Integer.parseInt(textField_speed.getText()));
@@ -155,10 +170,21 @@ public class ControllerFrame extends JFrame {
         }
     }
 
+    /**
+     * 停止按钮被触发后的事件
+     */
     private void onStopButtonClicked() {
         playController.stopPlay();
     }
 
+    /**
+     * 更新信息栏(由AbstractMusicPlayer.updateInfo()调用)
+     * @param actualSpeed 真实速度
+     * @param currentTick 目前的tick
+     * @param lengthTick 总tick
+     * @param speed 速度
+     * @param finished 是否播放完毕
+     */
     public void updateInfoTextField(int actualSpeed, long currentTick, long lengthTick,int speed, boolean finished) {
         if (!finished) {
             textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick+"\n"+ TimeUtils.getMMSSFromS((int) (currentTick / speed))+TimeUtils.progressBar(((double) currentTick)/lengthTick,20)+TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
@@ -168,7 +194,6 @@ public class ControllerFrame extends JFrame {
 
 
     }
-
     private void onTextFieldAndComboBoxUpdate() {
         updateComboBox();
     }
@@ -176,7 +201,9 @@ public class ControllerFrame extends JFrame {
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
     private final Map<String, AbstractMusicPlayer> playerNameMap = new HashMap<>();
 
-
+    /**
+     * 更新下拉框
+     */
     private void updateComboBox() {
         //update parser selector
         if (!textField_file_path.getText().isEmpty()) {

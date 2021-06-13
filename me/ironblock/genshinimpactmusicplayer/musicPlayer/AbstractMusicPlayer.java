@@ -31,13 +31,26 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
     //计时器
     private final Timer timer = new Timer(20);
 
+    /**
+     * 设置播放速度
+     * @param speedIn 要设置的播放速度
+     */
     public void setSpeed(int speedIn) {
         speed = speedIn;
         timer.setTps(speed);
     }
 
+    /**
+     * 播放音符的具体方法
+     * @param note 要播放的音符
+     */
     public abstract void playNote(K note);
 
+    /**
+     * 开始演奏音乐
+     * @param music 要演奏的音乐
+     * @throws Exception 抛出的异常
+     */
     public void playMusic(T music) throws Exception {
 
         if (musicPlayed!=null&&musicPlayed.equals(music)) {
@@ -83,6 +96,11 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
     }
     private final Timer updateTimer = new Timer(1);
     private int speedTimer = 0;
+
+    /**
+     * 更新ControllerFrame的TextArea_Info
+     * @param forceUpdate 是否强制更新
+     */
     private void updateInfo(boolean forceUpdate){
         speedTimer++;
         if (updateTimer.update()||forceUpdate){
@@ -127,10 +145,18 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
         }
     }
 
+    /**
+     * 获取当前正在使用的keyMap
+     * @return
+     */
     public KeyMap getActiveKeyMap() {
         return activeKeyMap;
     }
 
+    /**
+     * 设置正在使用的keyMap
+     * @param activeKeyMap 要设置的keyMap
+     */
     public void setActiveKeyMap(KeyMap activeKeyMap) {
         this.activeKeyMap = activeKeyMap;
     }

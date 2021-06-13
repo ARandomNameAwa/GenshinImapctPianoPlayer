@@ -1,21 +1,24 @@
 package me.ironblock.genshinimpactmusicplayer.musicPlayer;
 
-import me.ironblock.genshinimpactmusicplayer.music.CommonMusic;
-import me.ironblock.genshinimpactmusicplayer.note.CommonNoteMessage;
+import me.ironblock.genshinimpactmusicplayer.music.CharacterMusic;
+import me.ironblock.genshinimpactmusicplayer.note.CharacterNoteMessage;
 import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
 import java.awt.*;
 import java.util.HashSet;
 
-public class CommonMusicPlayer extends AbstractMusicPlayer<CommonMusic, CommonNoteMessage>{
+public class CharacterMusicPlayer extends AbstractMusicPlayer<CharacterMusic, CharacterNoteMessage>{
     private Robot robot;
     private final HashSet<Character> keysToBeReleased = new HashSet<>();
     @Override
-    public void playNote(CommonNoteMessage note) {
+    public void playNote(CharacterNoteMessage note) {
         keysToBeReleased.add(note.key);
         robot.keyPress(KeyMapUtils.getVKCodeFromKeyChar(note.key));
     }
 
+    /**
+     * 更新机器人并松开上一个tick被按下的按键
+     */
     @Override
     public void preTick() {
         if (robot == null){

@@ -6,9 +6,17 @@ import me.ironblock.genshinimpactmusicplayer.note.MidiNoteMessage;
 
 import javax.sound.midi.*;
 import java.io.File;
-import java.io.IOException;
 
+/**
+ * midi音乐解析器
+ */
 public class MidiMusicParser extends AbstractMusicParser<String,MidiNoteMessage> {
+    /**
+     * 解析音乐
+     * @param musicFile midi文件的路径
+     * @return 解析出的音乐
+     * @throws Exception 抛出的异常
+     */
     @Override
     public AbstractMusic<MidiNoteMessage> parseMusic(String musicFile) throws Exception {
             MidiMusic music = new MidiMusic();

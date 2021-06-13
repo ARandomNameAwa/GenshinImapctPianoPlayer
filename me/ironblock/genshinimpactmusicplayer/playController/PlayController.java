@@ -6,6 +6,10 @@ import me.ironblock.genshinimpactmusicplayer.musicPlayer.AbstractMusicPlayer;
 
 import java.io.File;
 
+
+/**
+ * 演奏控制器
+ */
 public class PlayController {
     private AbstractMusicParser parser;
     private AbstractMusicPlayer player;

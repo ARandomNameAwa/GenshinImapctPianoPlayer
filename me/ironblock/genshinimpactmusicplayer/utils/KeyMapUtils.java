@@ -23,6 +23,12 @@ public class KeyMapUtils {
     public static int getVKCodeFromKeyChar(char key){
         return KeyEvent.getExtendedKeyCodeForChar(key);
     }
+
+    /**
+     * 通过音名计算音名索引
+     * @param noteName 音名
+     * @return 音名索引
+     */
     public static int getNoteIndexFromNoteName(String noteName){
         return noteNameNoteIndexMap.get(noteName);
     }

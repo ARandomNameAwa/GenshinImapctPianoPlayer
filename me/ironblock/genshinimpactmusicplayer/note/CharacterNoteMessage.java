@@ -2,7 +2,7 @@ package me.ironblock.genshinimpactmusicplayer.note;
 
 import java.util.Objects;
 
-public class CommonNoteMessage extends AbstractNoteMessage{
+public class CharacterNoteMessage extends AbstractNoteMessage{
     public char key;
     @Override
     public boolean equals(Object o) {
@@ -10,7 +10,7 @@ public class CommonNoteMessage extends AbstractNoteMessage{
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        CommonNoteMessage message = (CommonNoteMessage) o;
+        CharacterNoteMessage message = (CharacterNoteMessage) o;
         return key == message.key;
     }
 

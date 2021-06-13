@@ -4,6 +4,10 @@ import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
 
 import java.util.*;
 
+/**
+ * 抽象的音乐类
+ * @param <T> 这个音乐使用的音符
+ */
 public abstract class AbstractMusic<T extends AbstractNoteMessage> {
     /**
      * 当前播放的进度
@@ -86,6 +90,10 @@ public abstract class AbstractMusic<T extends AbstractNoteMessage> {
         currentTick = tick;
     }
 
+    /**
+     * 获取现在播放的进度
+     * @return 现在播放的进度
+     */
     public long getCurrentTick(){
         return currentTick;
     }

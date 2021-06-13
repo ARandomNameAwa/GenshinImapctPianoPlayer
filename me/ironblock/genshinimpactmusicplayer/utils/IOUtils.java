@@ -6,7 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class IOUtils {
-
+    /**
+     * 把一个文件按字符串的方式读出来
+     * @param inputStream 输入流
+     * @return 字符串
+     */
     public static String readStringFully(InputStream inputStream) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));

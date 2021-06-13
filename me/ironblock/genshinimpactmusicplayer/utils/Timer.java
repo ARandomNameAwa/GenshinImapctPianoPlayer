@@ -35,6 +35,10 @@ public class Timer {
 
     }
 
+    /**
+     * 设置速度
+     * @param tps 速度
+     */
     public void setTps(int tps){
         this.sleepNanos = 1000000000/tps;
     }
