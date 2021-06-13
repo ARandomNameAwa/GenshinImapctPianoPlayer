@@ -5,13 +5,17 @@ import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicPlayer.AbstractMusicPlayer;
 import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
 import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
-import me.ironblock.genshinimpactmusicplayer.playController.SuffixDealerRegistry;
+import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
+import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -58,26 +62,26 @@ public class ControllerFrame extends JFrame {
         this.setBounds(((int) (frameWidth / 2 - w / 2)), ((int) (frameHeight / 2 - h / 2)), frameWidth, frameHeight);
         this.setLayout(null);
         label_file_path.setBounds(20, 30, 85, 30);
-        label_speed.setBounds(20, 80, 85, 30);
-        button_start.setBounds(20, 210, 85, 50);
-        button_pause.setBounds(130, 210, 85, 50);
-        button_stop.setBounds(230, 210, 85, 50);
+        label_speed.setBounds(20, 70, 85, 30);
+        button_start.setBounds(20, 230, 85, 50);
+        button_pause.setBounds(130, 230, 85, 50);
+        button_stop.setBounds(230, 230, 85, 50);
         textField_file_path.setBounds(130, 30, 200, 25);
-        textField_speed.setBounds(130, 80, 150, 25);
-        label_tps.setBounds(280, 80, 50, 25);
-        textArea_info.setBounds(350, 30, 250, 230);
-        label_parser.setBounds(20, 120, 85, 30);
-        label_player.setBounds(130, 120, 85, 30);
-        label_keyMap.setBounds(230, 120, 85, 30);
-        comboBox_parser.setBounds(20, 160, 85, 30);
-        comboBox_player.setBounds(130, 160, 85, 30);
-        comboBox_keyMap.setBounds(230, 160, 85, 30);
+        textField_speed.setBounds(130, 70, 150, 25);
+        label_tps.setBounds(280, 70, 50, 25);
+        textArea_info.setBounds(350, 30, 250, 250);
+        label_parser.setBounds(20, 110, 90, 30);
+        label_player.setBounds(20, 150, 85, 30);
+        label_keyMap.setBounds(20, 190, 85, 30);
+        comboBox_parser.setBounds(130, 110, 200, 30);
+        comboBox_player.setBounds(130, 150, 200, 30);
+        comboBox_keyMap.setBounds(130, 190, 200, 30);
         button_start.addActionListener(e -> this.onStartButtonClicked());
         button_pause.addActionListener(e -> this.onPauseButtonClicked());
         button_stop.addActionListener(e -> this.onStopButtonClicked());
         textField_file_path.addKeyListener(new KeyAdapter() {
                     @Override
-                    public void keyPressed(KeyEvent e) {
+                    public void keyTyped(KeyEvent e) {
                         onTextFieldAndComboBoxUpdate();
                     }
                 }
@@ -122,16 +126,27 @@ public class ControllerFrame extends JFrame {
     private void onStartButtonClicked() {
         try {
             playController.startPlay(textField_file_path.getText(), parserNameMap.get(comboBox_parser.getSelectedItem()), playerNameMap.get(comboBox_player.getSelectedItem()));
+            System.out.println("Setting keyMap to "+comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
             playController.setSpeed(Integer.parseInt(textField_speed.getText()));
         } catch (Exception exceptionNeedToBeDisplayed) {
             exceptionNeedToBeDisplayed.printStackTrace();
-            setTitle(exceptionNeedToBeDisplayed.getMessage());
+            setTitle(exceptionNeedToBeDisplayed.toString());
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            PrintWriter writer = new PrintWriter(byteArrayOutputStream);
+            exceptionNeedToBeDisplayed.printStackTrace(writer);
+            writer.flush();
+            System.out.println(byteArrayOutputStream.toString());
+            textArea_info.setText(byteArrayOutputStream.toString());
         }
     }
 
     private void onPauseButtonClicked() {
-        playController.setSpeed(Integer.parseInt(textField_speed.getText()));
+        try {
+            playController.setSpeed(Integer.parseInt(textField_speed.getText()));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
         playController.switchPause();
         if (button_pause.getText().equals("Pause")) {
             button_pause.setText("Resume");
@@ -144,9 +159,9 @@ public class ControllerFrame extends JFrame {
         playController.stopPlay();
     }
 
-    public void updateInfoTextField(int actualSpeed, long currentTick, long lengthTick, boolean finished) {
+    public void updateInfoTextField(int actualSpeed, long currentTick, long lengthTick,int speed, boolean finished) {
         if (!finished) {
-            textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick);
+            textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick+"\n"+ TimeUtils.getMMSSFromS((int) (currentTick / speed))+TimeUtils.progressBar(((double) currentTick)/lengthTick,20)+TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
         } else {
             textArea_info.setText("Music Finished");
         }
@@ -168,7 +183,7 @@ public class ControllerFrame extends JFrame {
             File file = new File(textField_file_path.getText());
             if (file.exists()) {
                 String[] tmp = file.getName().split("\\.");
-                Set<AbstractMusicParser<?, ? extends AbstractNoteMessage>> parsers = SuffixDealerRegistry.getSuffixParsers(tmp[tmp.length - 1]);
+                Set<AbstractMusicParser<?, ? extends AbstractNoteMessage>> parsers = MusicParserAndPlayerRegistry.getSuffixParsers(tmp[tmp.length - 1]);
                 if (parsers != null && !parsers.isEmpty()) {
                     String prevSelectItem = (String) comboBox_parser.getSelectedItem();
                     comboBox_parser.removeAllItems();
@@ -190,7 +205,7 @@ public class ControllerFrame extends JFrame {
         //update player selector
         if (comboBox_parser.getSelectedItem() != null) {
             Class<? extends AbstractNoteMessage> noteType = parserNameMap.get(comboBox_parser.getSelectedItem()).getNoteType();
-            Set<AbstractMusicPlayer> players = SuffixDealerRegistry.getNotePlayers(noteType);
+            Set<AbstractMusicPlayer> players = MusicParserAndPlayerRegistry.getNotePlayers(noteType);
             if (players != null && !players.isEmpty()) {
                 String prevSelectItem = (String) comboBox_player.getSelectedItem();
                 playerNameMap.clear();

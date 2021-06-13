@@ -36,7 +36,10 @@ public class KeyMap {
                 note+=12;
             }
         }
-
+        @Override
+        public String toString() {
+            return "NoteInfo{" + "octave=" + octave + ", note=" + note + '}';
+        }
         @Override
         public boolean equals(Object o) {
             if (this == o)
@@ -82,6 +85,7 @@ public class KeyMap {
         }
         //如果尝试调入音域失败,则返回-1
         if (noteInfo.getNoteIndex()<minNoteIndex||noteInfo.getNoteIndex()>maxNoteIndex){
+            System.out.println("尝试调入音域失败!!");
             return -1;
         }
 
@@ -97,6 +101,9 @@ public class KeyMap {
             if (noteKeyMap.containsKey(noteInfo)){
                 return noteKeyMap.get(noteInfo);
             }
+            System.out.println("尝试半音失败");
+            noteInfo.increaseOneKey();
+            System.out.println(noteInfo);
             return -1;
         }
 

@@ -10,8 +10,7 @@ import java.io.IOException;
 
 public class MidiMusicParser extends AbstractMusicParser<String,MidiNoteMessage> {
     @Override
-    public AbstractMusic<MidiNoteMessage> parseMusic(String musicFile) {
-        try {
+    public AbstractMusic<MidiNoteMessage> parseMusic(String musicFile) throws Exception {
             MidiMusic music = new MidiMusic();
 
             Sequence sequence = MidiSystem.getSequence(new File(musicFile));
@@ -42,9 +41,6 @@ public class MidiMusicParser extends AbstractMusicParser<String,MidiNoteMessage>
                 System.out.println();
             }
             return music;
-        } catch (InvalidMidiDataException|IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+
     }
 }

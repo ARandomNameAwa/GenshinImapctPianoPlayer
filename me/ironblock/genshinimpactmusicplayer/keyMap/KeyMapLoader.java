@@ -23,7 +23,7 @@ public class KeyMapLoader {
     public KeyMap loadKeyMapFromFile(String fileName){
         File file = new File(fileName);
         try {
-            loadKeyMapFromFile(new FileInputStream(file), file.getName());
+            loadKeyMapFromFile(new FileInputStream(file), file.getName().substring(0,file.getName().lastIndexOf(".")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

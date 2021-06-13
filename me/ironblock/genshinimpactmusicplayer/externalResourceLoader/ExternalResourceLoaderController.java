@@ -12,7 +12,7 @@ public class ExternalResourceLoaderController {
     public static final File keyMapPath;
     public static final File mouseMapPath;
     public static final File pluginPath;
-    public static final String[] preinstalledKeyMaps = new String[]{"resources/nbsKeyMap.txt","resources/nbsKeyMap.txt"};
+    public static final String[] preinstalledKeyMaps = new String[]{"resources/nbsKeyMap.txt","resources/GenshinImpactKeyMap.txt"};
     public static final String[] preinstalledKeyMapNames = new String[]{"NbsEditor","GenshinImpact"};
 
     static {
@@ -38,7 +38,12 @@ public class ExternalResourceLoaderController {
         for (int i = 0; i < preinstalledKeyMaps.length; i++) {
             KeyMapLoader.getInstance().loadKeyMapFromFile(ExternalResourceLoaderController.class.getClassLoader().getResourceAsStream(preinstalledKeyMaps[i]),preinstalledKeyMapNames[i]);
         }
+        System.out.println("KeyMap Path:" + keyMapPath);
+        if (!keyMapPath.exists()){
+            keyMapPath.mkdirs();
+        }
         File[] keyMaps = keyMapPath.listFiles();
+
         if (keyMaps!=null&&keyMaps.length>0) {
             for (File keyMap : keyMaps) {
                 if (keyMap.getName().endsWith("txt")){

@@ -12,7 +12,7 @@ import me.ironblock.genshinimpactmusicplayer.note.MidiNoteMessage;
 
 import java.util.*;
 
-public class SuffixDealerRegistry {
+public class MusicParserAndPlayerRegistry {
     private static final Map<String, Set<AbstractMusicParser<?,? extends AbstractNoteMessage>>> suffixParserMap = new HashMap<>();
     private static final Map<Class<? extends AbstractNoteMessage>, Set<AbstractMusicPlayer>> notePlayerMap = new HashMap<>();
 

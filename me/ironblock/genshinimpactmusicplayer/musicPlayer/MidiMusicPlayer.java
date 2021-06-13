@@ -12,13 +12,19 @@ public class MidiMusicPlayer extends AbstractMusicPlayer<MidiMusic, MidiNoteMess
     public static final int NOTE_OFF = 0x80;
     @Override
     public void playNote(MidiNoteMessage note) {
-        switch (note.command){
-            case NOTE_ON: //note_on
-                robot.keyPress(activeKeyMap.getNoteKey(note.octave,note.note));
-                break;
-            case NOTE_OFF: //note off
-                robot.keyRelease(activeKeyMap.getNoteKey(note.octave,note.note));
-                break;
+        try {
+            switch (note.command){
+                case NOTE_ON: //note_on
+                    robot.keyPress(activeKeyMap.getNoteKey(note.octave,note.note));
+                    break;
+                case NOTE_OFF: //note off
+                    robot.keyRelease(activeKeyMap.getNoteKey(note.octave,note.note));
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(note);
+            System.out.println(activeKeyMap.getNoteKey(note.octave,note.note));
         }
 
 

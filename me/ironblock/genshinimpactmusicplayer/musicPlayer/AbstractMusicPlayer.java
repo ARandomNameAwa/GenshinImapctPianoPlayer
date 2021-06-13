@@ -81,12 +81,12 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
         isPlaying = false;
         updateInfo(true);
     }
-    private Timer updateTimer = new Timer(1);
+    private final Timer updateTimer = new Timer(1);
     private int speedTimer = 0;
     private void updateInfo(boolean forceUpdate){
         speedTimer++;
         if (updateTimer.update()||forceUpdate){
-            ControllerFrame.instance.updateInfoTextField(speedTimer,musicPlayed.getCurrentTick(),musicPlayed.length,musicPlayed.isMusicFinished()||!isPlaying);
+            ControllerFrame.instance.updateInfoTextField(speedTimer,musicPlayed.getCurrentTick(),musicPlayed.length,speed,musicPlayed.isMusicFinished()||!isPlaying);
             speedTimer=0;
         }
     }

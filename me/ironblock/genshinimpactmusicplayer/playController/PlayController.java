@@ -14,18 +14,10 @@ public class PlayController {
      * @param file 文件名
      */
     public void startPlay(String file,AbstractMusicParser parser,AbstractMusicPlayer player) throws Exception {
-        try {
             File file1 = new File(file);
             this.parser = parser;
             this.player = player;
             this.player.playMusic(this.parser.parseMusic(file));
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-
     }
 
     /**
@@ -47,6 +39,7 @@ public class PlayController {
     }
 
     public void setActiveKeyMap(KeyMap activeKeyMap){
+
         player.setActiveKeyMap(activeKeyMap);
     }
 }
