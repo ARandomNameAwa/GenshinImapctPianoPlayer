@@ -26,6 +26,7 @@ public class KeyMap {
         if (noteInfo.getNoteIndex() < minNoteIndex) {
             noteInfo.octave = minNoteOctave;
             if (noteInfo.getNoteIndex() < minNoteIndex) {
+                System.out.println("超过最低音域");
                 noteInfo.octave++;
             }
         }
@@ -33,6 +34,7 @@ public class KeyMap {
         if (noteInfo.getNoteIndex() > maxNoteIndex) {
             noteInfo.octave = maxNoteOctave;
             if (noteInfo.getNoteIndex() > maxNoteIndex) {
+                System.out.println("超过最高音域");
                 noteInfo.octave--;
             }
 
@@ -44,15 +46,18 @@ public class KeyMap {
         }
 
         if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key
+//            System.out.println("已知:"+noteInfo);
             return noteKeyMap.get(noteInfo);
         } else {          //尝试半音
             noteInfo.increaseOneKey();
             if (noteKeyMap.containsKey(noteInfo)) {
+                System.out.println("上半音");
                 return noteKeyMap.get(noteInfo);
             }
             noteInfo.decreaseOnKey();
             noteInfo.decreaseOnKey();
             if (noteKeyMap.containsKey(noteInfo)) {
+                System.out.println("下半音" );
                 return noteKeyMap.get(noteInfo);
             }
             System.out.println("尝试半音失败");

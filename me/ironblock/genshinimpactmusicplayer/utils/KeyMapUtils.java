@@ -2,6 +2,7 @@ package me.ironblock.genshinimpactmusicplayer.utils;
 
 
 import java.awt.event.KeyEvent;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,8 +23,19 @@ public class KeyMapUtils {
      * @param key 键盘上的字符
      * @return 对应的vk_code
      */
-    public static int getVKCodeFromKeyChar(char key) {
-        return KeyEvent.getExtendedKeyCodeForChar(key);
+    public static int getVKCodeFromKeyChar(String key) {
+        if (key.length()==1){
+            return KeyEvent.getExtendedKeyCodeForChar(key.charAt(0));
+        }else{
+            try {
+                Field field = KeyEvent.class.getDeclaredField("VK_" + key.toUpperCase());
+                return (int) field.get(null);
+            } catch (NoSuchFieldException|IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("解析"+key+"时出错");
+        return 0;
     }
 
     /**

@@ -83,7 +83,7 @@ public class KeyMapLoader {
                     throw new IllegalArgumentException("音符写法无法解析");
                 }
                 KeyMap.NoteInfo noteInfo = new KeyMap.NoteInfo(octave, note);
-                keyMap.noteKeyMap.put(noteInfo, KeyMapUtils.getVKCodeFromKeyChar(keyValue[1].charAt(0)));
+                    keyMap.noteKeyMap.put(noteInfo, KeyMapUtils.getVKCodeFromKeyChar(keyValue[1]));
                 if (minNote == 0 || noteInfo.getNoteIndex() < minNote) {
                     minNote = noteInfo.getNoteIndex();
                 }
@@ -100,6 +100,7 @@ public class KeyMapLoader {
         keyMap.maxNoteIndex = maxNote;
         keyMap.minNoteOctave = minNote / 12;
         keyMap.maxNoteOctave = maxNote / 12;
+        System.out.println("keyMap"+name+"的最低音域是"+minNote+",最高音域是"+maxNote);
         loadedKeyMap.put(name, keyMap);
         return keyMap;
     }

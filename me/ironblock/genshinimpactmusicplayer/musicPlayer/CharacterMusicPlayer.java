@@ -14,7 +14,7 @@ public class CharacterMusicPlayer extends AbstractMusicPlayer<CharacterMusic, Ch
     @Override
     public void playNote(CharacterNoteMessage note) {
         keysToBeReleased.add(note.key);
-        robot.keyPress(KeyMapUtils.getVKCodeFromKeyChar(note.key));
+        robot.keyPress(KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(note.key)));
     }
 
     /**
@@ -31,7 +31,7 @@ public class CharacterMusicPlayer extends AbstractMusicPlayer<CharacterMusic, Ch
         }
 
         for (Character character : keysToBeReleased) {
-            robot.keyRelease(KeyMapUtils.getVKCodeFromKeyChar(character));
+            robot.keyRelease(KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(character)));
         }
         keysToBeReleased.clear();
     }
