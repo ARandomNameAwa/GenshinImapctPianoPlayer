@@ -22,6 +22,7 @@ public class KeyPosComponent extends UIComponents{
     private int shiningTime = 0;
     private boolean shining = false;
     private int cursor = 0;
+    private String string = "";
     static {
         try {
             IMAGE = ImageIO.read(Objects.requireNonNull(KeyPosComponent.class.getClassLoader().getResourceAsStream("resources/ComponentBackgroundIcon.png")));
@@ -29,7 +30,6 @@ public class KeyPosComponent extends UIComponents{
             e.printStackTrace();
         }
     }
-    private String string = "";
 
 
     @Override
