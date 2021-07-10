@@ -44,7 +44,7 @@ public class KeyPosComponent extends UIComponents{
             shining = !shining;
             shiningTime = 0;
         }
-        graphics.drawString(string.substring(0,cursor)+(isSelected()&&shining?"|":"")+string.substring(cursor),getStringRenderX(graphics,string.substring(0,cursor)+(isSelected()&&shining?"|":"")+string.substring(cursor)),getStringRenderY(graphics));
+        graphics.drawString(string.substring(0,cursor)+(isSelected()&&shining?"|":"")+string.substring(cursor),getStringRenderX(graphics,string.substring(0,cursor)+(isSelected()&&shining?"|":"")+string.substring(cursor)),getStringRenderY(graphics,string));
     }
 
     @Override
@@ -65,14 +65,7 @@ public class KeyPosComponent extends UIComponents{
         }
     }
 
-    private int getStringRenderX(Graphics2D g,String stringToRender){
-        Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(stringToRender, g);
-        return getX()-(int) r2d.getWidth()/2;
-    }
-    private int getStringRenderY(Graphics2D g){
-        Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(string, g);
-        return getY()+(int) r2d.getHeight()/4;
-    }
+
 
 
     @Override

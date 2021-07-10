@@ -50,6 +50,7 @@ public class MainFrame extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setBounds(0, 0, dimension.width, dimension.height);
         settingsComponent.setX(dimension.width / 2);
+        settingsComponent.setY(SettingsComponent.HEIGHT/2);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setUndecorated(true);
         this.setBackground(new Color(0, 0, 0, 20));
@@ -120,6 +121,7 @@ public class MainFrame extends JFrame {
 
             @Override
             public void mouseMoved(MouseEvent e) {
+
                 MainFrame.this.mouseMoved(e);
             }
         });
@@ -133,7 +135,7 @@ public class MainFrame extends JFrame {
         if (vk_code==KeyEvent.VK_ESCAPE){
             System.exit(0);
         }else if (selectedItem!=-1){
-            componentsList.get(selectedItem).onKeyTyped(vk_code,keyChar );
+            componentsList.get(selectedItem).onKeyTyped(vk_code, keyChar);
         }else if (settingsComponent.isSelected()){
             settingsComponent.onKeyTyped(vk_code,keyChar );
         }
@@ -160,11 +162,15 @@ public class MainFrame extends JFrame {
 
             }else if (e.getButton()== MouseEvent.BUTTON3){
                 componentsList.remove(index);
-                if (index>selectedItem){//TODO: 写的有问题 之后要改
+                if (index<selectedItem){//TODO: 写的有问题 之后要改
+                    //TODO:测试
                     selectedItem--;
-                    System.out.println("selected"+selectedItem);
+                    System.out.println("deleted selected:"+selectedItem);
+                }else if(index==selectedItem){
+                    selectedItem = -1;
                 }else{
-                    System.out.println("selectedq"+selectedItem);
+                    System.out.println("not deleted selected:"+selectedItem);
+
                 }
 
 
@@ -176,6 +182,9 @@ public class MainFrame extends JFrame {
             newComponent.setWidth(KeyPosComponent.WIDTH);
             newComponent.setHeight(KeyPosComponent.HEIGHT);
             componentsList.add(newComponent);
+            if (selectedItem!=-1){
+                componentsList.get(selectedItem).setSelected(false);
+            }
             newComponent.setSelected(true);
             selectedItem = componentsList.size()-1;
         }
@@ -221,8 +230,7 @@ public class MainFrame extends JFrame {
     }
 
     private void mouseDragged(MouseEvent e) {
-        if (e.getButton()==MouseEvent.BUTTON1) {
-            System.out.println("拖");
+        if (e.getButton()==MouseEvent.NOBUTTON) {
             if (draggingIem != null) {
                 draggingIem.setX(lastX - offsetX);
                 draggingIem.setY(lastY - offsetY);

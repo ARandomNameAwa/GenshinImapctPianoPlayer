@@ -1,9 +1,15 @@
 package me.ironblock.mousemappingmaker.ui.components;
 
+import me.ironblock.mousemappingmaker.ui.MainFrame;
+
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class UIComponents {
     private boolean isSelected;
+    protected List<UIComponents> componentsList = new ArrayList<>();
 
     public boolean isSelected() {
         return isSelected;
@@ -11,6 +17,10 @@ public abstract class UIComponents {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    protected void renderComponents(Graphics2D g){
+        componentsList.forEach(c->c.paint(g));
     }
 
     protected int x;
@@ -61,5 +71,21 @@ public abstract class UIComponents {
     public abstract void onClicked(int x, int y, int button);
     protected void drawComponentRect(Graphics graphics){
         graphics.fillRect(getDrawX(),getDrawY(),getWidth(),getHeight());
+    }
+    protected int getStringRenderX(Graphics2D g,String stringToRender){
+        Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(stringToRender, g);
+        return getX()-(int) r2d.getWidth()/2;
+    }
+    protected int getStringRenderY(Graphics2D g,String string){
+        Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(string, g);
+        return getY()+(int) r2d.getHeight()/4;
+    }
+    protected int getStringRenderX(Graphics2D g,String stringToRender,int xYouWantToRender){
+        Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(stringToRender, g);
+        return getX()+xYouWantToRender-(int) r2d.getWidth()/2;
+    }
+    protected int getStringRenderY(Graphics2D g,String string,int yYouWantToRender){
+        Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(string, g);
+        return getY()+yYouWantToRender+(int) r2d.getHeight()/4;
     }
 }
