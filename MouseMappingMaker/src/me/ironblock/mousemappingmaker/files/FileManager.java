@@ -8,8 +8,20 @@ public class FileManager {
             instance = new FileManager();
         return instance;
     }
-
+    //TODO:写完
     public void saveCurrentFile(){
+
+    }
+    //TODO:写完
+    public void loadCurrentFile(){
+
+    }
+    //TODO:写完
+    public void setCurrentFile(){
+
+    }
+    //TODO:写完
+    public void openResourceSelector(){
 
     }
 }

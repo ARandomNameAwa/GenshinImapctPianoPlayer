@@ -1,5 +1,7 @@
 package me.ironblock.mousemappingmaker.ui.components;
 
+import me.ironblock.mousemappingmaker.files.FileManager;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
@@ -9,14 +11,31 @@ public class SettingsComponent extends UIComponents{
     //label
     private static final int ta_left = -150;
     private static final int ta_up = -15;
-    private static final int ta_width = 230;
+    private static final int ta_width = 200;
     private static final int ta_height = 30;
     //ta
     private final int shiningTimer = 50;
     private int shiningTime = 0;
     private boolean shining = false;
     private int cursor = 0;
-    private String string = "qwe";
+    private String string = "";
+    //TODO:打开资源选择器
+    //open explorer
+    private static final int selector_left = 60;
+    private static final int selector_up = -15;
+    private static final int selector_width = 30;
+    private static final int selector_height = 30;
+    //button
+    private static final int button_load_left = 100;
+    private static final int button_load_up = -15;
+    private static final int button_load_width = 50;
+    private static final int button_load_height = 30;
+
+    private static final int button_save_left = 160;
+    private static final int button_save_up = -15;
+    private static final int button_save_width = 50;
+    private static final int button_save_height = 30;
+
 
     public SettingsComponent() {
         this.setWidth(WIDTH);
@@ -40,6 +59,16 @@ public class SettingsComponent extends UIComponents{
             shiningTime = 0;
         }
         graphics.drawString(string.substring(0,cursor)+(isSelected()&&shining?"|":"")+string.substring(cursor),this.getX()+ta_left,getStringRenderY(graphics,string,ta_up+10));
+        //TODO:资源选择器
+        graphics.setColor(new Color(50,50,255,255));
+        graphics.fillRect(getX()+selector_left, getY()+selector_up, selector_width, selector_height);
+        //buttons
+        graphics.setColor(new Color(255,255,255,150));
+        graphics.fillRect(getX()+button_load_left, getY()+button_load_up, button_load_width, button_load_height);
+        graphics.fillRect(getX()+button_save_left, getY()+button_save_up, button_save_width, button_save_height);
+        graphics.setColor(new Color(0,0,0,255));
+        graphics.drawString("加载", getX()+button_load_left+10, getY()+button_load_up+15);
+        graphics.drawString("保存", getX()+button_save_left+10, getY()+button_save_up+15);
     }
 
     @Override
@@ -62,6 +91,24 @@ public class SettingsComponent extends UIComponents{
 
     @Override
     public void onClicked(int x, int y, int button) {
+        //TODO: getDrawX(),getX()和x传的东西太复杂了
+        int trueX = x+getDrawX() - getX(), trueY = y +getDrawY()- getY();
+        System.out.println(x+","+y+":"+getX()+","+getY()+":"+trueX+","+trueY);
+        if (new Rectangle(selector_left, selector_up, selector_width, selector_height).contains(trueX, trueY)){
+            //TODO: open file selector
+            System.out.println("资源选择器");
+            FileManager.getInstance().openResourceSelector();
+        }
+        if (new Rectangle(button_save_left, button_save_up, button_save_width, button_save_height).contains(trueX, trueY)){
+            //TODO: open file selector
+            System.out.println("保存");
+            FileManager.getInstance().saveCurrentFile();
+        }
+        if (new Rectangle(button_load_left, button_load_up, button_load_width, button_load_height).contains(trueX, trueY)){
+            //TODO: open file selector
+            System.out.println("加载");
+            FileManager.getInstance().loadCurrentFile();
 
+        }
     }
 }
