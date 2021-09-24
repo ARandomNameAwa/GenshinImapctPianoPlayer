@@ -62,7 +62,7 @@ public abstract class AbstractMusicPlayer<T extends AbstractMusic<K>, K extends 
             if (isPlaying) {
                 music.reset();
             } else {
-
+                Thread.sleep(2000);
                 musicPlayerThread = new Thread(this::playMusicPlayerThread, "MusicPlayerThread");
                 musicPlayerThread.start();
             }

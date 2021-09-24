@@ -4,6 +4,7 @@ import me.ironblock.genshinimpactmusicplayer.music.MidiMusic;
 import me.ironblock.genshinimpactmusicplayer.note.MidiNoteMessage;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class MidiMusicPlayer extends AbstractMusicPlayer<MidiMusic, MidiNoteMessage> {
     public static final int NOTE_ON = 0x90;
@@ -15,9 +16,11 @@ public class MidiMusicPlayer extends AbstractMusicPlayer<MidiMusic, MidiNoteMess
         try {
             switch (note.command) {
                 case NOTE_ON: //note_on
+                    Toolkit.getDefaultToolkit().setLockingKeyState(KeyEvent.VK_NUM_LOCK,true);
                     robot.keyPress(activeKeyMap.getNoteKey(note.octave, note.note));
                     break;
                 case NOTE_OFF: //note off
+                    Toolkit.getDefaultToolkit().setLockingKeyState(KeyEvent.VK_NUM_LOCK,true);
                     robot.keyRelease(activeKeyMap.getNoteKey(note.octave, note.note));
                     break;
             }
