@@ -22,6 +22,11 @@ public class KeyPosComponent extends UIComponents{
     private int shiningTime = 0;
     private boolean shining = false;
     private int cursor = 0;
+
+    public String getString() {
+        return string;
+    }
+
     private String string = "";
     static {
         try {
@@ -65,7 +70,9 @@ public class KeyPosComponent extends UIComponents{
         }
     }
 
-
+    public void setContent(String content){
+        this.string = content;
+    }
 
 
     @Override

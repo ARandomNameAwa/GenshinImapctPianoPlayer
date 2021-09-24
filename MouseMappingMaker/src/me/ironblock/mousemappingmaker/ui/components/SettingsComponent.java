@@ -2,8 +2,10 @@ package me.ironblock.mousemappingmaker.ui.components;
 
 import me.ironblock.mousemappingmaker.files.FileManager;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+
 
 public class SettingsComponent extends UIComponents{
     public static final int WIDTH = 500;
@@ -36,6 +38,10 @@ public class SettingsComponent extends UIComponents{
     private static final int button_save_width = 50;
     private static final int button_save_height = 30;
 
+
+    public String getString() {
+        return string;
+    }
 
     public SettingsComponent() {
         this.setWidth(WIDTH);
@@ -75,15 +81,22 @@ public class SettingsComponent extends UIComponents{
     public void onKeyTyped(int vk_code, char keyChar) {
         System.out.println(vk_code);
         if (vk_code== KeyEvent.VK_BACK_SPACE){
-            if (string.length()>0&&cursor>0)
+            if (string.length()>0&&cursor>0) {
                 string = string.substring(0, cursor-1)+string.substring(cursor);
-            if (cursor>0)
+            }
+            if (cursor>0) {
                 cursor--;
+            }
         }else if (vk_code== KeyEvent.VK_LEFT){
-            if (cursor>0)cursor--;
+            if (cursor>0) {
+                cursor--;
+            }
         }else if (vk_code==KeyEvent.VK_RIGHT){
-            if (cursor<string.length())cursor++;
-        }else if(vk_code!=KeyEvent.VK_CAPS_LOCK&&vk_code!=KeyEvent.VK_SHIFT&&vk_code!=KeyEvent.VK_CONTROL&&vk_code!=KeyEvent.VK_ALT){//控制键都给刨了
+            if (cursor<string.length()) {
+                cursor++;
+            }
+        }else if(vk_code!=KeyEvent.VK_CAPS_LOCK&&vk_code!=KeyEvent.VK_SHIFT&&vk_code!=KeyEvent.VK_CONTROL&&vk_code!=KeyEvent.VK_ALT){
+            //控制键都给刨了
             string = string.substring(0,cursor) + keyChar+string.substring(cursor);
             cursor++;
         }
@@ -91,23 +104,18 @@ public class SettingsComponent extends UIComponents{
 
     @Override
     public void onClicked(int x, int y, int button) {
-        //TODO: getDrawX(),getX()和x传的东西太复杂了
         int trueX = x+getDrawX() - getX(), trueY = y +getDrawY()- getY();
         System.out.println(x+","+y+":"+getX()+","+getY()+":"+trueX+","+trueY);
-        if (new Rectangle(selector_left, selector_up, selector_width, selector_height).contains(trueX, trueY)){
-            //TODO: open file selector
-            System.out.println("资源选择器");
-            FileManager.getInstance().openResourceSelector();
-        }
+
         if (new Rectangle(button_save_left, button_save_up, button_save_width, button_save_height).contains(trueX, trueY)){
-            //TODO: open file selector
             System.out.println("保存");
-            FileManager.getInstance().saveCurrentFile();
+            boolean success = FileManager.getInstance().saveCurrentFile(string);
+            JOptionPane.showMessageDialog(null,success?"保存成功":"保存失败");
         }
         if (new Rectangle(button_load_left, button_load_up, button_load_width, button_load_height).contains(trueX, trueY)){
-            //TODO: open file selector
             System.out.println("加载");
-            FileManager.getInstance().loadCurrentFile();
+            boolean success = FileManager.getInstance().loadCurrentFile(string);
+            JOptionPane.showMessageDialog(null,success?"加载成功":"加载失败");
 
         }
     }

@@ -4,6 +4,7 @@ import me.ironblock.mousemappingmaker.files.FileManager;
 import me.ironblock.mousemappingmaker.ui.components.KeyPosComponent;
 import me.ironblock.mousemappingmaker.ui.components.SettingsComponent;
 import me.ironblock.mousemappingmaker.ui.components.UIComponents;
+import sun.tools.tree.ShiftLeftExpression;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
@@ -16,7 +17,11 @@ import java.util.List;
  * 覆盖全屏的Frame
  */
 public class MainFrame extends JFrame {
-    private final List<KeyPosComponent> componentsList = new ArrayList<>();
+    private static MainFrame instance;
+    {
+      instance = this;
+    }
+    private List<KeyPosComponent> componentsList = new ArrayList<>();
 
     private int selectedItem = -1;
     public static final Font font = new Font("微软雅黑", Font.PLAIN, 25);
@@ -39,7 +44,7 @@ public class MainFrame extends JFrame {
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                FileManager.getInstance().saveCurrentFile();
+                FileManager.getInstance().saveCurrentFile(settingsComponent.getString());
                 System.exit(0);
             }
         });
@@ -146,6 +151,10 @@ public class MainFrame extends JFrame {
         //如果点到了设置窗口
         if (checkSettingComponentSelected(e.getXOnScreen(), e.getYOnScreen())) {
             settingsComponent.setSelected(true);
+            if (selectedItem!=-1){
+                componentsList.get(selectedItem).setSelected(false);
+                selectedItem = -1;
+            }
             settingsComponent.onClicked(e.getXOnScreen() - settingsComponent.getDrawX(), e.getYOnScreen() - settingsComponent.getDrawY(), e.getButton());
             //直接返回
             return;
@@ -296,6 +305,8 @@ public class MainFrame extends JFrame {
 
 
 
+
+
     @Override
     public void paint(Graphics g) {
        Graphics2D tmp = ((Graphics2D) g);
@@ -316,5 +327,17 @@ public class MainFrame extends JFrame {
         g.dispose();
 
 
+    }
+
+    public List<KeyPosComponent> getComponentsList() {
+        return componentsList;
+    }
+
+    public void setComponentsList(List<KeyPosComponent> list){
+        this.componentsList = list;
+    }
+
+    public static MainFrame getInstance() {
+        return instance;
     }
 }
