@@ -47,7 +47,13 @@ public class ExternalResourceLoaderController {
     private void loadKeyMaps() {
         System.out.println("Loading default keyMap....");
         for (int i = 0; i < preinstalledKeyMaps.length; i++) {
-            KeyMapLoader.getInstance().loadKeyMapFromFile(ExternalResourceLoaderController.class.getClassLoader().getResourceAsStream(preinstalledKeyMaps[i]), preinstalledKeyMapNames[i]);
+            try {
+                KeyMapLoader.getInstance().loadKeyMapFromFile(ExternalResourceLoaderController.class.getClassLoader().getResourceAsStream(preinstalledKeyMaps[i]), preinstalledKeyMapNames[i]);
+            } catch (Exception e) {
+
+
+                e.printStackTrace();
+            }
         }
         System.out.println("KeyMap Path:" + keyMapPath);
         if (!keyMapPath.exists()) {
