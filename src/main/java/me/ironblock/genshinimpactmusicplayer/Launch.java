@@ -6,6 +6,8 @@ import me.ironblock.genshinimpactmusicplayer.ui.ControllerFrame;
 
 /**
  * 主类
+ *
+ * @author Administrator
  */
 public class Launch {
     /**
