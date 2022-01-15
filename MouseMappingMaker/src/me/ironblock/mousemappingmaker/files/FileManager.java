@@ -17,8 +17,9 @@ public class FileManager {
         }
         return instance;
     }
+
     //TODO:写完
-    public boolean saveCurrentFile(String path){
+    public boolean saveCurrentFile(String path) {
         List<KeyPosComponent> list = MainFrame.getInstance().getComponentsList();
         StringBuilder sb = new StringBuilder();
         for (KeyPosComponent keyPosComponent : list) {
@@ -28,7 +29,7 @@ public class FileManager {
             new File(path).getParentFile().mkdirs();
             OutputStream outputStream = new FileOutputStream(path);
             byte[] b = sb.toString().getBytes(StandardCharsets.UTF_8);
-            outputStream.write(b,0,b.length);
+            outputStream.write(b, 0, b.length);
             outputStream.close();
         } catch (IOException e) {
 
@@ -38,13 +39,14 @@ public class FileManager {
         return true;
 
     }
+
     //TODO:写完
-    public boolean loadCurrentFile(String path){
+    public boolean loadCurrentFile(String path) {
         List<KeyPosComponent> pos = new ArrayList<>();
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
             String buffer;
-            while ((buffer= reader.readLine())!=null){
+            while ((buffer = reader.readLine()) != null) {
                 String[] keyValue = buffer.split(":");
                 String[] pos0 = keyValue[1].split(",");
                 KeyPosComponent posComponent = new KeyPosComponent();
@@ -65,7 +67,7 @@ public class FileManager {
     }
 
     //TODO:写完
-    public void openResourceSelector(){
+    public void openResourceSelector() {
 
     }
 }

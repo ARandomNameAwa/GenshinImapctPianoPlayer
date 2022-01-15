@@ -19,8 +19,8 @@ public abstract class UIComponents {
         isSelected = selected;
     }
 
-    protected void renderComponents(Graphics2D g){
-        componentsList.forEach(c->c.paint(g));
+    protected void renderComponents(Graphics2D g) {
+        componentsList.forEach(c -> c.paint(g));
     }
 
     protected int x;
@@ -60,32 +60,42 @@ public abstract class UIComponents {
     public void setY(int y) {
         this.y = y;
     }
-    public int getDrawX(){
-        return getX()-getWidth()/2;
+
+    public int getDrawX() {
+        return getX() - getWidth() / 2;
     }
-    public int getDrawY(){
+
+    public int getDrawY() {
         return getY() - getHeight() / 2;
     }
+
     public abstract void paint(Graphics2D graphics);
+
     public abstract void onKeyTyped(int vk_code, char keyChar);
+
     public abstract void onClicked(int x, int y, int button);
-    protected void drawComponentRect(Graphics graphics){
-        graphics.fillRect(getDrawX(),getDrawY(),getWidth(),getHeight());
+
+    protected void drawComponentRect(Graphics graphics) {
+        graphics.fillRect(getDrawX(), getDrawY(), getWidth(), getHeight());
     }
-    protected int getStringRenderX(Graphics2D g,String stringToRender){
+
+    protected int getStringRenderX(Graphics2D g, String stringToRender) {
         Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(stringToRender, g);
-        return getX()-(int) r2d.getWidth()/2;
+        return getX() - (int) r2d.getWidth() / 2;
     }
-    protected int getStringRenderY(Graphics2D g,String string){
+
+    protected int getStringRenderY(Graphics2D g, String string) {
         Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(string, g);
-        return getY()+(int) r2d.getHeight()/4;
+        return getY() + (int) r2d.getHeight() / 4;
     }
-    protected int getStringRenderX(Graphics2D g,String stringToRender,int xYouWantToRender){
+
+    protected int getStringRenderX(Graphics2D g, String stringToRender, int xYouWantToRender) {
         Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(stringToRender, g);
-        return getX()+xYouWantToRender-(int) r2d.getWidth()/2;
+        return getX() + xYouWantToRender - (int) r2d.getWidth() / 2;
     }
-    protected int getStringRenderY(Graphics2D g,String string,int yYouWantToRender){
+
+    protected int getStringRenderY(Graphics2D g, String string, int yYouWantToRender) {
         Rectangle2D r2d = g.getFontMetrics(MainFrame.font).getStringBounds(string, g);
-        return getY()+yYouWantToRender+(int) r2d.getHeight()/4;
+        return getY() + yYouWantToRender + (int) r2d.getHeight() / 4;
     }
 }

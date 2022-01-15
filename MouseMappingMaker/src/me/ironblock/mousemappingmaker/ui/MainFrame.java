@@ -4,7 +4,6 @@ import me.ironblock.mousemappingmaker.files.FileManager;
 import me.ironblock.mousemappingmaker.ui.components.KeyPosComponent;
 import me.ironblock.mousemappingmaker.ui.components.SettingsComponent;
 import me.ironblock.mousemappingmaker.ui.components.UIComponents;
-import sun.tools.tree.ShiftLeftExpression;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
@@ -18,9 +17,11 @@ import java.util.List;
  */
 public class MainFrame extends JFrame {
     private static MainFrame instance;
+
     {
-      instance = this;
+        instance = this;
     }
+
     private List<KeyPosComponent> componentsList = new ArrayList<>();
 
     private int selectedItem = -1;
@@ -55,14 +56,14 @@ public class MainFrame extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setBounds(0, 0, dimension.width, dimension.height);
         settingsComponent.setX(dimension.width / 2);
-        settingsComponent.setY(SettingsComponent.HEIGHT/2);
+        settingsComponent.setY(SettingsComponent.HEIGHT / 2);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setUndecorated(true);
         this.setBackground(new Color(0, 0, 0, 20));
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                MainFrame.this.keyTyped(e.getKeyCode(),e.getKeyChar());
+                MainFrame.this.keyTyped(e.getKeyCode(), e.getKeyChar());
             }
         });
         this.addMouseListener(new MouseInputListener() {
@@ -136,13 +137,13 @@ public class MainFrame extends JFrame {
 
     }
 
-    public void keyTyped(int vk_code,char keyChar){
-        if (vk_code==KeyEvent.VK_ESCAPE){
+    public void keyTyped(int vk_code, char keyChar) {
+        if (vk_code == KeyEvent.VK_ESCAPE) {
             System.exit(0);
-        }else if (selectedItem!=-1){
+        } else if (selectedItem != -1) {
             componentsList.get(selectedItem).onKeyTyped(vk_code, keyChar);
-        }else if (settingsComponent.isSelected()){
-            settingsComponent.onKeyTyped(vk_code,keyChar );
+        } else if (settingsComponent.isSelected()) {
+            settingsComponent.onKeyTyped(vk_code, keyChar);
         }
     }
 
@@ -151,7 +152,7 @@ public class MainFrame extends JFrame {
         //如果点到了设置窗口
         if (checkSettingComponentSelected(e.getXOnScreen(), e.getYOnScreen())) {
             settingsComponent.setSelected(true);
-            if (selectedItem!=-1){
+            if (selectedItem != -1) {
                 componentsList.get(selectedItem).setSelected(false);
                 selectedItem = -1;
             }
@@ -162,23 +163,23 @@ public class MainFrame extends JFrame {
         //如果点到了其他东西
         int index = checkKeyPosComponentSelected(e.getXOnScreen(), e.getYOnScreen());
         if (index != -1) {
-            if (e.getButton()== MouseEvent.BUTTON1){
+            if (e.getButton() == MouseEvent.BUTTON1) {
                 if (selectedItem != -1) {
                     componentsList.get(selectedItem).setSelected(false);
                 }
                 this.selectedItem = index;
                 componentsList.get(selectedItem).setSelected(true);
 
-            }else if (e.getButton()== MouseEvent.BUTTON3){
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
                 componentsList.remove(index);
-                if (index<selectedItem){//TODO: 写的有问题 之后要改
+                if (index < selectedItem) {//TODO: 写的有问题 之后要改
                     //TODO:测试
                     selectedItem--;
-                    System.out.println("deleted selected:"+selectedItem);
-                }else if(index==selectedItem){
+                    System.out.println("deleted selected:" + selectedItem);
+                } else if (index == selectedItem) {
                     selectedItem = -1;
-                }else{
-                    System.out.println("not deleted selected:"+selectedItem);
+                } else {
+                    System.out.println("not deleted selected:" + selectedItem);
 
                 }
 
@@ -191,11 +192,11 @@ public class MainFrame extends JFrame {
             newComponent.setWidth(KeyPosComponent.WIDTH);
             newComponent.setHeight(KeyPosComponent.HEIGHT);
             componentsList.add(newComponent);
-            if (selectedItem!=-1){
+            if (selectedItem != -1) {
                 componentsList.get(selectedItem).setSelected(false);
             }
             newComponent.setSelected(true);
-            selectedItem = componentsList.size()-1;
+            selectedItem = componentsList.size() - 1;
         }
 
     }
@@ -205,10 +206,10 @@ public class MainFrame extends JFrame {
     private UIComponents draggingIem;
 
     private void mousePressed(MouseEvent e) {
-        if (e.getButton()==MouseEvent.BUTTON1) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             lastX = e.getXOnScreen();
             lastY = e.getYOnScreen();
-            if (selectedItem != -1&&selectedItem<componentsList.size()) {
+            if (selectedItem != -1 && selectedItem < componentsList.size()) {
                 componentsList.get(selectedItem).setSelected(false);
             }
             //如果点到了设置窗口
@@ -239,7 +240,7 @@ public class MainFrame extends JFrame {
     }
 
     private void mouseDragged(MouseEvent e) {
-        if (e.getButton()==MouseEvent.NOBUTTON) {
+        if (e.getButton() == MouseEvent.NOBUTTON) {
             if (draggingIem != null) {
                 draggingIem.setX(lastX - offsetX);
                 draggingIem.setY(lastY - offsetY);
@@ -300,23 +301,16 @@ public class MainFrame extends JFrame {
     }
 
 
-
-
-
-
-
-
-
     @Override
     public void paint(Graphics g) {
-       Graphics2D tmp = ((Graphics2D) g);
+        Graphics2D tmp = ((Graphics2D) g);
         Graphics2D backup = tmp;
 
         tmp.setComposite(AlphaComposite.SrcOver.derive(AlphaComposite.CLEAR));
-        tmp.setColor(new Color(0,0,0,255));
+        tmp.setColor(new Color(0, 0, 0, 255));
         tmp.fillRect(0, 0, this.getWidth(), this.getHeight());
         tmp.setComposite(AlphaComposite.SrcOver.derive(AlphaComposite.SRC));
-        tmp.setColor(new Color(0,0,0,10));
+        tmp.setColor(new Color(0, 0, 0, 10));
         tmp.fillRect(0, 0, this.getWidth(), this.getHeight());
         tmp.setComposite(AlphaComposite.SrcOver.derive(AlphaComposite.SRC_OVER));
         settingsComponent.paint(tmp);
@@ -333,7 +327,7 @@ public class MainFrame extends JFrame {
         return componentsList;
     }
 
-    public void setComponentsList(List<KeyPosComponent> list){
+    public void setComponentsList(List<KeyPosComponent> list) {
         this.componentsList = list;
     }
 
