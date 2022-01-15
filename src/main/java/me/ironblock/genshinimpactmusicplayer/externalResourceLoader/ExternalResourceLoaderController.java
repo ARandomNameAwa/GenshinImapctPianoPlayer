@@ -15,7 +15,7 @@ public class ExternalResourceLoaderController {
     public static final File keyMapPath;
     public static final File mouseMapPath;
     public static final File pluginPath;
-    public static final String[] preinstalledKeyMaps = new String[]{"resources/nbsKeyMap.txt", "resources/GenshinImpactKeyMap.txt"};
+    public static final String[] preinstalledKeyMaps = new String[]{"nbsKeyMap.txt", "GenshinImpactKeyMap.txt"};
     public static final String[] preinstalledKeyMapNames = new String[]{"NbsEditor", "GenshinImpact"};
     private static ExternalResourceLoaderController instance;
 

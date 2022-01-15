@@ -6,11 +6,29 @@
 
     <groupId>me.ironblock.genshinimpactmusicplayer</groupId>
     <artifactId>GenshinImpactMusicPlayer</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>MouseMappingMaker</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+    <build>
+        <resources>
+            <resource>
+                <directory>
+                    src/main/java
+                </directory>
+                <includes>
+                    <include>*.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+
 
 </project>
