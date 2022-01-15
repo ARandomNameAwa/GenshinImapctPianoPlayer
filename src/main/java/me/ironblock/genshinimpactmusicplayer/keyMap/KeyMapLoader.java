@@ -1,5 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.keyMap;
 
+import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
 import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
@@ -82,7 +83,7 @@ public class KeyMapLoader {
                 } else {
                     throw new IllegalArgumentException("音符写法无法解析");
                 }
-                KeyMap.NoteInfo noteInfo = new KeyMap.NoteInfo(octave, note);
+                NoteInfo noteInfo = new NoteInfo(octave, note);
                 keyMap.noteKeyMap.put(noteInfo, KeyMapUtils.getVKCodeFromKeyChar(keyValue[1]));
                 if (minNote == 0 || noteInfo.getNoteIndex() < minNote) {
                     minNote = noteInfo.getNoteIndex();
