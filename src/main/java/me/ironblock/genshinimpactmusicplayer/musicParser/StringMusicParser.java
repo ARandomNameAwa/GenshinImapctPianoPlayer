@@ -1,41 +1,51 @@
 package me.ironblock.genshinimpactmusicplayer.musicParser;
 
-import me.ironblock.genshinimpactmusicplayer.music.AbstractMusic;
-import me.ironblock.genshinimpactmusicplayer.music.CharacterMusic;
-import me.ironblock.genshinimpactmusicplayer.note.CharacterNoteMessage;
+import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
+import me.ironblock.genshinimpactmusicplayer.music.Music;
+import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
 import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
+import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Stack;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * 字符串音乐解析器
  */
-public class StringMusicParser extends AbstractMusicParser<String, CharacterNoteMessage> {
+public class StringMusicParser extends AbstractMusicParser{
     /**
      * 解析字符串音乐
      *
-     * @param musicIn 文件路径
+     * @param musicStream 文件流
+     * @param keyMap 使用的keyMap
      * @return 解析出的音乐
-     * @throws Exception 抛出的异常
      */
     @Override
-    public AbstractMusic<CharacterNoteMessage> parseMusic(String musicIn) throws Exception {
-        musicIn = IOUtils.readStringFully(new FileInputStream(musicIn)).toLowerCase(Locale.ROOT);
-        CharacterMusic music = new CharacterMusic();
+    public Music parseMusic(InputStream musicStream, KeyMap keyMap){
+        String musicIn = IOUtils.readStringFully(musicStream).toLowerCase(Locale.ROOT);
+        Music music = new Music();
         long currentTick = 0;
         //使用栈来解析括号
         Stack<Character> stack = new Stack<>();
         boolean enableStack = false;
+        List<Character> pressedChars = new ArrayList<>();
         for (char c : musicIn.toCharArray()) {
+
+
+            for (Character pressedChar : pressedChars) {
+                KeyAction action = new KeyAction(false,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(pressedChar)));
+                music.addNoteToTick(currentTick*2+1, action);
+            }
+            pressedChars.clear();
 
             if (c == ')') {
                 currentTick++;
                 enableStack = false;
-                music.addNoteToTrack(0, currentTick, getKeyMessage(stack.toArray(new Character[0])).toArray(new CharacterNoteMessage[0]));
+                for (Character character : stack) {
+                    pressedChars.add(character);
+                    KeyAction action = new KeyAction(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(character)));
+                    music.addNoteToTick(currentTick*2, action);
+                }
                 stack.clear();
                 continue;
 
@@ -50,30 +60,27 @@ public class StringMusicParser extends AbstractMusicParser<String, CharacterNote
                 enableStack = true;
                 continue;
             }
+            currentTick++;
             if (c != '\n' && c != ' ') {
-                currentTick++;
-                music.addNoteToTrack(0, currentTick, getKeyMessage(c).toArray(new CharacterNoteMessage[0]));
+                pressedChars.add(c);
+                KeyAction action = new KeyAction(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(c)));
+                music.addNoteToTick( currentTick*2,action);
             }
 
+
         }
-        music.length = currentTick + 1;
+        music.length = currentTick*2 + 1;
         return music;
     }
 
-    /**
-     * 用若干个字符构造出若干个音符
-     *
-     * @param c 字符
-     * @return 构造出的音符
-     */
-    private List<CharacterNoteMessage> getKeyMessage(Character... c) {
-        List<CharacterNoteMessage> msg = new ArrayList<>();
-        for (Character character : c) {
-            CharacterNoteMessage message = new CharacterNoteMessage();
-            message.key = character;
-            msg.add(message);
-        }
-        return msg;
+    @Override
+    public String getMusicFileSuffix() {
+        return "txt";
+    }
+
+    @Override
+    public String getMusicFileTypeName() {
+        return "PressKey";
     }
 
 

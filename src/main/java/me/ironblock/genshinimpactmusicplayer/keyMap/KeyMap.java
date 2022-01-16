@@ -18,6 +18,16 @@ public class KeyMap {
     protected int minNoteOctave, maxNoteOctave;
 
     /**
+     * 返回音符对应的键(有就返回没有就不返回不会做近似)
+     * @param noteInfo 音符
+     * @return 对应的键 没有的话就返回-1
+     */
+    public int getNoteKeyOrigin(NoteInfo noteInfo){
+        return noteKeyMap.getOrDefault(noteInfo, -1);
+    }
+
+
+    /**
      * 获取一个音符对应的键的vk_code
      *
      * @return vk_code, 如果找不到返回-1

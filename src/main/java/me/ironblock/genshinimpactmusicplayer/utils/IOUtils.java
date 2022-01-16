@@ -1,9 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class IOUtils {
     /**
@@ -25,6 +22,16 @@ public class IOUtils {
             e.printStackTrace();
         }
         return "";
+
+    }
+
+    public static InputStream openStream(String in) {
+        try {
+            return new FileInputStream(in);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
 
     }
 }

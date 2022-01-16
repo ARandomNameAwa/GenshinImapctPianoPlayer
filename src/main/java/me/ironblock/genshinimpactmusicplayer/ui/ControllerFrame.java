@@ -2,10 +2,10 @@ package me.ironblock.genshinimpactmusicplayer.ui;
 
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
-import me.ironblock.genshinimpactmusicplayer.musicPlayer.AbstractMusicPlayer;
 import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
 import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
 import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
+import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -34,11 +35,9 @@ public class ControllerFrame extends JFrame {
     private final JLabel label_file_path = new JLabel("File Path");
     private final JLabel label_speed = new JLabel("Speed");
     private final JLabel label_tps = new JLabel("tps");
-    private final JLabel label_parser = new JLabel("Parser");
-    private final JLabel label_player = new JLabel("Player");
+    private final JLabel label_parser = new JLabel("File Type");
     private final JLabel label_keyMap = new JLabel("Key Map");
     private final JComboBox<String> comboBox_parser = new JComboBox<>();
-    private final JComboBox<String> comboBox_player = new JComboBox<>();
     private final JComboBox<String> comboBox_keyMap = new JComboBox<>();
     private final JTextField textField_file_path = new JTextField();
     private final JTextField textField_speed = new JTextField();
@@ -48,7 +47,6 @@ public class ControllerFrame extends JFrame {
     private final JButton button_stop = new JButton("Stop");
     private final PlayController playController = new PlayController();
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
-    private final Map<String, AbstractMusicPlayer> playerNameMap = new HashMap<>();
 
     public static void init() {
         instance = new ControllerFrame();
@@ -59,7 +57,6 @@ public class ControllerFrame extends JFrame {
      * 初始化frame
      */
     private void setup() {
-        //https://blog.csdn.net/qq_27870421/article/details/90710218
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
         double height = screenSize.getHeight();
@@ -82,10 +79,8 @@ public class ControllerFrame extends JFrame {
         label_tps.setBounds(280, 70, 50, 25);
         textArea_info.setBounds(350, 30, 250, 250);
         label_parser.setBounds(20, 110, 90, 30);
-        label_player.setBounds(20, 150, 85, 30);
         label_keyMap.setBounds(20, 190, 85, 30);
         comboBox_parser.setBounds(130, 110, 200, 30);
-        comboBox_player.setBounds(130, 150, 200, 30);
         comboBox_keyMap.setBounds(130, 190, 200, 30);
         button_start.addActionListener(e -> this.onStartButtonClicked());
         button_pause.addActionListener(e -> this.onPauseButtonClicked());
@@ -101,9 +96,7 @@ public class ControllerFrame extends JFrame {
         comboBox_parser.addActionListener(l -> {
             onTextFieldAndComboBoxUpdate();
         });
-        comboBox_player.addActionListener(l -> {
-            onTextFieldAndComboBoxUpdate();
-        });
+
         this.add(label_file_path);
         this.add(label_speed);
         this.add(label_tps);
@@ -115,16 +108,14 @@ public class ControllerFrame extends JFrame {
         this.add(button_stop);
         this.add(comboBox_parser);
         this.add(comboBox_keyMap);
-        this.add(comboBox_player);
         this.add(label_parser);
-        this.add(label_player);
         this.add(label_keyMap);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         for (String s : KeyMapLoader.getInstance().getAllLoadedMapName()) {
             comboBox_keyMap.addItem(s);
         }
         this.setResizable(false);
-        this.setAlwaysOnTop(true);
+//        this.setAlwaysOnTop(true);
         super.setTitle(programName + " " + programVersion + " by " + programAuthor);
         this.setVisible(true);
     }
@@ -143,18 +134,21 @@ public class ControllerFrame extends JFrame {
      */
     private void onStartButtonClicked() {
         try {
-            playController.startPlay(textField_file_path.getText(), parserNameMap.get(comboBox_parser.getSelectedItem()), playerNameMap.get(comboBox_player.getSelectedItem()));
             System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
             playController.setSpeed(Integer.parseInt(textField_speed.getText()));
+
+            playController.startPlay(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
+
         } catch (Exception exceptionNeedToBeDisplayed) {
+
             exceptionNeedToBeDisplayed.printStackTrace();
             setTitle(exceptionNeedToBeDisplayed.toString());
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             PrintWriter writer = new PrintWriter(byteArrayOutputStream);
             exceptionNeedToBeDisplayed.printStackTrace(writer);
             writer.flush();
-            System.out.println(byteArrayOutputStream.toString());
+            System.out.println(byteArrayOutputStream);
             textArea_info.setText(byteArrayOutputStream.toString());
         }
     }
@@ -215,15 +209,15 @@ public class ControllerFrame extends JFrame {
             File file = new File(textField_file_path.getText());
             if (file.exists()) {
                 String[] tmp = file.getName().split("\\.");
-                Set<AbstractMusicParser<?, ? extends AbstractNoteMessage>> parsers = MusicParserAndPlayerRegistry.getSuffixParsers(tmp[tmp.length - 1]);
+                Set<AbstractMusicParser> parsers = MusicParserAndPlayerRegistry.getSuffixParsers(tmp[tmp.length - 1]);
                 if (parsers != null && !parsers.isEmpty()) {
                     String prevSelectItem = (String) comboBox_parser.getSelectedItem();
                     comboBox_parser.removeAllItems();
                     parserNameMap.clear();
 
-                    for (AbstractMusicParser<?, ? extends AbstractNoteMessage> parser : parsers) {
-                        parserNameMap.put(parser.getClass().getSimpleName(), parser);
-                        comboBox_parser.addItem(parser.getClass().getSimpleName());
+                    for (AbstractMusicParser parser : parsers) {
+                        parserNameMap.put(parser.getMusicFileTypeName(), parser);
+                        comboBox_parser.addItem(parser.getMusicFileTypeName());
                     }
                     if (prevSelectItem != null && !prevSelectItem.isEmpty()) {
                         if (parserNameMap.containsKey(prevSelectItem)) {
@@ -234,25 +228,7 @@ public class ControllerFrame extends JFrame {
 
             }
         }
-        //update player selector
-        if (comboBox_parser.getSelectedItem() != null) {
-            Class<? extends AbstractNoteMessage> noteType = parserNameMap.get(comboBox_parser.getSelectedItem()).getNoteType();
-            Set<AbstractMusicPlayer> players = MusicParserAndPlayerRegistry.getNotePlayers(noteType);
-            if (players != null && !players.isEmpty()) {
-                String prevSelectItem = (String) comboBox_player.getSelectedItem();
-                playerNameMap.clear();
-                comboBox_player.removeAllItems();
-                for (AbstractMusicPlayer player : players) {
-                    playerNameMap.put(player.getClass().getSimpleName(), player);
-                    comboBox_player.addItem(player.getClass().getSimpleName());
-                }
-                if (prevSelectItem != null && !prevSelectItem.isEmpty()) {
-                    if (playerNameMap.containsKey(prevSelectItem)) {
-                        comboBox_player.setSelectedItem(prevSelectItem);
-                    }
-                }
-            }
-        }
+
     }
 
 

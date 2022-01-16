@@ -14,9 +14,9 @@ public class Music {
      */
     public long length;
     /**
-     * 音轨列表
+     * 键盘操作列表
      */
-    public List<Map<Long, List<KeyAction>>> tracks = new ArrayList<>();
+    public Map<Long, Set<KeyAction>> keyActionMap = new HashMap<>();
     /**
      * 当前播放的进度
      */
@@ -27,14 +27,9 @@ public class Music {
      *
      * @return 下一tick的所有音符
      */
-    public List<KeyAction> getNextTickNote() {
+    public Set<KeyAction> getNextTickNote() {
         currentTick++;
-        List<KeyAction> toReturn = new ArrayList<>();
-        for (Map<Long, List<KeyAction>> track : tracks) {
-            if (track.containsKey(currentTick))
-                toReturn.addAll(track.get(currentTick));
-        }
-        return toReturn;
+        return keyActionMap.get(currentTick);
     }
 
     /**
@@ -46,33 +41,21 @@ public class Music {
         return length <= currentTick;
     }
 
-    /**
-     * 创建一个新的音轨,并返回新音轨的编号
-     *
-     * @return 新音轨的编号
-     */
-    public int newTrack() {
-        tracks.add(new HashMap<>());
-        return tracks.size() - 1;
-    }
 
     /**
      * 向指定音轨的指定位置添加指定的音符
      *
-     * @param track   音轨
      * @param tick    位置
      * @param message 音符
      */
-    public void addNoteToTrack(int track, long tick, KeyAction... message) {
-        if (track >= tracks.size()) {  //不存在这种这个音轨时
-            tracks.add(track, new HashMap<>());
-        }
-        if (!tracks.get(track).containsKey(tick)) { //在这个音轨的tick位置没有找到其他音符
+    public void addNoteToTick(long tick, KeyAction... message) {
+        if (!keyActionMap.containsKey(tick)) { //在这个音轨的tick位置没有找到其他音符
             //添加一个只有一个音符的List
-            tracks.get(track).put(tick, new ArrayList<>(Arrays.asList(message)));
+            Set<KeyAction> set = new HashSet<>(Arrays.asList(message));
+            keyActionMap.put(tick, set);
         } else {    //有其他音符
             //向已有的List添加音符
-            tracks.get(track).get(tick).addAll(new ArrayList<>(Arrays.asList(message)));
+            keyActionMap.get(tick).addAll(new ArrayList<>(Arrays.asList(message)));
         }
     }
 
