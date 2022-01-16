@@ -60,7 +60,9 @@ public class StringMusicParser extends AbstractMusicParser{
                 enableStack = true;
                 continue;
             }
-            currentTick++;
+            if (c != '\n'){
+                currentTick++;
+            }
             if (c != '\n' && c != ' ') {
                 pressedChars.add(c);
                 KeyAction action = new KeyAction(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(c)));
