@@ -9,10 +9,14 @@ import java.util.Map;
 public class KeyMapUtils {
     public static final String[] NOTE_NAMES = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
     private static final Map<String, Integer> noteNameNoteIndexMap = new HashMap<>();
+    private static final Map<Integer,String> noteIndexNoteNameMap = new HashMap<>();
 
     static {
         for (int i = 0; i < NOTE_NAMES.length; i++) {
             noteNameNoteIndexMap.put(NOTE_NAMES[i], i);
+        }
+        for (int i = 0; i < NOTE_NAMES.length; i++) {
+            noteIndexNoteNameMap.put(i, NOTE_NAMES[i]);
         }
     }
 
@@ -48,4 +52,10 @@ public class KeyMapUtils {
         return noteNameNoteIndexMap.get(noteName);
     }
 
+    /**
+     * 通过索引计算音名
+     */
+    public static String getNoteNameFromNoteIndex(int index){
+        return noteIndexNoteNameMap.get(index);
+    }
 }

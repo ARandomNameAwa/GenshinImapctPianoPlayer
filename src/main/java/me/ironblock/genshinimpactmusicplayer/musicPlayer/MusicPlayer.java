@@ -47,12 +47,12 @@ public class MusicPlayer {
     }
 
     /**
-     * 设置播放速度
+     * 设置播放速度倍数
      *
-     * @param speedIn 要设置的播放速度
+     * @param speedIn 要设置的播放速度倍数
      */
-    public void setSpeed(int speedIn) {
-        speed = speedIn;
+    public void setSpeed(double speedIn) {
+        speed = (int) (musicPlayed.tpsReal*speedIn);
         timer.setTps(speed);
     }
 
@@ -62,21 +62,19 @@ public class MusicPlayer {
      * @param note 要播放的音符
      */
     public void playNote(KeyAction note) {
-        if (note.getCommand()) {
-            robot.keyPress(note.getKey());
-        } else {
-            robot.keyRelease(note.getKey());
-        }
-
+            if (note.getCommand()) {
+                robot.keyPress(note.getKey());
+            } else {
+                robot.keyRelease(note.getKey());
+            }
     }
 
     /**
      * 开始演奏音乐
      *
      * @param music 要演奏的音乐
-     * @throws Exception 抛出的异常
      */
-    public void playMusic(Music music) throws Exception {
+    public void playMusic(Music music) {
 
         if (musicPlayed != null && musicPlayed.equals(music)) {
             if (isPlaying) {
@@ -117,6 +115,11 @@ public class MusicPlayer {
                     }
 
                 }
+            }
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         isPlaying = false;

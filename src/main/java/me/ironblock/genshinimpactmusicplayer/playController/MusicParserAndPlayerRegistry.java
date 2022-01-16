@@ -3,9 +3,6 @@ package me.ironblock.genshinimpactmusicplayer.playController;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicParser.MidiMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicParser.StringMusicParser;
-import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
-import me.ironblock.genshinimpactmusicplayer.note.CharacterNoteMessage;
-import me.ironblock.genshinimpactmusicplayer.note.MidiNoteMessage;
 
 import java.util.*;
 

@@ -2,7 +2,6 @@ package me.ironblock.genshinimpactmusicplayer.ui;
 
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
-import me.ironblock.genshinimpactmusicplayer.note.AbstractNoteMessage;
 import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
 import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
 import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
@@ -40,13 +39,15 @@ public class ControllerFrame extends JFrame {
     private final JComboBox<String> comboBox_parser = new JComboBox<>();
     private final JComboBox<String> comboBox_keyMap = new JComboBox<>();
     private final JTextField textField_file_path = new JTextField();
-    private final JTextField textField_speed = new JTextField();
+    private final JTextField textField_speed = new JTextField("1");
     private final JTextArea textArea_info = new JTextArea();
     private final JButton button_start = new JButton("Start");
     private final JButton button_pause = new JButton("Pause");
     private final JButton button_stop = new JButton("Stop");
     private final PlayController playController = new PlayController();
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
+
+
 
     public static void init() {
         instance = new ControllerFrame();
@@ -79,9 +80,9 @@ public class ControllerFrame extends JFrame {
         label_tps.setBounds(280, 70, 50, 25);
         textArea_info.setBounds(350, 30, 250, 250);
         label_parser.setBounds(20, 110, 90, 30);
-        label_keyMap.setBounds(20, 190, 85, 30);
+        label_keyMap.setBounds(20, 150, 85, 30);
         comboBox_parser.setBounds(130, 110, 200, 30);
-        comboBox_keyMap.setBounds(130, 190, 200, 30);
+        comboBox_keyMap.setBounds(130, 150, 200, 30);
         button_start.addActionListener(e -> this.onStartButtonClicked());
         button_pause.addActionListener(e -> this.onPauseButtonClicked());
         button_stop.addActionListener(e -> this.onStopButtonClicked());
@@ -93,9 +94,7 @@ public class ControllerFrame extends JFrame {
                                            }
 
         );
-        comboBox_parser.addActionListener(l -> {
-            onTextFieldAndComboBoxUpdate();
-        });
+        comboBox_parser.addActionListener(l -> onTextFieldAndComboBoxUpdate());
 
         this.add(label_file_path);
         this.add(label_speed);
@@ -136,9 +135,8 @@ public class ControllerFrame extends JFrame {
         try {
             System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
-            playController.setSpeed(Integer.parseInt(textField_speed.getText()));
-
             playController.startPlay(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
+            playController.setSpeed(Double.parseDouble(textField_speed.getText()));
 
         } catch (Exception exceptionNeedToBeDisplayed) {
 
@@ -158,7 +156,7 @@ public class ControllerFrame extends JFrame {
      */
     private void onPauseButtonClicked() {
         try {
-            playController.setSpeed(Integer.parseInt(textField_speed.getText()));
+            playController.setSpeed(Double.parseDouble(textField_speed.getText()));
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

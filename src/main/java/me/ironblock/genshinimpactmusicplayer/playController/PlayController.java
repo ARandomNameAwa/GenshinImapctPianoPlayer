@@ -38,7 +38,7 @@ public class PlayController {
         player.switchPause();
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(double speed) {
         player.setSpeed(speed);
     }
 

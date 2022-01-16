@@ -1,6 +1,7 @@
 package me.ironblock.genshinimpactmusicplayer.keyMap;
 
 import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
+import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,10 +20,11 @@ public class KeyMap {
 
     /**
      * 返回音符对应的键(有就返回没有就不返回不会做近似)
+     *
      * @param noteInfo 音符
      * @return 对应的键 没有的话就返回-1
      */
-    public int getNoteKeyOrigin(NoteInfo noteInfo){
+    public int getNoteKeyOrigin(NoteInfo noteInfo) {
         return noteKeyMap.getOrDefault(noteInfo, -1);
     }
 
@@ -36,20 +38,13 @@ public class KeyMap {
         NoteInfo noteInfo = new NoteInfo(octave, note);
         //有没有超过最低音域
         if (noteInfo.getNoteIndex() < minNoteIndex) {
-            noteInfo.octave = minNoteOctave;
-            if (noteInfo.getNoteIndex() < minNoteIndex) {
-                System.out.println("超过最低音域");
-                noteInfo.octave++;
-            }
+            System.out.println("超过最低音域:尝试找到" + KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
+            noteInfo.octave++;
         }
         //有没有超过最高音域
         if (noteInfo.getNoteIndex() > maxNoteIndex) {
-            noteInfo.octave = maxNoteOctave;
-            if (noteInfo.getNoteIndex() > maxNoteIndex) {
-                System.out.println("超过最高音域");
-                noteInfo.octave--;
-            }
-
+            System.out.println("超过最高音域:尝试找到" + KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
+            noteInfo.octave--;
         }
         //如果尝试调入音域失败,则返回-1
         if (noteInfo.getNoteIndex() < minNoteIndex || noteInfo.getNoteIndex() > maxNoteIndex) {
@@ -58,18 +53,18 @@ public class KeyMap {
         }
 
         if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key
-//            System.out.println("已知:"+noteInfo);
             return noteKeyMap.get(noteInfo);
         } else {          //尝试半音
+            System.out.println("找不到"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
             noteInfo.increaseOneKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                System.out.println("上半音");
+                System.out.println("上半音:"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
                 return noteKeyMap.get(noteInfo);
             }
             noteInfo.decreaseOnKey();
             noteInfo.decreaseOnKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                System.out.println("下半音");
+                System.out.println("下半音:"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
                 return noteKeyMap.get(noteInfo);
             }
             System.out.println("尝试半音失败");

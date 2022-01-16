@@ -14,6 +14,15 @@ public class Music {
      */
     public long length;
     /**
+     * 真实的音乐长度
+     */
+    public double realDuration;
+    /**
+     * 真实的音乐tps
+     */
+    public int tpsReal;
+
+    /**
      * 键盘操作列表
      */
     public Map<Long, Set<KeyAction>> keyActionMap = new HashMap<>();

@@ -72,6 +72,8 @@ public class StringMusicParser extends AbstractMusicParser{
 
         }
         music.length = currentTick*2 + 1;
+        music.realDuration = music.length;
+        music.tpsReal = 5;
         return music;
     }
 
