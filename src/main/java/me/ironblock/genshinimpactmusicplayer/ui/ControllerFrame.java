@@ -1,5 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.ui;
 
+import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
@@ -12,15 +13,12 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 /**
  * 控制窗口(也是主窗口)
@@ -95,17 +93,18 @@ public class ControllerFrame extends JFrame {
         label_parser.setBounds(20, 110, 90, 30);
         label_keyMap.setBounds(20, 150, 85, 30);
         label_pitch.setBounds(20, 190, 80, 30);
-        label_tune.setBounds(200, 190, 50, 30);
+        label_tune.setBounds(140, 190, 50, 30);
         //button
         button_start.setBounds(20, 230, 85, 50);
         button_pause.setBounds(130, 230, 85, 50);
         button_stop.setBounds(230, 230, 85, 50);
+        button_autoTune.setBounds(240,190,100,30);
 
         //textFields
         textField_file_path.setBounds(130, 30, 200, 25);
         textField_speed.setBounds(130, 70, 150, 25);
-        textField_pitch.setBounds(100, 190, 50, 30);
-        textField_tune.setBounds(250, 190, 50, 30);
+        textField_pitch.setBounds(80, 190, 50, 30);
+        textField_tune.setBounds(180, 190, 50, 30);
 
         textArea_info.setBounds(350, 30, 250, 250);
 
@@ -141,11 +140,12 @@ public class ControllerFrame extends JFrame {
             }
         });
 
+        button_autoTune.addActionListener(e -> autoTune());
 
-        this.setAlwaysOnTop(true);
+//        this.setAlwaysOnTop(true);
 
 
-
+        this.add(button_autoTune);
         this.add(label_file_path);
         this.add(label_speed);
         this.add(label_tps);
@@ -305,6 +305,44 @@ public class ControllerFrame extends JFrame {
     private void onTextFieldAndComboBoxUpdate() {
         updateComboBox();
     }
+    private static final int tuneMin = -20;
+    private static final int tuneMax = 10;
+    private void autoTune(){
+        if (!textField_file_path.getText().isEmpty()){
+            File file = new File(textField_file_path.getText());
+            if (file.exists()) {
+                AbstractMusicParser parser = parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString());
+                KeyMap keyMap = KeyMapLoader.getInstance().getLoadedKeyMap(Objects.requireNonNull(comboBox_keyMap.getSelectedItem()).toString());
+                Map<Integer, Integer> tuneInaccuracyMap = new HashMap<>();
+                for (int i = tuneMin;i<=tuneMax;i++){
+                    InputStream inputStream = IOUtils.openStream(file.getAbsolutePath());
+                    tuneInaccuracyMap.put(i, parser.totalNoteInaccuracy(inputStream, keyMap, i));
+                    try {
+                        if (inputStream!=null) {
+                            inputStream.close();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                int bestTune = tuneInaccuracyMap.entrySet().stream()
+                        .min(Comparator.comparingInt(Map.Entry::getValue))
+                        .get().getKey();
+                int octave = bestTune/12;
+                int note = bestTune%12;
+                tuneInaccuracyMap.forEach((key, value) -> {
+                    System.out.println("tune:"+key+",value:"+value);
+
+                });
+                textField_pitch.setText(String.valueOf(octave));
+                textField_tune.setText(String.valueOf(note));
+
+
+
+            }
+
+        }
+    }
 
     /**
      * 更新下拉框
@@ -348,6 +386,9 @@ public class ControllerFrame extends JFrame {
         int tune = Integer.parseInt(textField_tune.getText());
         return pitch*12+tune;
     }
+
+
+
 
 
 }
