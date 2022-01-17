@@ -79,13 +79,13 @@ public class KeyMap {
         //有没有超过最低音域
         if (noteInfo.getNoteIndex() < minNoteIndex) {
             int wrongPitch = (minNoteIndex - noteInfo.getNoteIndex())/12+1;
-            return 2 * wrongPitch * wrongPitch * noteInfo.getNoteIndex();
+            return 2 * wrongPitch * wrongPitch * noteInfo.getNoteIndex()*noteInfo.getNoteIndex()/3;
 
         }
         //有没有超过最高音域
         if (noteInfo.getNoteIndex() > maxNoteIndex) {
             int wrongPitch = (noteInfo.getNoteIndex()-maxNoteIndex)/12+1;
-            return 4 *wrongPitch*wrongPitch*wrongPitch*noteInfo.getNoteIndex();
+            return 4 *wrongPitch*wrongPitch*wrongPitch*noteInfo.getNoteIndex()*noteInfo.getNoteIndex()/3;
         }
 
         if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key

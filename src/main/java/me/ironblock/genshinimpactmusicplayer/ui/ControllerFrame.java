@@ -316,7 +316,7 @@ public class ControllerFrame extends JFrame {
                 Map<Integer, Integer> tuneInaccuracyMap = new HashMap<>();
                 for (int i = tuneMin;i<=tuneMax;i++){
                     InputStream inputStream = IOUtils.openStream(file.getAbsolutePath());
-                    tuneInaccuracyMap.put(i, parser.totalNoteInaccuracy(inputStream, keyMap, i)+Math.abs(i));
+                    tuneInaccuracyMap.put(i, (int) (parser.totalNoteInaccuracy(inputStream, keyMap, i)*(1+ ((double) Math.abs(i))/(tuneMax-tuneMin)/10)));
                     try {
                         if (inputStream!=null) {
                             inputStream.close();
