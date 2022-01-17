@@ -17,7 +17,7 @@ public abstract class AbstractMusicParser{
      * @return 解析好的音乐
      * @throws Exception 搞不好什么错误
      */
-    public abstract Music parseMusic(InputStream musicStream, KeyMap keyMap) throws Exception;
+    public abstract Music parseMusic(InputStream musicStream, KeyMap keyMap,int tune) throws Exception;
 
 
     /**
@@ -32,5 +32,8 @@ public abstract class AbstractMusicParser{
      * @return 音乐文件的种类名字
      */
     public abstract String getMusicFileTypeName();
+
+
+    public abstract int totalNoteInaccuracy(InputStream musicStream, KeyMap keyMap,int tune) throws Exception;
 
 }

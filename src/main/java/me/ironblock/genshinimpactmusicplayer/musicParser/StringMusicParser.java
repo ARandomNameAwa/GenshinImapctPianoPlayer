@@ -21,7 +21,7 @@ public class StringMusicParser extends AbstractMusicParser{
      * @return 解析出的音乐
      */
     @Override
-    public Music parseMusic(InputStream musicStream, KeyMap keyMap){
+    public Music parseMusic(InputStream musicStream, KeyMap keyMap,int tune){
         String musicIn = IOUtils.readStringFully(musicStream).toLowerCase(Locale.ROOT);
         Music music = new Music();
         long currentTick = 0;
@@ -85,6 +85,11 @@ public class StringMusicParser extends AbstractMusicParser{
     @Override
     public String getMusicFileTypeName() {
         return "PressKey";
+    }
+
+    @Override
+    public int totalNoteInaccuracy(InputStream musicStream, KeyMap keyMap, int tune) {
+        return 0;
     }
 
 

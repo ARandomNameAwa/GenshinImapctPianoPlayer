@@ -26,6 +26,12 @@ public class NoteInfo {
         return octave * 12 + note;
     }
 
+    public void addKey(int key){
+       int tmp = octave*12+ note+key;
+        octave = tmp/12;
+        note = tmp%12;
+    }
+
     public void increaseOneKey() {
         note++;
         if (note >= 12) {

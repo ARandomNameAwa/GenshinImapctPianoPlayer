@@ -8,6 +8,9 @@ import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -28,25 +31,38 @@ public class ControllerFrame extends JFrame {
     public static final String programName = "Genshin Impact Music Player";
     public static final String programVersion = "v1.1.0";
     public static final String programAuthor = "Iron_Block";
+
     public static final int frameWidth = 650;
     public static final int frameHeight = 320;
+
     public static ControllerFrame instance;
+
     private final JLabel label_file_path = new JLabel("File Path");
     private final JLabel label_speed = new JLabel("Speed");
     private final JLabel label_tps = new JLabel("tps");
     private final JLabel label_parser = new JLabel("File Type");
     private final JLabel label_keyMap = new JLabel("Key Map");
+    private final JLabel label_tune = new JLabel("曲调");
+    private final JLabel label_pitch = new JLabel("升降八度");
+
     private final JComboBox<String> comboBox_parser = new JComboBox<>();
     private final JComboBox<String> comboBox_keyMap = new JComboBox<>();
+
     private final JTextField textField_file_path = new JTextField();
     private final JTextField textField_speed = new JTextField("1");
+    private final JTextField textField_tune = new JTextField("0");
+    private final JTextField textField_pitch = new JTextField("0");
+
     private final JTextArea textArea_info = new JTextArea();
+
+
     private final JButton button_start = new JButton("Start");
     private final JButton button_pause = new JButton("Pause");
     private final JButton button_stop = new JButton("Stop");
+
+
     private final PlayController playController = new PlayController();
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
-
 
 
     public static void init() {
@@ -70,31 +86,63 @@ public class ControllerFrame extends JFrame {
         //居中
         this.setBounds(((int) (frameWidth / 2 - w / 2)), ((int) (frameHeight / 2 - h / 2)), frameWidth, frameHeight);
         this.setLayout(null);
+
+        //label
         label_file_path.setBounds(20, 30, 85, 30);
         label_speed.setBounds(20, 70, 85, 30);
+        label_tps.setBounds(280, 70, 50, 25);
+        label_parser.setBounds(20, 110, 90, 30);
+        label_keyMap.setBounds(20, 150, 85, 30);
+        label_pitch.setBounds(20, 190, 80, 30);
+        label_tune.setBounds(200, 190, 50, 30);
+        //button
         button_start.setBounds(20, 230, 85, 50);
         button_pause.setBounds(130, 230, 85, 50);
         button_stop.setBounds(230, 230, 85, 50);
+
+        //textFields
         textField_file_path.setBounds(130, 30, 200, 25);
         textField_speed.setBounds(130, 70, 150, 25);
-        label_tps.setBounds(280, 70, 50, 25);
+        textField_pitch.setBounds(100, 190, 50, 30);
+        textField_tune.setBounds(250, 190, 50, 30);
+
         textArea_info.setBounds(350, 30, 250, 250);
-        label_parser.setBounds(20, 110, 90, 30);
-        label_keyMap.setBounds(20, 150, 85, 30);
+
         comboBox_parser.setBounds(130, 110, 200, 30);
         comboBox_keyMap.setBounds(130, 150, 200, 30);
+
+        //Listeners
         button_start.addActionListener(e -> this.onStartButtonClicked());
         button_pause.addActionListener(e -> this.onPauseButtonClicked());
         button_stop.addActionListener(e -> this.onStopButtonClicked());
         textField_file_path.addKeyListener(new KeyAdapter() {
                                                @Override
-                                               public void keyTyped(KeyEvent e) {
+                                               public void keyPressed(KeyEvent e) {
                                                    onTextFieldAndComboBoxUpdate();
                                                }
                                            }
 
         );
         comboBox_parser.addActionListener(l -> onTextFieldAndComboBoxUpdate());
+
+        textField_pitch.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                onPitchTextFieldKeyTyped(e);
+            }
+        });
+
+
+        textField_tune.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                onTuneTextFieldKeyTyped(e);
+            }
+        });
+
+
+
+
 
         this.add(label_file_path);
         this.add(label_speed);
@@ -109,6 +157,10 @@ public class ControllerFrame extends JFrame {
         this.add(comboBox_keyMap);
         this.add(label_parser);
         this.add(label_keyMap);
+        this.add(label_tune);
+        this.add(label_pitch);
+        this.add(textField_tune);
+        this.add(textField_pitch);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         for (String s : KeyMapLoader.getInstance().getAllLoadedMapName()) {
             comboBox_keyMap.addItem(s);
@@ -135,9 +187,10 @@ public class ControllerFrame extends JFrame {
         try {
             System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
-            playController.startPlay(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
+            playController.startPlay(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), getCurrentTune());
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
-
+            textField_pitch.setEditable(false);
+            textField_tune.setEditable(false);
         } catch (Exception exceptionNeedToBeDisplayed) {
 
             exceptionNeedToBeDisplayed.printStackTrace();
@@ -155,6 +208,8 @@ public class ControllerFrame extends JFrame {
      * 暂停按钮被触发的事件
      */
     private void onPauseButtonClicked() {
+        textField_pitch.setText(String.valueOf(Math.random()));
+
         try {
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
         } catch (NumberFormatException e) {
@@ -173,6 +228,8 @@ public class ControllerFrame extends JFrame {
      */
     private void onStopButtonClicked() {
         playController.stopPlay();
+        textField_pitch.setEditable(true);
+        textField_tune.setEditable(true);
     }
 
     /**
@@ -194,6 +251,57 @@ public class ControllerFrame extends JFrame {
 
     }
 
+    /**
+     * 升降八度的文本框的事件处理
+     */
+    private void onPitchTextFieldKeyTyped(KeyEvent event) {
+        int key = Integer.parseInt(textField_pitch.getText());
+
+        if (event.getKeyCode() == 38) {
+            //上键
+            key += 1;
+
+        } else if (event.getKeyCode() == 40) {
+            //上键
+            key -= 1;
+        }
+        textField_pitch.setText(String.valueOf(key));
+
+        event.consume();
+    }
+
+
+    /**
+     * 升降音调的文本框的事件处理
+     */
+    private void onTuneTextFieldKeyTyped(KeyEvent event) {
+        int key = Integer.parseInt(textField_tune.getText());
+        while (key < -7) {
+            key += 8;
+        }
+        while (key > 7) {
+            key -= 8;
+        }
+        if (event.getKeyCode() == 38) {
+            //上键
+            if (key != 7) {
+                key += 1;
+            } else {
+                key = -7;
+            }
+
+        } else if (event.getKeyCode() == 40) {
+            //上键
+            if (key != -7) {
+                key -= 1;
+            } else {
+                key = 7;
+            }
+        }
+        textField_tune.setText(String.valueOf(key));
+        event.consume();
+    }
+
     private void onTextFieldAndComboBoxUpdate() {
         updateComboBox();
     }
@@ -203,6 +311,8 @@ public class ControllerFrame extends JFrame {
      */
     private void updateComboBox() {
         //update parser selector
+
+
         if (!textField_file_path.getText().isEmpty()) {
             File file = new File(textField_file_path.getText());
             if (file.exists()) {
@@ -227,6 +337,16 @@ public class ControllerFrame extends JFrame {
             }
         }
 
+    }
+
+    /**
+     * 获取现在的音调
+     * @return 音调
+     */
+    private int getCurrentTune(){
+        int pitch = Integer.parseInt(textField_pitch.getText());
+        int tune = Integer.parseInt(textField_tune.getText());
+        return pitch*12+tune;
     }
 
 

@@ -75,6 +75,33 @@ public class KeyMap {
 
     }
 
+    public int getNoteInaccuracy(NoteInfo noteInfo){
+        //有没有超过最低音域
+        if (noteInfo.getNoteIndex() < minNoteIndex) {
+            return 2;
+
+        }
+        //有没有超过最高音域
+        if (noteInfo.getNoteIndex() > maxNoteIndex) {
+            return 2;
+        }
+
+        if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key
+            return 0;
+        } else {          //尝试半音
+            noteInfo.increaseOneKey();
+            if (noteKeyMap.containsKey(noteInfo)) {
+                return 5;
+            }
+            noteInfo.decreaseOnKey();
+            noteInfo.decreaseOnKey();
+            if (noteKeyMap.containsKey(noteInfo)) {
+                return 5;
+            }
+            return 10;
+        }
+    }
+
     public Map<NoteInfo, Integer> getNoteKeyMap() {
         return noteKeyMap;
     }

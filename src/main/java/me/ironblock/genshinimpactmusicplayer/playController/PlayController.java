@@ -20,8 +20,8 @@ public class PlayController {
      *
      * @param file 文件名
      */
-    public void startPlay(InputStream file, AbstractMusicParser parser) throws Exception {
-        this.player.playMusic(parser.parseMusic(file,activeKeyMap));
+    public void startPlay(InputStream file, AbstractMusicParser parser,int tune) throws Exception {
+        this.player.playMusic(parser.parseMusic(file,activeKeyMap,tune));
     }
 
     /**
