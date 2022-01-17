@@ -37,10 +37,10 @@ public class ControllerFrame extends JFrame {
 
     public static ControllerFrame instance;
 
-    private final JLabel label_file_path = new JLabel("File Path");
-    private final JLabel label_speed = new JLabel("Speed");
-    private final JLabel label_tps = new JLabel("tps");
-    private final JLabel label_parser = new JLabel("File Type");
+    private final JLabel label_file_path = new JLabel("文件路径");
+    private final JLabel label_speed = new JLabel("速度");
+    private final JLabel label_tps = new JLabel("倍");
+    private final JLabel label_parser = new JLabel("文件类型");
     private final JLabel label_keyMap = new JLabel("Key Map");
     private final JLabel label_tune = new JLabel("曲调");
     private final JLabel label_pitch = new JLabel("升降八度");
@@ -59,6 +59,7 @@ public class ControllerFrame extends JFrame {
     private final JButton button_start = new JButton("Start");
     private final JButton button_pause = new JButton("Pause");
     private final JButton button_stop = new JButton("Stop");
+    private final JButton button_autoTune = new JButton("自动调音");
 
 
     private final PlayController playController = new PlayController();
@@ -141,6 +142,7 @@ public class ControllerFrame extends JFrame {
         });
 
 
+        this.setAlwaysOnTop(true);
 
 
 
@@ -208,8 +210,6 @@ public class ControllerFrame extends JFrame {
      * 暂停按钮被触发的事件
      */
     private void onPauseButtonClicked() {
-        textField_pitch.setText(String.valueOf(Math.random()));
-
         try {
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
         } catch (NumberFormatException e) {
