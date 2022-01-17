@@ -316,7 +316,7 @@ public class ControllerFrame extends JFrame {
                 Map<Integer, Integer> tuneInaccuracyMap = new HashMap<>();
                 for (int i = tuneMin;i<=tuneMax;i++){
                     InputStream inputStream = IOUtils.openStream(file.getAbsolutePath());
-                    tuneInaccuracyMap.put(i, parser.totalNoteInaccuracy(inputStream, keyMap, i));
+                    tuneInaccuracyMap.put(i, parser.totalNoteInaccuracy(inputStream, keyMap, i)+Math.abs(i));
                     try {
                         if (inputStream!=null) {
                             inputStream.close();
@@ -330,10 +330,12 @@ public class ControllerFrame extends JFrame {
                         .get().getKey();
                 int octave = bestTune/12;
                 int note = bestTune%12;
+                System.out.println("=========");
                 tuneInaccuracyMap.forEach((key, value) -> {
                     System.out.println("tune:"+key+",value:"+value);
 
                 });
+                System.out.println("=========");
                 textField_pitch.setText(String.valueOf(octave));
                 textField_tune.setText(String.valueOf(note));
 

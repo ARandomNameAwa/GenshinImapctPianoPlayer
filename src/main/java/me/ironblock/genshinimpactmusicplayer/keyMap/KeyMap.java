@@ -78,12 +78,14 @@ public class KeyMap {
     public int getNoteInaccuracy(NoteInfo noteInfo){
         //有没有超过最低音域
         if (noteInfo.getNoteIndex() < minNoteIndex) {
-            return 2;
+            int wrongPitch = (minNoteIndex - noteInfo.getNoteIndex())/12+1;
+            return 2 * wrongPitch * wrongPitch * noteInfo.getNoteIndex();
 
         }
         //有没有超过最高音域
         if (noteInfo.getNoteIndex() > maxNoteIndex) {
-            return 2;
+            int wrongPitch = (noteInfo.getNoteIndex()-maxNoteIndex)/12+1;
+            return 4 *wrongPitch*wrongPitch*wrongPitch*noteInfo.getNoteIndex();
         }
 
         if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key
@@ -91,14 +93,14 @@ public class KeyMap {
         } else {          //尝试半音
             noteInfo.increaseOneKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                return 5;
+                return 5*noteInfo.getNoteIndex();
             }
             noteInfo.decreaseOnKey();
             noteInfo.decreaseOnKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                return 5;
+                return 5*noteInfo.getNoteIndex();
             }
-            return 10;
+            return 7*noteInfo.getNoteIndex();
         }
     }
 
