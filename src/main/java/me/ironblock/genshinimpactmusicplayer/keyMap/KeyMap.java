@@ -76,31 +76,42 @@ public class KeyMap {
     }
 
     public int getNoteInaccuracy(NoteInfo noteInfo){
+        boolean keyAdded = false;
         //有没有超过最低音域
         if (noteInfo.getNoteIndex() < minNoteIndex) {
             int wrongPitch = (minNoteIndex - noteInfo.getNoteIndex())/12+1;
-            return 2 * wrongPitch * wrongPitch * noteInfo.getNoteIndex()*noteInfo.getNoteIndex()/3;
+            if (wrongPitch>1){
+                return 2 * wrongPitch * wrongPitch * noteInfo.getNoteIndex()*noteInfo.getNoteIndex()/3;
+            }else{
+                noteInfo.addKey(12);
+                keyAdded = true;
+            }
 
         }
         //有没有超过最高音域
         if (noteInfo.getNoteIndex() > maxNoteIndex) {
             int wrongPitch = (noteInfo.getNoteIndex()-maxNoteIndex)/12+1;
-            return 4 *wrongPitch*wrongPitch*wrongPitch*noteInfo.getNoteIndex()*noteInfo.getNoteIndex()/3;
+            if (wrongPitch>1){
+                return 4 *wrongPitch*wrongPitch*wrongPitch*noteInfo.getNoteIndex()*noteInfo.getNoteIndex()/3;
+            }else{
+                noteInfo.addKey(-12);
+                keyAdded = true;
+            }
         }
 
         if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key
-            return 0;
+            return keyAdded?6:0;
         } else {          //尝试半音
             noteInfo.increaseOneKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                return 5*noteInfo.getNoteIndex();
+                return keyAdded?20*noteInfo.getNoteIndex():5*noteInfo.getNoteIndex();
             }
             noteInfo.decreaseOnKey();
             noteInfo.decreaseOnKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                return 5*noteInfo.getNoteIndex();
+                return keyAdded?20*noteInfo.getNoteIndex():5*noteInfo.getNoteIndex();
             }
-            return 7*noteInfo.getNoteIndex();
+            return keyAdded?28*noteInfo.getNoteIndex():7*noteInfo.getNoteIndex();
         }
     }
 
