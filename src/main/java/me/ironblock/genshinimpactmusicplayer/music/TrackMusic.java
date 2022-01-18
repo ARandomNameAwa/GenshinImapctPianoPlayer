@@ -85,7 +85,7 @@ public class TrackMusic {
         Map<Integer, TuneInfo> tuneInaccuracyMap = new HashMap<>();
         for (int i = minTune; i <= maxTune; i++) {
             TuneInfo tuneInfo = totalInaccuracy(keyMap, i);
-            tuneInfo.setTuneInaccuracy(i);
+            tuneInfo.setTuneInaccuracy(Math.abs(i));
             tuneInaccuracyMap.put(i, tuneInfo);
 
         }

@@ -120,7 +120,7 @@ public class KeyActionMusic {
                         }else{
                             NoteInfo noteInfo1 = new NoteInfo(noteInfo.getNoteIndex());
                             noteInfo1.addKey(tune);
-                            int key = keyMap.getNoteKey(noteInfo);
+                            int key = keyMap.getNoteKey(noteInfo1);
                             if (key!=-1){
                                 KeyAction keyOn = new KeyAction(true,keyMap.getNoteKey(noteInfo1));
                                 KeyAction keyOff = new KeyAction(false, keyMap.getNoteKey(noteInfo1));
