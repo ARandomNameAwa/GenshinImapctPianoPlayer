@@ -1,6 +1,8 @@
 package me.ironblock.genshinimpactmusicplayer.playController;
 
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
+import me.ironblock.genshinimpactmusicplayer.music.KeyActionMusic;
+import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
 
@@ -12,15 +14,20 @@ import java.io.InputStream;
  */
 public class PlayController {
     private final MusicPlayer player = new MusicPlayer();
+    private TrackMusic trackMusic;
     private KeyMap activeKeyMap;
+
+    public void prepareMusicPlayed(InputStream file,AbstractMusicParser parser){
+        trackMusic = parser.parseMusic(file);
+    }
 
     /**
      * 开始演奏
      *
-     * @param file 文件名
      */
-    public void startPlay(InputStream file, AbstractMusicParser parser,int tune) throws Exception {
-        this.player.playMusic(parser.parseMusic(file));
+    public void startPlay(int tune) {
+        KeyActionMusic keyActionMusic = KeyActionMusic.getFromTrackMusic(trackMusic,activeKeyMap,tune);
+        this.player.playMusic(keyActionMusic);
     }
 
     /**
@@ -38,10 +45,16 @@ public class PlayController {
     }
 
     public void setSpeed(double speed) {
-        player.setSpeed(speed);
+        player.setSpeed((int) (speed*trackMusic.tpsReal));
+    }
+
+    public int autoTune(int minTune,int maxTune){
+        return trackMusic.autoTune(activeKeyMap, minTune, maxTune);
     }
 
     public void setActiveKeyMap(KeyMap activeKeyMap) {
         this.activeKeyMap = activeKeyMap;
     }
+
+
 }

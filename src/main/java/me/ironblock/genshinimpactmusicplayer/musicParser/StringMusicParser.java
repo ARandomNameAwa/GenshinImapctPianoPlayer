@@ -78,10 +78,7 @@ public class StringMusicParser extends AbstractMusicParser{
         return "PressKey";
     }
 
-    @Override
-    public int totalNoteInaccuracy(InputStream musicStream, KeyMap keyMap, int tune) {
-        return 0;
-    }
+
 
 
 }

@@ -10,12 +10,7 @@ import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
@@ -190,7 +185,9 @@ public class ControllerFrame extends JFrame {
         try {
             System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
-            playController.startPlay(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), getCurrentTune());
+            playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()),parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
+
+            playController.startPlay(getCurrentTune());
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
             textField_pitch.setEditable(false);
             textField_tune.setEditable(false);
@@ -314,29 +311,15 @@ public class ControllerFrame extends JFrame {
             if (file.exists()) {
                 AbstractMusicParser parser = parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString());
                 KeyMap keyMap = KeyMapLoader.getInstance().getLoadedKeyMap(Objects.requireNonNull(comboBox_keyMap.getSelectedItem()).toString());
-                Map<Integer, Integer> tuneInaccuracyMap = new HashMap<>();
-                for (int i = tuneMin;i<=tuneMax;i++){
-                    InputStream inputStream = IOUtils.openStream(file.getAbsolutePath());
-                    tuneInaccuracyMap.put(i, (int) (parser.totalNoteInaccuracy(inputStream, keyMap, i)*(1+ ((double) Math.abs(i))/(tuneMax-tuneMin)/10)));
-                    try {
-                        if (inputStream!=null) {
-                            inputStream.close();
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                int bestTune = tuneInaccuracyMap.entrySet().stream()
-                        .min(Comparator.comparingInt(Map.Entry::getValue))
-                        .get().getKey();
+
+                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()),parser);
+                playController.setActiveKeyMap(keyMap);
+
+                int bestTune = playController.autoTune(tuneMin,tuneMax);
+
                 int octave = bestTune/12;
                 int note = bestTune%12;
-                System.out.println("=========");
-                tuneInaccuracyMap.forEach((key, value) -> {
-                    System.out.println("tune:"+key+",value:"+value);
 
-                });
-                System.out.println("=========");
                 textField_pitch.setText(String.valueOf(octave));
                 textField_tune.setText(String.valueOf(note));
 
@@ -389,6 +372,8 @@ public class ControllerFrame extends JFrame {
         int tune = Integer.parseInt(textField_tune.getText());
         return pitch*12+tune;
     }
+
+
 
 
 

@@ -46,13 +46,13 @@ public class MusicPlayer {
     }
 
     /**
-     * 设置播放速度倍数
+     * 设置播放速度(tps)
      *
-     * @param speedIn 要设置的播放速度倍数
+     * @param speedIn 要设置的播放速度(tps)
      */
-    public void setSpeed(double speedIn) {
-        speed = (int) (keyActionMusicPlayed.tpsReal*speedIn);
-        timer.setTps(speed);
+    public void setSpeed(int speedIn) {
+        speed = speedIn;
+        timer.setTps(speedIn);
     }
 
     /**

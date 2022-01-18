@@ -16,14 +16,7 @@ public class KeyActionMusic {
      * 音乐时长
      */
     public long length;
-    /**
-     * 真实的音乐长度
-     */
-    public double realDuration;
-    /**
-     * 真实的音乐tps
-     */
-    public int tpsReal;
+
 
     /**
      * 键盘操作列表
@@ -33,6 +26,15 @@ public class KeyActionMusic {
      * 当前播放的进度
      */
     protected long currentTick;
+
+    /**
+     * 获取指定tick的键盘操作
+     * @param tick 指定tick
+     * @return 键盘操作
+     */
+    public Set<KeyAction> getSpecificTickNoteSet(int tick){
+        return keyActionMap.get(currentTick);
+    }
 
     /**
      * 获取下一tick的所有音符
@@ -100,8 +102,10 @@ public class KeyActionMusic {
 
     public static KeyActionMusic getFromTrackMusic(TrackMusic trackMusicIn, KeyMap keyMap,int tune) {
         KeyActionMusic keyActionMusic = new KeyActionMusic();
-        List<Map<Integer, Set<NoteInfo>>> tracks = trackMusicIn.getTracks();
-        for (Map<Integer, Set<NoteInfo>> track : tracks) {
+        keyActionMusic.length = trackMusicIn.length;
+
+        Map<Integer,Map<Integer, Set<NoteInfo>>> tracks = trackMusicIn.getTracks();
+        for (Map<Integer, Set<NoteInfo>> track : tracks.values()) {
             track.forEach((tick, nodeInfoSet) -> {
                 for (NoteInfo noteInfo : nodeInfoSet) {
                     noteInfo.addKey(tune);

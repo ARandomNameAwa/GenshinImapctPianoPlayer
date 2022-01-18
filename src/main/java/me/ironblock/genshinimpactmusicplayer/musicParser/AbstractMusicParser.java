@@ -14,7 +14,6 @@ public abstract class AbstractMusicParser{
      * 解析音乐
      * @param musicStream 音乐文件流
      * @return 解析好的音乐
-     * @throws Exception 搞不好什么错误
      */
     public abstract TrackMusic parseMusic(InputStream musicStream);
 
@@ -34,7 +33,6 @@ public abstract class AbstractMusicParser{
     public abstract String getMusicFileTypeName();
 
 
-    public abstract int totalNoteInaccuracy(InputStream musicStream, KeyMap keyMap,int tune);
 
 
 

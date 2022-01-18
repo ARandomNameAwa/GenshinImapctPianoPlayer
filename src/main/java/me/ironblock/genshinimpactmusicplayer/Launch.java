@@ -4,13 +4,15 @@ import me.ironblock.genshinimpactmusicplayer.externalResourceLoader.ExternalReso
 import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
 import me.ironblock.genshinimpactmusicplayer.ui.ControllerFrame;
 
+//I:\midiMusics\千本樱.mid
+
 /**
  * 主类
  *
  * @author Administrator
  */
 public class Launch {
-    public static boolean DEBUG_MODE = false;
+    public static boolean DEBUG_MODE = true;
 
     /**
      * 启动

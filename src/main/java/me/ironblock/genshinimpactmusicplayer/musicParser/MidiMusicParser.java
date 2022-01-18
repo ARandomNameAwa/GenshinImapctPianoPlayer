@@ -22,7 +22,6 @@ public class MidiMusicParser extends AbstractMusicParser {
      *
      * @param musicStream midi文件的路径
      * @return 解析出的音乐
-     * @throws Exception 抛出的异常
      */
     @Override
     public TrackMusic parseMusic(InputStream musicStream) {
@@ -69,34 +68,7 @@ public class MidiMusicParser extends AbstractMusicParser {
         return "MIDI";
     }
 
-    @Override
-    public int totalNoteInaccuracy(InputStream musicStream, KeyMap keyMap, int tune) {
-        try {
-            int totalInaccuracy = 0;
-            Sequence sequence = MidiSystem.getSequence(musicStream);
-            for (Track track : sequence.getTracks()) {
-                for (int i = 0; i < track.size(); i++) {
-                    MidiEvent event = track.get(i);
-                    MidiMessage message = event.getMessage();
-                    if (message instanceof ShortMessage) {
-                        ShortMessage sm = (ShortMessage) message;
-                        int key = sm.getData1();
-                        int octave = (key / 12) - 1;
-                        int note = key % 12;
-                        if (sm.getCommand() == 0x90) {
-                            NoteInfo noteInfo = new NoteInfo(octave, note);
-                            noteInfo.addKey(tune);
-                            totalInaccuracy += keyMap.getNoteInaccuracy(noteInfo);
-                        }
-                    }
-                }
-            }
-            return totalInaccuracy;
-        } catch (InvalidMidiDataException | IOException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
+
 
 
 }
