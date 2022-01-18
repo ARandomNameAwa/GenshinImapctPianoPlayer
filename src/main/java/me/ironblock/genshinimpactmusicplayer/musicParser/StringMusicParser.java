@@ -9,6 +9,8 @@ import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 import java.io.InputStream;
 import java.util.*;
 
+import static javafx.scene.input.KeyCode.V;
+
 /**
  * 字符串音乐解析器
  */
@@ -35,7 +37,7 @@ public class StringMusicParser extends AbstractMusicParser{
                 enableStack = false;
                 for (Character character : stack) {
                     NoteInfo noteInfo = new NoteInfo(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(character)));
-                    trackMusic.putNode(0, (int) (currentTick*5), noteInfo);
+                    trackMusic.putNode(0, (int) (currentTick*9), noteInfo);
                 }
                 stack.clear();
                 continue;
@@ -56,15 +58,16 @@ public class StringMusicParser extends AbstractMusicParser{
             }
             if (c != '\n' && c != ' ') {
                 NoteInfo noteInfo = new NoteInfo(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(c)));
-                trackMusic.putNode(0, (int) (currentTick*5), noteInfo);
+                trackMusic.putNode(0, (int) (currentTick*9), noteInfo);
 
             }
 
 
         }
-        trackMusic.length = currentTick*5 + 1;
+
+        trackMusic.length = currentTick*9 + 1;
         trackMusic.realDuration = ((double) trackMusic.length)/2;
-        trackMusic.tpsReal = 10;
+        trackMusic.tpsReal = 25;
         return trackMusic;
     }
 

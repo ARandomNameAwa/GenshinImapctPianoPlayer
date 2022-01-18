@@ -3,6 +3,7 @@ package me.ironblock.genshinimpactmusicplayer.ui;
 import me.ironblock.genshinimpactmusicplayer.Launch;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
+import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
 import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
@@ -11,7 +12,6 @@ import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
@@ -66,7 +66,7 @@ public class ControllerFrame extends JFrame {
     private final JButton button_choseFile = new JButton("...");
 
     private final JFileChooser fileChooser = new JFileChooser(new File("."));
-    private final JSlider jSlider = new JSlider(0,100,0);
+    private final JSlider jSlider = new JSlider(0, 100, 0);
 
     private final PlayController playController = new PlayController();
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
@@ -104,8 +104,8 @@ public class ControllerFrame extends JFrame {
         label_keyMap.setBounds(20, 150, 85, 30);
         label_pitch.setBounds(350, 30, 80, 30);
         label_tune.setBounds(470, 30, 50, 30);
-        label_currentPlayTime.setBounds(20,184,60,40);
-        label_totalPlayTime.setBounds(300,184,60,40);
+        label_currentPlayTime.setBounds(20, 184, 60, 40);
+        label_totalPlayTime.setBounds(300, 184, 60, 40);
         //button
         button_choseFile.setBounds(280, 30, 30, 25);
         button_start.setBounds(20, 230, 85, 50);
@@ -124,7 +124,7 @@ public class ControllerFrame extends JFrame {
         comboBox_parser.setBounds(130, 110, 200, 30);
         comboBox_keyMap.setBounds(130, 150, 200, 30);
 
-        jSlider.setBounds(58,180,240,50);
+        jSlider.setBounds(58, 180, 240, 50);
 
         //Listeners
         button_start.addActionListener(e -> this.onStartButtonClicked());
@@ -227,12 +227,14 @@ public class ControllerFrame extends JFrame {
         try {
             System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
-            playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
+            if (!playController.TrackMusicLoaded())
+            playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()),textField_file_path.getText());
 
             playController.startPlay(getCurrentTune());
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
             textField_pitch.setEditable(false);
             textField_tune.setEditable(false);
+            button_autoTune.setEnabled(false);
         } catch (Exception exceptionNeedToBeDisplayed) {
 
             exceptionNeedToBeDisplayed.printStackTrace();
@@ -270,6 +272,7 @@ public class ControllerFrame extends JFrame {
         playController.stopPlay();
         textField_pitch.setEditable(true);
         textField_tune.setEditable(true);
+        button_autoTune.setEnabled(true);
     }
 
     /**
@@ -286,9 +289,12 @@ public class ControllerFrame extends JFrame {
             textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick + "\n" + TimeUtils.getMMSSFromS((int) (currentTick / speed)) + TimeUtils.progressBar(((double) currentTick) / lengthTick, 20) + TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
             label_currentPlayTime.setText(TimeUtils.getMMSSFromS((int) (currentTick / speed)));
             label_totalPlayTime.setText(TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
-            jSlider.setValue((int) (((double) currentTick)/lengthTick*100));
+            jSlider.setValue((int) (((double) currentTick) / lengthTick * 100));
         } else {
             textArea_info.setText("Music Finished");
+            textField_pitch.setEditable(true);
+            textField_tune.setEditable(true);
+            button_autoTune.setEnabled(true);
         }
 
 
@@ -298,7 +304,7 @@ public class ControllerFrame extends JFrame {
      * 升降八度的文本框的事件处理
      */
     private void onPitchTextFieldKeyTyped(KeyEvent event) {
-        int key = Integer.parseInt(textField_pitch.getText());
+        int key = Integer.parseInt(((JTextField) event.getSource()).getText());
 
         if (event.getKeyCode() == 38) {
             //上键
@@ -308,7 +314,7 @@ public class ControllerFrame extends JFrame {
             //上键
             key -= 1;
         }
-        textField_pitch.setText(String.valueOf(key));
+        ((JTextField) event.getSource()).setText(String.valueOf(key));
 
         event.consume();
     }
@@ -347,7 +353,7 @@ public class ControllerFrame extends JFrame {
 
     private void onTextFieldAndComboBoxUpdate() {
         File file = new File(textField_file_path.getText());
-        if (file.exists()){
+        if (file.exists()) {
             onFilePathCompleted();
         }
     }
@@ -362,7 +368,7 @@ public class ControllerFrame extends JFrame {
                 AbstractMusicParser parser = parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString());
                 KeyMap keyMap = KeyMapLoader.getInstance().getLoadedKeyMap(Objects.requireNonNull(comboBox_keyMap.getSelectedItem()).toString());
 
-                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser);
+                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser,file.getAbsolutePath());
                 playController.setActiveKeyMap(keyMap);
 
                 int bestTune = playController.autoTune(tuneMin, tuneMax);
@@ -426,16 +432,16 @@ public class ControllerFrame extends JFrame {
 
     private void chooseFile() {
         int status = fileChooser.showOpenDialog(this);
-        if (status==JFileChooser.FILES_ONLY){
+        if (status == JFileChooser.FILES_ONLY) {
             textField_file_path.setText(fileChooser.getSelectedFile().getAbsolutePath());
             onFilePathCompleted();
         }
     }
 
-    private void onFilePathCompleted(){
+    private void onFilePathCompleted() {
         updateComboBox();
-        playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
-        System.out.println("文件路径填完");
+        playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()),textField_file_path.getText());
+        addTracksUIForMusic(playController.getTrackMusic());
         IOUtils.closeAllStreams();
 
     }
@@ -443,34 +449,29 @@ public class ControllerFrame extends JFrame {
     /**
      * 注册拖拽事件
      */
-    private void drag()
-    {
-        new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE,new DropTargetAdapter()
-        {
+    private void drag() {
+        new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, new DropTargetAdapter() {
             @Override
-            public void drop(DropTargetDropEvent dtde)
-            {
-                try{
+            public void drop(DropTargetDropEvent dtde) {
+                try {
 
-                    if(dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
-                    {
+                    if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                        List<File> list=(List<File>)(dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
+                        List<File> list = (List<File>) (dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
 
-                       if (list.size()>0){
-                           textField_file_path.setText(list.get(0).getAbsolutePath());
-                           onFilePathCompleted();
-                       }
+                        if (list.size() > 0) {
+                            textField_file_path.setText(list.get(0).getAbsolutePath());
+                            onFilePathCompleted();
+                        }
 
-                    }
-
-                    else
-                    {
+                    } else {
 
                         dtde.rejectDrop();
                     }
 
-                }catch(Exception e){e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
 
@@ -481,22 +482,23 @@ public class ControllerFrame extends JFrame {
     }
 
     private boolean mousePressingSlider = false;
-    private void onSliderDragged(ChangeEvent event){
-        if (mousePressingSlider&&playController.isPlaying()){
+
+    private void onSliderDragged(ChangeEvent event) {
+        if (mousePressingSlider && playController.isPlaying()) {
             double progress = ((double) jSlider.getValue()) / 100;
             label_currentPlayTime.setText(TimeUtils.getMMSSFromS((int) (TimeUtils.getSFromMMSS(label_totalPlayTime.getText()) * progress)));
         }
     }
 
-    private void onMouseStartPressSlider(){
-        if (playController.isPlaying()){
+    private void onMouseStartPressSlider() {
+        if (playController.isPlaying()) {
             onPauseButtonClicked();
         }
         mousePressingSlider = true;
     }
 
-    private void onMouseStopPressSlider(){
-        if (playController.isPlaying()){
+    private void onMouseStopPressSlider() {
+        if (playController.isPlaying()) {
             int tickToJump = (int) (((double) jSlider.getValue()) / 100 * playController.getTotalTick());
             playController.jumpToTick(tickToJump);
             onPauseButtonClicked();
@@ -504,6 +506,66 @@ public class ControllerFrame extends JFrame {
         mousePressingSlider = false;
     }
 
+    private final Set<Component> components = new HashSet<>();
+    private final Map<Integer, JTextField> trackTextFieldMap = new HashMap<>();
+    private void addTracksUIForMusic(TrackMusic music) {
+        for (Component component : components) {
+            this.remove(component);
+        }
+        components.clear();
+
+        int loopTime = 0;
+        for (int trackIndex : music.getTracks().keySet()) {
+            JLabel label_trackDescriptor = new JLabel("轨道" + trackIndex + ":" + music.getTrackInfo(trackIndex));
+            JLabel label_pitch = new JLabel("升降八度");
+            JTextField textField_pitch = new JTextField("0");
+            JButton button = new JButton("静音");
+
+            label_trackDescriptor.setBounds(350, 50 + loopTime * 70, 300, 45);
+            label_pitch.setBounds(380,85+loopTime*70,80,30);
+            textField_pitch.setBounds(450,85+loopTime*70,80,30);
+            button.setBounds(530,85+loopTime*70,80,30);
+
+
+            button.addActionListener(e -> onMuteButtonClicked(trackIndex,e));
+            textField_pitch.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    onPitchTextFieldKeyTyped(e);
+                }
+            });
+
+
+            this.add(label_trackDescriptor);
+            this.add(label_pitch);
+            this.add(textField_pitch);
+            this.add(button);
+
+            trackTextFieldMap.put(trackIndex, textField_pitch);
+
+            components.add(label_trackDescriptor);
+            components.add(label_pitch);
+            components.add(textField_pitch);
+            components.add(button);
+
+
+
+
+            loopTime++;
+        }
+        this.setVisible(false);
+        this.setVisible(true);
+    }
+
+    private void onMuteButtonClicked(int track,ActionEvent event){
+        if (((JButton) event.getSource()).getText().equals("静音")){
+            playController.getTrackMusic().muteTrack(track);
+            ((JButton) event.getSource()).setText("解除静音");
+        }else{
+            playController.getTrackMusic().dismuteTrack(track);
+            ((JButton) event.getSource()).setText("静音");
+        }
+    }
 
 
 }

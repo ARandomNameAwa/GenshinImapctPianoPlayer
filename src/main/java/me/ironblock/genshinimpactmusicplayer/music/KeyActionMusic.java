@@ -118,23 +118,22 @@ public class KeyActionMusic {
                             keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
                             keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
                         }else{
-                            noteInfo.addKey(tune);
+                            NoteInfo noteInfo1 = new NoteInfo(noteInfo.getNoteIndex());
+                            noteInfo1.addKey(tune);
                             int key = keyMap.getNoteKey(noteInfo);
                             if (key!=-1){
-                                KeyAction keyOn = new KeyAction(true,keyMap.getNoteKey(noteInfo));
-                                KeyAction keyOff = new KeyAction(false, keyMap.getNoteKey(noteInfo));
+                                KeyAction keyOn = new KeyAction(true,keyMap.getNoteKey(noteInfo1));
+                                KeyAction keyOff = new KeyAction(false, keyMap.getNoteKey(noteInfo1));
                                 keyActionMusic.addNoteToTick(tick,keyOn);
                                 keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
                                 keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
                             }
-                            noteInfo.addKey(-tune);
                         }
 
                     }
                 });
             }
         }
-
 
         return keyActionMusic;
 

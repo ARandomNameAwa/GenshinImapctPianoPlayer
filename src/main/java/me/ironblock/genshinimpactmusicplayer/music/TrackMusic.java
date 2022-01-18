@@ -1,14 +1,10 @@
 package me.ironblock.genshinimpactmusicplayer.music;
 
-import com.sun.org.apache.xalan.internal.lib.NodeInfo;
 import me.ironblock.genshinimpactmusicplayer.Launch;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
-import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -32,6 +28,8 @@ public class TrackMusic {
      * 真实的音乐tps
      */
     public int tpsReal;
+
+
 
     public void putNode(int track, int tick, NoteInfo... noteInfo) {
         if (!tracks.containsKey(track)) {
@@ -57,16 +55,21 @@ public class TrackMusic {
      */
     public TuneInfo totalInaccuracy(KeyMap keyMap, int tune) {
         TuneInfo tuneInfoTotal = new TuneInfo();
-        for (Map<Integer, Set<NoteInfo>> track : getTracks().values()) {
-            for (Set<NoteInfo> value : track.values()) {
-                for (NoteInfo noteInfo : value) {
-                    TuneInfo tuneInfo1 = keyMap.getNoteInaccuracy(noteInfo, tune);
-                    tuneInfoTotal.setWrongNoteInaccuracy(tuneInfoTotal.getWrongNoteInaccuracy() + tuneInfo1.getWrongNoteInaccuracy());
-                    tuneInfoTotal.setBelowLowestPitchInaccuracy(tuneInfoTotal.getBelowLowestPitchInaccuracy() + tuneInfo1.getBelowLowestPitchInaccuracy());
-                    tuneInfoTotal.setOverHighestPitchInaccuracy(tuneInfoTotal.getOverHighestPitchInaccuracy() + tuneInfo1.getOverHighestPitchInaccuracy());
+        for (int i : getTracks().keySet()) {
+            if (!isTrackMuted(i)) {
+                Map<Integer, Set<NoteInfo>> track = getTracks().get(i);
+                for (Set<NoteInfo> value : track.values()) {
+                    for (NoteInfo noteInfo : value) {
+                        TuneInfo tuneInfo1 = keyMap.getNoteInaccuracy(noteInfo, tune);
+                        tuneInfoTotal.setWrongNoteInaccuracy(tuneInfoTotal.getWrongNoteInaccuracy() + tuneInfo1.getWrongNoteInaccuracy());
+                        tuneInfoTotal.setBelowLowestPitchInaccuracy(tuneInfoTotal.getBelowLowestPitchInaccuracy() + tuneInfo1.getBelowLowestPitchInaccuracy());
+                        tuneInfoTotal.setOverHighestPitchInaccuracy(tuneInfoTotal.getOverHighestPitchInaccuracy() + tuneInfo1.getOverHighestPitchInaccuracy());
+                    }
                 }
             }
         }
+
+
         return tuneInfoTotal;
     }
 
@@ -82,7 +85,7 @@ public class TrackMusic {
         Map<Integer, TuneInfo> tuneInaccuracyMap = new HashMap<>();
         for (int i = minTune; i <= maxTune; i++) {
             TuneInfo tuneInfo = totalInaccuracy(keyMap, i);
-            tuneInfo.setTuneInaccuracy((int) (tuneInfo.getInaccuracy() * (1 + ((double) Math.abs(i)) / (maxTune - minTune) / 10)));
+            tuneInfo.setTuneInaccuracy(i);
             tuneInaccuracyMap.put(i, tuneInfo);
 
         }
@@ -94,7 +97,7 @@ public class TrackMusic {
         }
         return tuneInaccuracyMap.entrySet().stream()
                 .min(Comparator.comparingInt(tune -> tune.getValue().getInaccuracy()))
-                .get().getKey();
+                .orElse(null).getKey();
     }
 
     /**
@@ -180,4 +183,19 @@ public class TrackMusic {
         }
     }
 
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrackMusic that = (TrackMusic) o;
+        return length == that.length && Double.compare(that.realDuration, realDuration) == 0 && tpsReal == that.tpsReal && Objects.equals(tracks, that.tracks) && Objects.equals(tracksMuted, that.tracksMuted) && Objects.equals(trackInfoMap, that.trackInfoMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tracks, tracksMuted, length, realDuration, tpsReal, trackInfoMap);
+    }
 }

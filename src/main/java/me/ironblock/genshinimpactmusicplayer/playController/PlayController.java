@@ -16,9 +16,13 @@ public class PlayController {
     private final MusicPlayer player = new MusicPlayer();
     private TrackMusic trackMusic;
     private KeyMap activeKeyMap;
+    private String currentMusicName = "";
 
-    public void prepareMusicPlayed(InputStream file,AbstractMusicParser parser){
-        trackMusic = parser.parseMusic(file);
+    public void prepareMusicPlayed(InputStream file,AbstractMusicParser parser,String name){
+        if (!currentMusicName.equals(name)){
+            trackMusic = parser.parseMusic(file);
+            currentMusicName = name;
+        }
     }
 
     /**
@@ -68,6 +72,14 @@ public class PlayController {
 
     public boolean isPlaying(){
         return trackMusic != null && player.getKeyActionMusicPlayed() != null;
+    }
+
+    public TrackMusic getTrackMusic(){
+        return trackMusic;
+    }
+
+    public boolean TrackMusicLoaded(){
+        return trackMusic!=null;
     }
 
 }

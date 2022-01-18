@@ -80,11 +80,11 @@ public class NoteInfo {
         if (o == null || getClass() != o.getClass())
             return false;
         NoteInfo noteInfo = (NoteInfo) o;
-        return octave == noteInfo.octave && note == noteInfo.note;
+        return octave == noteInfo.octave && note == noteInfo.note&&noteInfo.vk_Code==vk_Code;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(octave, note);
+        return Objects.hash(octave, note,vk_Code);
     }
 }

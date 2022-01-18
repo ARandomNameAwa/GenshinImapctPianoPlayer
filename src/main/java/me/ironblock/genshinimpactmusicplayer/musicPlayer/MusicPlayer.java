@@ -61,11 +61,11 @@ public class MusicPlayer {
      * @param note 要播放的音符
      */
     public void playNote(KeyAction note) {
-            if (note.getCommand()) {
-                robot.keyPress(note.getKey());
-            } else {
-                robot.keyRelease(note.getKey());
-            }
+        if (note.getCommand()) {
+            robot.keyPress(note.getKey());
+        } else {
+            robot.keyRelease(note.getKey());
+        }
     }
 
     /**
@@ -95,7 +95,7 @@ public class MusicPlayer {
     /**
      * 播放器线程
      */
-    protected void playMusicPlayerThread(){
+    protected void playMusicPlayerThread() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -173,11 +173,11 @@ public class MusicPlayer {
         }
     }
 
-   public int getSpeed(){
-       return speed;
-   }
+    public int getSpeed() {
+        return speed;
+    }
 
-    public KeyActionMusic getKeyActionMusicPlayed(){
+    public KeyActionMusic getKeyActionMusicPlayed() {
         return keyActionMusicPlayed;
     }
 

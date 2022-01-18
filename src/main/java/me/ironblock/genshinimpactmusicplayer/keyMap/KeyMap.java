@@ -28,36 +28,36 @@ public class KeyMap {
     public int getNoteKey(NoteInfo noteInfo) {
         //有没有超过最低音域
         if (noteInfo.getNoteIndex() < minNoteIndex) {
-            System.out.println("超过最低音域:尝试找到" + KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
+//            System.out.println("超过最低音域:尝试找到" + KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
             noteInfo.octave++;
         }
         //有没有超过最高音域
         if (noteInfo.getNoteIndex() > maxNoteIndex) {
-            System.out.println("超过最高音域:尝试找到" + KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
+//            System.out.println("超过最高音域:尝试找到" + KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
             noteInfo.octave--;
         }
         //如果尝试调入音域失败,则返回-1
         if (noteInfo.getNoteIndex() < minNoteIndex || noteInfo.getNoteIndex() > maxNoteIndex) {
-            System.out.println("尝试调入音域失败!!");
+//            System.out.println("尝试调入音域失败!!");
             return -1;
         }
 
         if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key
             return noteKeyMap.get(noteInfo);
         } else {          //尝试半音
-            System.out.println("找不到"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
+//            System.out.println("找不到"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
             noteInfo.increaseOneKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                System.out.println("上半音:"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
+//                System.out.println("上半音:"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
                 return noteKeyMap.get(noteInfo);
             }
             noteInfo.decreaseOnKey();
             noteInfo.decreaseOnKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                System.out.println("下半音:"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
+//                System.out.println("下半音:"+KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
                 return noteKeyMap.get(noteInfo);
             }
-            System.out.println("尝试半音失败");
+//            System.out.println("尝试半音失败");
             noteInfo.increaseOneKey();
             System.out.println(noteInfo);
             return -1;
@@ -65,7 +65,8 @@ public class KeyMap {
 
     }
 
-    public TuneInfo getNoteInaccuracy(NoteInfo noteInfo, int tune){
+    public TuneInfo
+    getNoteInaccuracy(NoteInfo noteInfo, int tune){
         NoteInfo noteInfo1 = new NoteInfo(noteInfo.getNoteIndex());
         TuneInfo tuneInfo = new TuneInfo();
         noteInfo1.addKey(tune);
@@ -73,11 +74,11 @@ public class KeyMap {
         if (noteInfo1.getNoteIndex() < minNoteIndex) {
             int wrongPitch = (minNoteIndex - noteInfo1.getNoteIndex())/12+1;
             if (wrongPitch>1){
-                int inaccuracy = 2 * wrongPitch * wrongPitch * noteInfo1.getNoteIndex()*noteInfo1.getNoteIndex()/3;
-                tuneInfo.setOverHighestPitchInaccuracy(inaccuracy);
+                int inaccuracy = 2 * wrongPitch *noteInfo1.getNoteIndex()*noteInfo1.getNoteIndex()/10;
+                tuneInfo.setBelowLowestPitchInaccuracy(inaccuracy);
                 return tuneInfo;
             }else{
-                tuneInfo.setOverHighestPitchInaccuracy(6);
+                tuneInfo.setBelowLowestPitchInaccuracy(6);
                 noteInfo1.addKey(12);
             }
 
@@ -86,11 +87,11 @@ public class KeyMap {
         if (noteInfo1.getNoteIndex() > maxNoteIndex) {
             int wrongPitch = (noteInfo1.getNoteIndex()-maxNoteIndex)/12+1;
             if (wrongPitch>1){
-                int inaccuracy = 4 * wrongPitch * wrongPitch * wrongPitch * noteInfo1.getNoteIndex() * noteInfo1.getNoteIndex() / 3;
-                tuneInfo.setBelowLowestPitchInaccuracy(inaccuracy);
+                int inaccuracy = 12 * wrongPitch * wrongPitch * wrongPitch * noteInfo1.getNoteIndex() * noteInfo1.getNoteIndex() / 3;
+                tuneInfo.setOverHighestPitchInaccuracy(inaccuracy);
                 return tuneInfo;
             }else{
-                tuneInfo.setOverHighestPitchInaccuracy(6);
+                tuneInfo.setOverHighestPitchInaccuracy(6*noteInfo1.getNoteIndex());
                 noteInfo1.addKey(-12);
             }
         }
@@ -110,13 +111,13 @@ public class KeyMap {
             }
             if (upFind||downFind){
                 if (tuneInfo.getInaccuracy()==0){
-                    tuneInfo.setWrongNoteInaccuracy(20*noteInfo1.getNoteIndex());
+                    tuneInfo.setWrongNoteInaccuracy(10*noteInfo1.getNoteIndex());
                 }else{
                     tuneInfo.setWrongNoteInaccuracy(60*noteInfo1.getNoteIndex());
                 }
             }else{
                 if (tuneInfo.getInaccuracy()==0){
-                    tuneInfo.setWrongNoteInaccuracy(50*noteInfo1.getNoteIndex());
+                    tuneInfo.setWrongNoteInaccuracy(10*noteInfo1.getNoteIndex());
                 }else{
                     tuneInfo.setWrongNoteInaccuracy(150*noteInfo1.getNoteIndex());
                 }
