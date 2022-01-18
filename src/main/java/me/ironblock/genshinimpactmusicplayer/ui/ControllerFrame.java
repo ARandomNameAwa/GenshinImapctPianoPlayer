@@ -11,10 +11,18 @@ import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * 控制窗口(也是主窗口)
@@ -54,6 +62,9 @@ public class ControllerFrame extends JFrame {
     private final JButton button_pause = new JButton("Pause");
     private final JButton button_stop = new JButton("Stop");
     private final JButton button_autoTune = new JButton("自动调音");
+    private final JButton button_choseFile = new JButton("...");
+
+    private final JFileChooser fileChooser = new JFileChooser(new File("."));
 
 
     private final PlayController playController = new PlayController();
@@ -69,6 +80,12 @@ public class ControllerFrame extends JFrame {
      * 初始化frame
      */
     private void setup() {
+//        try {
+//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+//            e.printStackTrace();
+//        }
+
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
         double height = screenSize.getHeight();
@@ -91,13 +108,14 @@ public class ControllerFrame extends JFrame {
         label_pitch.setBounds(20, 190, 80, 30);
         label_tune.setBounds(140, 190, 50, 30);
         //button
+        button_choseFile.setBounds(280, 30, 30, 25);
         button_start.setBounds(20, 230, 85, 50);
         button_pause.setBounds(130, 230, 85, 50);
         button_stop.setBounds(230, 230, 85, 50);
-        button_autoTune.setBounds(240,190,100,30);
+        button_autoTune.setBounds(240, 190, 100, 30);
 
         //textFields
-        textField_file_path.setBounds(130, 30, 200, 25);
+        textField_file_path.setBounds(130, 30, 150, 25);
         textField_speed.setBounds(130, 70, 150, 25);
         textField_pitch.setBounds(80, 190, 50, 30);
         textField_tune.setBounds(180, 190, 50, 30);
@@ -136,11 +154,15 @@ public class ControllerFrame extends JFrame {
             }
         });
 
+        button_choseFile.addActionListener(e -> chooseFile());
+
         button_autoTune.addActionListener(e -> autoTune());
+
+
         if (!Launch.DEBUG_MODE)
-        this.setAlwaysOnTop(true);
+            this.setAlwaysOnTop(true);
 
-
+        this.add(button_choseFile);
         this.add(button_autoTune);
         this.add(label_file_path);
         this.add(label_speed);
@@ -163,6 +185,8 @@ public class ControllerFrame extends JFrame {
         for (String s : KeyMapLoader.getInstance().getAllLoadedMapName()) {
             comboBox_keyMap.addItem(s);
         }
+
+        drag();
         this.setResizable(false);
 //        this.setAlwaysOnTop(true);
         super.setTitle(programName + " " + programVersion + " by " + programAuthor);
@@ -185,7 +209,7 @@ public class ControllerFrame extends JFrame {
         try {
             System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
-            playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()),parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
+            playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
 
             playController.startPlay(getCurrentTune());
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
@@ -301,28 +325,32 @@ public class ControllerFrame extends JFrame {
     }
 
     private void onTextFieldAndComboBoxUpdate() {
-        updateComboBox();
+        File file = new File(textField_file_path.getText());
+        if (file.exists()){
+            onFilePathCompleted();
+        }
     }
+
     private static final int tuneMin = -20;
     private static final int tuneMax = 10;
-    private void autoTune(){
-        if (!textField_file_path.getText().isEmpty()){
+
+    private void autoTune() {
+        if (!textField_file_path.getText().isEmpty()) {
             File file = new File(textField_file_path.getText());
             if (file.exists()) {
                 AbstractMusicParser parser = parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString());
                 KeyMap keyMap = KeyMapLoader.getInstance().getLoadedKeyMap(Objects.requireNonNull(comboBox_keyMap.getSelectedItem()).toString());
 
-                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()),parser);
+                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser);
                 playController.setActiveKeyMap(keyMap);
 
-                int bestTune = playController.autoTune(tuneMin,tuneMax);
+                int bestTune = playController.autoTune(tuneMin, tuneMax);
 
-                int octave = bestTune/12;
-                int note = bestTune%12;
+                int octave = bestTune / 12;
+                int note = bestTune % 12;
 
                 textField_pitch.setText(String.valueOf(octave));
                 textField_tune.setText(String.valueOf(note));
-
 
 
             }
@@ -365,17 +393,68 @@ public class ControllerFrame extends JFrame {
 
     /**
      * 获取现在的音调
+     *
      * @return 音调
      */
-    private int getCurrentTune(){
+    private int getCurrentTune() {
         int pitch = Integer.parseInt(textField_pitch.getText());
         int tune = Integer.parseInt(textField_tune.getText());
-        return pitch*12+tune;
+        return pitch * 12 + tune;
     }
 
 
+    private void chooseFile() {
+        int status = fileChooser.showOpenDialog(this);
+        if (status==JFileChooser.FILES_ONLY){
+            textField_file_path.setText(fileChooser.getSelectedFile().getAbsolutePath());
+            onFilePathCompleted();
+        }
+    }
+
+    private void onFilePathCompleted(){
+        updateComboBox();
+        playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()));
+        System.out.println("文件路径填完");
+        IOUtils.closeAllStreams();
+
+    }
+
+    public void drag()
+    {
+        new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE,new DropTargetAdapter()
+        {
+            @Override
+            public void drop(DropTargetDropEvent dtde)
+            {
+                try{
+
+                    if(dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+                    {
+                        dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                        List<File> list=(List<File>)(dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
+
+                       if (list.size()>0){
+                           textField_file_path.setText(list.get(0).getAbsolutePath());
+                           onFilePathCompleted();
+                       }
+
+                    }
+
+                    else
+                    {
+
+                        dtde.rejectDrop();
+                    }
+
+                }catch(Exception e){e.printStackTrace();}
+
+            }
 
 
+        });
+
+
+    }
 
 
 

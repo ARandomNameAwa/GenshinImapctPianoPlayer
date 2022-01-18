@@ -1,6 +1,8 @@
 package me.ironblock.genshinimpactmusicplayer.utils;
 
 import java.io.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class IOUtils {
     /**
@@ -25,13 +27,26 @@ public class IOUtils {
 
     }
 
+    private static final Set<InputStream> inputStreams = new HashSet<>();
     public static InputStream openStream(String in) {
         try {
-            return new FileInputStream(in);
+            InputStream inputStream = new FileInputStream(in);
+            inputStreams.add(inputStream);
+            return inputStream;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return null;
 
+    }
+
+    public static void closeAllStreams(){
+        for (InputStream inputStream : inputStreams) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
