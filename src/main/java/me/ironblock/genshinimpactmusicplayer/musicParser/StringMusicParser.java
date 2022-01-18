@@ -1,8 +1,8 @@
 package me.ironblock.genshinimpactmusicplayer.musicParser;
 
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
-import me.ironblock.genshinimpactmusicplayer.music.Music;
-import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
+import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
+import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
 import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
@@ -17,34 +17,25 @@ public class StringMusicParser extends AbstractMusicParser{
      * 解析字符串音乐
      *
      * @param musicStream 文件流
-     * @param keyMap 使用的keyMap
      * @return 解析出的音乐
      */
     @Override
-    public Music parseMusic(InputStream musicStream, KeyMap keyMap,int tune){
+    public TrackMusic parseMusic(InputStream musicStream){
         String musicIn = IOUtils.readStringFully(musicStream).toLowerCase(Locale.ROOT);
-        Music music = new Music();
+        TrackMusic trackMusic = new TrackMusic();
         long currentTick = 0;
         //使用栈来解析括号
         Stack<Character> stack = new Stack<>();
         boolean enableStack = false;
-        List<Character> pressedChars = new ArrayList<>();
         for (char c : musicIn.toCharArray()) {
 
-
-            for (Character pressedChar : pressedChars) {
-                KeyAction action = new KeyAction(false,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(pressedChar)));
-                music.addNoteToTick(currentTick*2+1, action);
-            }
-            pressedChars.clear();
 
             if (c == ')') {
                 currentTick++;
                 enableStack = false;
                 for (Character character : stack) {
-                    pressedChars.add(character);
-                    KeyAction action = new KeyAction(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(character)));
-                    music.addNoteToTick(currentTick*2, action);
+                    NoteInfo noteInfo = new NoteInfo(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(character)));
+                    trackMusic.putNode(0, (int) (currentTick*5), noteInfo);
                 }
                 stack.clear();
                 continue;
@@ -64,17 +55,17 @@ public class StringMusicParser extends AbstractMusicParser{
                 currentTick++;
             }
             if (c != '\n' && c != ' ') {
-                pressedChars.add(c);
-                KeyAction action = new KeyAction(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(c)));
-                music.addNoteToTick( currentTick*2,action);
+                NoteInfo noteInfo = new NoteInfo(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(c)));
+                trackMusic.putNode(0, (int) (currentTick*5), noteInfo);
+
             }
 
 
         }
-        music.length = currentTick*2 + 1;
-        music.realDuration = music.length;
-        music.tpsReal = 5;
-        return music;
+        trackMusic.length = currentTick*5 + 1;
+        trackMusic.realDuration = ((double) trackMusic.length)/2;
+        trackMusic.tpsReal = 10;
+        return trackMusic;
     }
 
     @Override

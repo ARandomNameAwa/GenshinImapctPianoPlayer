@@ -4,7 +4,6 @@ import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
 
-import java.io.File;
 import java.io.InputStream;
 
 
@@ -21,7 +20,7 @@ public class PlayController {
      * @param file 文件名
      */
     public void startPlay(InputStream file, AbstractMusicParser parser,int tune) throws Exception {
-        this.player.playMusic(parser.parseMusic(file,activeKeyMap,tune));
+        this.player.playMusic(parser.parseMusic(file));
     }
 
     /**

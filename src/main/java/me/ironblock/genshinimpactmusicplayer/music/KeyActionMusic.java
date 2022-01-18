@@ -1,6 +1,9 @@
 package me.ironblock.genshinimpactmusicplayer.music;
 
+import com.sun.org.apache.xalan.internal.lib.NodeInfo;
+import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
+import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
 
 import java.util.*;
 
@@ -8,7 +11,7 @@ import java.util.*;
  * @author :Iron__Block
  * @Date :2022/1/15 21:51
  */
-public class Music {
+public class KeyActionMusic {
     /**
      * 音乐时长
      */
@@ -93,5 +96,25 @@ public class Music {
         return currentTick;
     }
 
+    private static final int noteDelay = 10;
 
+    public static KeyActionMusic getFromTrackMusic(TrackMusic trackMusicIn, KeyMap keyMap,int tune) {
+        KeyActionMusic keyActionMusic = new KeyActionMusic();
+        List<Map<Integer, Set<NoteInfo>>> tracks = trackMusicIn.getTracks();
+        for (Map<Integer, Set<NoteInfo>> track : tracks) {
+            track.forEach((tick, nodeInfoSet) -> {
+                for (NoteInfo noteInfo : nodeInfoSet) {
+                    noteInfo.addKey(tune);
+                    KeyAction keyOn = new KeyAction(true, noteInfo.isVKCode()?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
+                    KeyAction keyOff = new KeyAction(false, noteInfo.isVKCode?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
+                    keyActionMusic.addNoteToTick(tick,keyOn);
+                    keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
+                    keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
+                    noteInfo.addKey(-tune);
+                }
+            });
+        }
+        return keyActionMusic;
+
+    }
 }

@@ -1,16 +1,12 @@
 package me.ironblock.genshinimpactmusicplayer.musicParser;
 
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
-import me.ironblock.genshinimpactmusicplayer.music.Music;
-import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
+import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
 import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
 
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 //I:\midiMusics\千本樱.mid
 
 /**
@@ -29,16 +25,16 @@ public class MidiMusicParser extends AbstractMusicParser {
      * @throws Exception 抛出的异常
      */
     @Override
-    public Music parseMusic(InputStream musicStream, KeyMap keyMap, int tune) {
+    public TrackMusic parseMusic(InputStream musicStream) {
         try {
-            Music music = new Music();
+            TrackMusic trackMusic = new TrackMusic();
 
             Sequence sequence = MidiSystem.getSequence(musicStream);
-            music.realDuration = ((double) sequence.getMicrosecondLength()) / 1_000_000;
-            music.length = sequence.getTickLength() / tickDivision;
-            music.tpsReal = (int) (music.length / music.realDuration);
-            System.out.println("realDuration:" + music.realDuration);
-            System.out.println("tpsReal:" + music.tpsReal);
+            trackMusic.realDuration = ((double) sequence.getMicrosecondLength()) / 1_000_000;
+            trackMusic.length = sequence.getTickLength() / tickDivision;
+            trackMusic.tpsReal = (int) (trackMusic.length / trackMusic.realDuration);
+            System.out.println("realDuration:" + trackMusic.realDuration);
+            System.out.println("tpsReal:" + trackMusic.tpsReal);
             for (Track track : sequence.getTracks()) {
                 for (int i = 0; i < track.size(); i++) {
                     MidiEvent event = track.get(i);
@@ -50,20 +46,12 @@ public class MidiMusicParser extends AbstractMusicParser {
                         int note = key % 12;
                         if (sm.getCommand() == 0x90) {
                             NoteInfo noteInfo = new NoteInfo(octave, note);
-                            noteInfo.addKey(tune);
-                            int key1 = keyMap.getNoteKey(noteInfo.octave, noteInfo.note);
-                            if (key1 != -1) {
-                                KeyAction keyAction = new KeyAction(true, key1);
-                                KeyAction keyAction1 = new KeyAction(false, key1);
-                                music.addNoteToTick(event.getTick() / tickDivision, keyAction);
-                                music.addNoteToTick(event.getTick() / tickDivision + noteDelay, keyAction1);
-                                music.addNoteToTick(event.getTick() / tickDivision - noteDelay / 2, keyAction1);
-                            }
+                            trackMusic.putNode(i, (int) (event.getTick() / tickDivision), noteInfo);
                         }
                     }
                 }
             }
-            return music;
+            return trackMusic;
         } catch (InvalidMidiDataException | IOException e) {
             e.printStackTrace();
         }
@@ -82,7 +70,7 @@ public class MidiMusicParser extends AbstractMusicParser {
     }
 
     @Override
-    public int totalNoteInaccuracy(InputStream musicStream, KeyMap keyMap, int tune){
+    public int totalNoteInaccuracy(InputStream musicStream, KeyMap keyMap, int tune) {
         try {
             int totalInaccuracy = 0;
             Sequence sequence = MidiSystem.getSequence(musicStream);
@@ -98,7 +86,7 @@ public class MidiMusicParser extends AbstractMusicParser {
                         if (sm.getCommand() == 0x90) {
                             NoteInfo noteInfo = new NoteInfo(octave, note);
                             noteInfo.addKey(tune);
-                            totalInaccuracy+= keyMap.getNoteInaccuracy(noteInfo);
+                            totalInaccuracy += keyMap.getNoteInaccuracy(noteInfo);
                         }
                     }
                 }

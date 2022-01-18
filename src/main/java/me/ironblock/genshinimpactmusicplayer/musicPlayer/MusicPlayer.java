@@ -1,7 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.musicPlayer;
 
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
-import me.ironblock.genshinimpactmusicplayer.music.Music;
+import me.ironblock.genshinimpactmusicplayer.music.KeyActionMusic;
 import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
 import me.ironblock.genshinimpactmusicplayer.ui.ControllerFrame;
 import me.ironblock.genshinimpactmusicplayer.utils.Timer;
@@ -26,7 +25,7 @@ public class MusicPlayer {
     /**
      * 正在播放的歌曲
      */
-    protected Music musicPlayed;
+    protected KeyActionMusic keyActionMusicPlayed;
     /**
      * 播放歌曲的速度(tps)
      */
@@ -52,7 +51,7 @@ public class MusicPlayer {
      * @param speedIn 要设置的播放速度倍数
      */
     public void setSpeed(double speedIn) {
-        speed = (int) (musicPlayed.tpsReal*speedIn);
+        speed = (int) (keyActionMusicPlayed.tpsReal*speedIn);
         timer.setTps(speed);
     }
 
@@ -72,19 +71,19 @@ public class MusicPlayer {
     /**
      * 开始演奏音乐
      *
-     * @param music 要演奏的音乐
+     * @param keyActionMusic 要演奏的音乐
      */
-    public void playMusic(Music music) {
+    public void playMusic(KeyActionMusic keyActionMusic) {
 
-        if (musicPlayed != null && musicPlayed.equals(music)) {
+        if (keyActionMusicPlayed != null && keyActionMusicPlayed.equals(keyActionMusic)) {
             if (isPlaying) {
-                music.reset();
+                keyActionMusic.reset();
             } else {
                 musicPlayerThread = new Thread(this::playMusicPlayerThread, "MusicPlayerThread");
                 musicPlayerThread.start();
             }
         } else {
-            musicPlayed = music;
+            keyActionMusicPlayed = keyActionMusic;
             musicPlayerThread = new Thread(this::playMusicPlayerThread, "MusicPlayerThread");
             musicPlayerThread.start();
         }
@@ -102,11 +101,11 @@ public class MusicPlayer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        while (!musicPlayed.isMusicFinished() && isPlaying) {
+        while (!keyActionMusicPlayed.isMusicFinished() && isPlaying) {
             if (!paused) {
                 if (timer.update()) {
                     updateInfo(false);
-                    Set<KeyAction> set = musicPlayed.getNextTickNote();
+                    Set<KeyAction> set = keyActionMusicPlayed.getNextTickNote();
                     if (set != null) {
                         for (KeyAction k : set) {
                             playNote(k);
@@ -134,7 +133,7 @@ public class MusicPlayer {
     private void updateInfo(boolean forceUpdate) {
         speedTimer++;
         if (updateTimer.update() || forceUpdate) {
-            ControllerFrame.instance.updateInfoTextField(speedTimer, musicPlayed.getCurrentTick(), musicPlayed.length, speed, musicPlayed.isMusicFinished() || !isPlaying);
+            ControllerFrame.instance.updateInfoTextField(speedTimer, keyActionMusicPlayed.getCurrentTick(), keyActionMusicPlayed.length, speed, keyActionMusicPlayed.isMusicFinished() || !isPlaying);
             speedTimer = 0;
         }
     }

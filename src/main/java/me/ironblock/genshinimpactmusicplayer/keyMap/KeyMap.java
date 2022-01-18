@@ -27,15 +27,16 @@ public class KeyMap {
     public int getNoteKeyOrigin(NoteInfo noteInfo) {
         return noteKeyMap.getOrDefault(noteInfo, -1);
     }
-
+    public int getNoteKey(int octave, int note){
+        return getNoteKey(new NoteInfo(octave, note));
+    }
 
     /**
      * 获取一个音符对应的键的vk_code
      *
      * @return vk_code, 如果找不到返回-1
      */
-    public int getNoteKey(int octave, int note) {
-        NoteInfo noteInfo = new NoteInfo(octave, note);
+    public int getNoteKey(NoteInfo noteInfo) {
         //有没有超过最低音域
         if (noteInfo.getNoteIndex() < minNoteIndex) {
             System.out.println("超过最低音域:尝试找到" + KeyMapUtils.getNoteNameFromNoteIndex(noteInfo.note) + noteInfo.octave);
@@ -114,6 +115,8 @@ public class KeyMap {
             return keyAdded?160*noteInfo.getNoteIndex():50*noteInfo.getNoteIndex();
         }
     }
+
+
 
     public Map<NoteInfo, Integer> getNoteKeyMap() {
         return noteKeyMap;

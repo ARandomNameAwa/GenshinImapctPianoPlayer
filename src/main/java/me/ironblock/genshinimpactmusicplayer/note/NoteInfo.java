@@ -1,5 +1,7 @@
 package me.ironblock.genshinimpactmusicplayer.note;
 
+import com.sun.org.apache.xalan.internal.lib.NodeInfo;
+
 import java.util.Objects;
 
 /**
@@ -12,6 +14,15 @@ public class NoteInfo {
     public int octave;
     //音名
     public int note;
+
+    public boolean isVKCode;
+
+    public int vk_Code;
+
+    public NoteInfo(boolean isVkCode,int vk_Code){
+        this.isVKCode = isVkCode;
+        this.vk_Code = vk_Code;
+    }
 
     public NoteInfo(int octave, int note) {
         this.octave = octave;
@@ -46,6 +57,15 @@ public class NoteInfo {
             octave--;
             note += 12;
         }
+    }
+
+
+    public boolean isVKCode(){
+        return isVKCode;
+    }
+
+    public int getVk_Code(){
+        return vk_Code;
     }
 
     @Override

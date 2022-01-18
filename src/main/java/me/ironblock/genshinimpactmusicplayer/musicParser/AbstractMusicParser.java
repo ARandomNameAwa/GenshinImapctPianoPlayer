@@ -1,7 +1,7 @@
 package me.ironblock.genshinimpactmusicplayer.musicParser;
 
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
-import me.ironblock.genshinimpactmusicplayer.music.Music;
+import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
 
 import java.io.InputStream;
 
@@ -13,11 +13,11 @@ public abstract class AbstractMusicParser{
     /**
      * 解析音乐
      * @param musicStream 音乐文件流
-     * @param keyMap 使用的keyMap
      * @return 解析好的音乐
      * @throws Exception 搞不好什么错误
      */
-    public abstract Music parseMusic(InputStream musicStream, KeyMap keyMap,int tune);
+    public abstract TrackMusic parseMusic(InputStream musicStream);
+
 
 
     /**
