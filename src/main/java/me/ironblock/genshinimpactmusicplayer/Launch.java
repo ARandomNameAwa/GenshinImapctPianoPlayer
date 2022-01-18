@@ -10,6 +10,8 @@ import me.ironblock.genshinimpactmusicplayer.ui.ControllerFrame;
  * @author Administrator
  */
 public class Launch {
+    public static boolean DEBUG_MODE = false;
+
     /**
      * 启动
      */

@@ -104,14 +104,14 @@ public class KeyMap {
         } else {          //尝试半音
             noteInfo.increaseOneKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                return keyAdded?20*noteInfo.getNoteIndex():5*noteInfo.getNoteIndex();
+                return keyAdded?100*noteInfo.getNoteIndex():20*noteInfo.getNoteIndex();
             }
             noteInfo.decreaseOnKey();
             noteInfo.decreaseOnKey();
             if (noteKeyMap.containsKey(noteInfo)) {
-                return keyAdded?20*noteInfo.getNoteIndex():5*noteInfo.getNoteIndex();
+                return keyAdded?100*noteInfo.getNoteIndex():20*noteInfo.getNoteIndex();
             }
-            return keyAdded?28*noteInfo.getNoteIndex():7*noteInfo.getNoteIndex();
+            return keyAdded?160*noteInfo.getNoteIndex():50*noteInfo.getNoteIndex();
         }
     }
 

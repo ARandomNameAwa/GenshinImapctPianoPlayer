@@ -1,5 +1,6 @@
 package me.ironblock.genshinimpactmusicplayer.ui;
 
+import me.ironblock.genshinimpactmusicplayer.Launch;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
@@ -141,8 +142,8 @@ public class ControllerFrame extends JFrame {
         });
 
         button_autoTune.addActionListener(e -> autoTune());
-
-//        this.setAlwaysOnTop(true);
+        if (!Launch.DEBUG_MODE)
+        this.setAlwaysOnTop(true);
 
 
         this.add(button_autoTune);
