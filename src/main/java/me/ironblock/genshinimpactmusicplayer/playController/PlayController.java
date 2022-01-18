@@ -56,5 +56,18 @@ public class PlayController {
         this.activeKeyMap = activeKeyMap;
     }
 
+    public void jumpToTick(int tick){
+        player.getKeyActionMusicPlayed().jumpToTick(tick);
+    }
+    public int getTotalTick(){
+        return (int) player.getKeyActionMusicPlayed().length;
+    }
+    public int getSpeed(){
+        return player.getSpeed();
+    }
+
+    public boolean isPlaying(){
+        return trackMusic != null && player.getKeyActionMusicPlayed() != null;
+    }
 
 }

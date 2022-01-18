@@ -111,13 +111,25 @@ public class KeyActionMusic {
             if (!trackMusicIn.isTrackMuted(i)) {
                 track.forEach((tick, nodeInfoSet) -> {
                     for (NoteInfo noteInfo : nodeInfoSet) {
-                        noteInfo.addKey(tune);
-                        KeyAction keyOn = new KeyAction(true, noteInfo.isVKCode()?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
-                        KeyAction keyOff = new KeyAction(false, noteInfo.isVKCode?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
-                        keyActionMusic.addNoteToTick(tick,keyOn);
-                        keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
-                        keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
-                        noteInfo.addKey(-tune);
+                        if (noteInfo.isVKCode()){
+                            KeyAction keyOn = new KeyAction(true,noteInfo.getVk_Code());
+                            KeyAction keyOff = new KeyAction(false,noteInfo.getVk_Code());
+                            keyActionMusic.addNoteToTick(tick,keyOn);
+                            keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
+                            keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
+                        }else{
+                            noteInfo.addKey(tune);
+                            int key = keyMap.getNoteKey(noteInfo);
+                            if (key!=-1){
+                                KeyAction keyOn = new KeyAction(true,keyMap.getNoteKey(noteInfo));
+                                KeyAction keyOff = new KeyAction(false, keyMap.getNoteKey(noteInfo));
+                                keyActionMusic.addNoteToTick(tick,keyOn);
+                                keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
+                                keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
+                            }
+                            noteInfo.addKey(-tune);
+                        }
+
                     }
                 });
             }

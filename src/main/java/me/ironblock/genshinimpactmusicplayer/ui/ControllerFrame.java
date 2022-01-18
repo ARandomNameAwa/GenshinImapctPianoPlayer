@@ -10,16 +10,15 @@ import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -34,7 +33,7 @@ public class ControllerFrame extends JFrame {
     public static final String programVersion = "v1.1.0";
     public static final String programAuthor = "Iron_Block";
 
-    public static final int frameWidth = 650;
+    public static final int frameWidth = 680;
     public static final int frameHeight = 320;
 
     public static ControllerFrame instance;
@@ -46,6 +45,8 @@ public class ControllerFrame extends JFrame {
     private final JLabel label_keyMap = new JLabel("Key Map");
     private final JLabel label_tune = new JLabel("曲调");
     private final JLabel label_pitch = new JLabel("升降八度");
+    private final JLabel label_currentPlayTime = new JLabel("00:00");
+    private final JLabel label_totalPlayTime = new JLabel("00:00");
 
     private final JComboBox<String> comboBox_parser = new JComboBox<>();
     private final JComboBox<String> comboBox_keyMap = new JComboBox<>();
@@ -65,7 +66,7 @@ public class ControllerFrame extends JFrame {
     private final JButton button_choseFile = new JButton("...");
 
     private final JFileChooser fileChooser = new JFileChooser(new File("."));
-
+    private final JSlider jSlider = new JSlider(0,100,0);
 
     private final PlayController playController = new PlayController();
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
@@ -80,11 +81,7 @@ public class ControllerFrame extends JFrame {
      * 初始化frame
      */
     private void setup() {
-//        try {
-//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-//        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-//            e.printStackTrace();
-//        }
+
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
@@ -105,25 +102,29 @@ public class ControllerFrame extends JFrame {
         label_tps.setBounds(280, 70, 50, 25);
         label_parser.setBounds(20, 110, 90, 30);
         label_keyMap.setBounds(20, 150, 85, 30);
-        label_pitch.setBounds(20, 190, 80, 30);
-        label_tune.setBounds(140, 190, 50, 30);
+        label_pitch.setBounds(350, 30, 80, 30);
+        label_tune.setBounds(470, 30, 50, 30);
+        label_currentPlayTime.setBounds(20,184,60,40);
+        label_totalPlayTime.setBounds(300,184,60,40);
         //button
         button_choseFile.setBounds(280, 30, 30, 25);
         button_start.setBounds(20, 230, 85, 50);
         button_pause.setBounds(130, 230, 85, 50);
         button_stop.setBounds(230, 230, 85, 50);
-        button_autoTune.setBounds(240, 190, 100, 30);
+        button_autoTune.setBounds(568, 30, 100, 30);
 
         //textFields
         textField_file_path.setBounds(130, 30, 150, 25);
         textField_speed.setBounds(130, 70, 150, 25);
-        textField_pitch.setBounds(80, 190, 50, 30);
-        textField_tune.setBounds(180, 190, 50, 30);
+        textField_pitch.setBounds(410, 30, 50, 30);
+        textField_tune.setBounds(505, 30, 50, 30);
 
         textArea_info.setBounds(350, 30, 250, 250);
 
         comboBox_parser.setBounds(130, 110, 200, 30);
         comboBox_keyMap.setBounds(130, 150, 200, 30);
+
+        jSlider.setBounds(58,180,240,50);
 
         //Listeners
         button_start.addActionListener(e -> this.onStartButtonClicked());
@@ -158,6 +159,19 @@ public class ControllerFrame extends JFrame {
 
         button_autoTune.addActionListener(e -> autoTune());
 
+        jSlider.addChangeListener(this::onSliderDragged);
+        jSlider.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                onMouseStartPressSlider();
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                onMouseStopPressSlider();
+            }
+        });
+
 
         if (!Launch.DEBUG_MODE)
             this.setAlwaysOnTop(true);
@@ -168,7 +182,7 @@ public class ControllerFrame extends JFrame {
         this.add(label_speed);
         this.add(label_tps);
         this.add(textField_file_path);
-        this.add(textArea_info);
+//        this.add(textArea_info);
         this.add(textField_speed);
         this.add(button_start);
         this.add(button_pause);
@@ -181,6 +195,10 @@ public class ControllerFrame extends JFrame {
         this.add(label_pitch);
         this.add(textField_tune);
         this.add(textField_pitch);
+        this.add(label_currentPlayTime);
+        this.add(label_totalPlayTime);
+        this.add(jSlider);
+
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         for (String s : KeyMapLoader.getInstance().getAllLoadedMapName()) {
             comboBox_keyMap.addItem(s);
@@ -266,6 +284,9 @@ public class ControllerFrame extends JFrame {
     public void updateInfoTextField(int actualSpeed, long currentTick, long lengthTick, int speed, boolean finished) {
         if (!finished) {
             textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick + "\n" + TimeUtils.getMMSSFromS((int) (currentTick / speed)) + TimeUtils.progressBar(((double) currentTick) / lengthTick, 20) + TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
+            label_currentPlayTime.setText(TimeUtils.getMMSSFromS((int) (currentTick / speed)));
+            label_totalPlayTime.setText(TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
+            jSlider.setValue((int) (((double) currentTick)/lengthTick*100));
         } else {
             textArea_info.setText("Music Finished");
         }
@@ -419,7 +440,10 @@ public class ControllerFrame extends JFrame {
 
     }
 
-    public void drag()
+    /**
+     * 注册拖拽事件
+     */
+    private void drag()
     {
         new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE,new DropTargetAdapter()
         {
@@ -454,6 +478,30 @@ public class ControllerFrame extends JFrame {
         });
 
 
+    }
+
+    private boolean mousePressingSlider = false;
+    private void onSliderDragged(ChangeEvent event){
+        if (mousePressingSlider&&playController.isPlaying()){
+            double progress = ((double) jSlider.getValue()) / 100;
+            label_currentPlayTime.setText(TimeUtils.getMMSSFromS((int) (TimeUtils.getSFromMMSS(label_totalPlayTime.getText()) * progress)));
+        }
+    }
+
+    private void onMouseStartPressSlider(){
+        if (playController.isPlaying()){
+            onPauseButtonClicked();
+        }
+        mousePressingSlider = true;
+    }
+
+    private void onMouseStopPressSlider(){
+        if (playController.isPlaying()){
+            int tickToJump = (int) (((double) jSlider.getValue()) / 100 * playController.getTotalTick());
+            playController.jumpToTick(tickToJump);
+            onPauseButtonClicked();
+        }
+        mousePressingSlider = false;
     }
 
 

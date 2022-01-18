@@ -42,4 +42,17 @@ public class TimeUtils {
         }
         return stringBuilder.toString();
     }
+
+    /**
+     * 把MMSS变成S
+     * @param mmss MMSS
+     * @return S
+     */
+    public static int getSFromMMSS(String mmss){
+        String[] spl = mmss.split(":");
+        int total = 0;
+        total += Integer.parseInt(spl[0]) * 60;
+        total += Integer.parseInt(spl[1]);
+        return total;
+    }
 }

@@ -173,4 +173,12 @@ public class MusicPlayer {
         }
     }
 
+   public int getSpeed(){
+       return speed;
+   }
+
+    public KeyActionMusic getKeyActionMusicPlayed(){
+        return keyActionMusicPlayed;
+    }
+
 }
