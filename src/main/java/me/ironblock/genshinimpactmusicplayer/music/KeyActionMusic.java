@@ -105,19 +105,25 @@ public class KeyActionMusic {
         keyActionMusic.length = trackMusicIn.length;
 
         Map<Integer,Map<Integer, Set<NoteInfo>>> tracks = trackMusicIn.getTracks();
-        for (Map<Integer, Set<NoteInfo>> track : tracks.values()) {
-            track.forEach((tick, nodeInfoSet) -> {
-                for (NoteInfo noteInfo : nodeInfoSet) {
-                    noteInfo.addKey(tune);
-                    KeyAction keyOn = new KeyAction(true, noteInfo.isVKCode()?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
-                    KeyAction keyOff = new KeyAction(false, noteInfo.isVKCode?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
-                    keyActionMusic.addNoteToTick(tick,keyOn);
-                    keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
-                    keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
-                    noteInfo.addKey(-tune);
-                }
-            });
+
+        for (int i : tracks.keySet()) {
+            Map<Integer, Set<NoteInfo>> track = tracks.get(i);
+            if (!trackMusicIn.isTrackMuted(i)) {
+                track.forEach((tick, nodeInfoSet) -> {
+                    for (NoteInfo noteInfo : nodeInfoSet) {
+                        noteInfo.addKey(tune);
+                        KeyAction keyOn = new KeyAction(true, noteInfo.isVKCode()?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
+                        KeyAction keyOff = new KeyAction(false, noteInfo.isVKCode?noteInfo.getVk_Code():keyMap.getNoteKey(noteInfo));
+                        keyActionMusic.addNoteToTick(tick,keyOn);
+                        keyActionMusic.addNoteToTick(tick+noteDelay,keyOff);
+                        keyActionMusic.addNoteToTick(tick-noteDelay/2,keyOff);
+                        noteInfo.addKey(-tune);
+                    }
+                });
+            }
         }
+
+
         return keyActionMusic;
 
     }

@@ -14,7 +14,6 @@ public class ExternalResourceLoaderController {
     public static final File runPath;
     public static final File keyMapPath;
     public static final File mouseMapPath;
-    public static final File pluginPath;
     public static final String[] preinstalledKeyMaps = new String[]{"nbsKeyMap.txt", "GenshinImpactKeyMap.txt"};
     public static final String[] preinstalledKeyMapNames = new String[]{"NbsEditor", "GenshinImpact"};
     private static ExternalResourceLoaderController instance;
@@ -23,7 +22,6 @@ public class ExternalResourceLoaderController {
         runPath = new File(ExternalResourceLoaderController.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getParentFile();
         keyMapPath = new File(runPath, "keyMaps");
         mouseMapPath = new File(runPath, "mouseMaps");
-        pluginPath = new File(runPath, "plugins");
     }
 
     public static ExternalResourceLoaderController getInstance() {

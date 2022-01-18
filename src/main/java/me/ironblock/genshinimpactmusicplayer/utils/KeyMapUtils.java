@@ -58,4 +58,14 @@ public class KeyMapUtils {
     public static String getNoteNameFromNoteIndex(int index){
         return noteIndexNoteNameMap.get(index);
     }
+
+    /**
+     * 通过noteIndex计算音名+第几个八度
+     */
+    public static String getFullNameFromNoteIndex(int index){
+        int octave = index/12;
+        int note = index%12;
+        return getNoteNameFromNoteIndex(note) + octave;
+
+    }
 }

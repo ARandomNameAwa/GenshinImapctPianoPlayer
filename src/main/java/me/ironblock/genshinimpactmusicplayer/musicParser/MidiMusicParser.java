@@ -15,7 +15,6 @@ import java.io.InputStream;
 public class MidiMusicParser extends AbstractMusicParser {
 
     private static final int tickDivision = 10;
-    private static final int noteDelay = 10;
 
     /**
      * 解析音乐
@@ -34,7 +33,8 @@ public class MidiMusicParser extends AbstractMusicParser {
             trackMusic.tpsReal = (int) (trackMusic.length / trackMusic.realDuration);
             System.out.println("realDuration:" + trackMusic.realDuration);
             System.out.println("tpsReal:" + trackMusic.tpsReal);
-            for (Track track : sequence.getTracks()) {
+            for (int j = 0; j < sequence.getTracks().length; j++) {
+                Track track = sequence.getTracks()[j];
                 for (int i = 0; i < track.size(); i++) {
                     MidiEvent event = track.get(i);
                     MidiMessage message = event.getMessage();
@@ -45,11 +45,13 @@ public class MidiMusicParser extends AbstractMusicParser {
                         int note = key % 12;
                         if (sm.getCommand() == 0x90) {
                             NoteInfo noteInfo = new NoteInfo(octave, note);
-                            trackMusic.putNode(i, (int) (event.getTick() / tickDivision), noteInfo);
+                            trackMusic.putNode(j, (int) (event.getTick() / tickDivision), noteInfo);
                         }
                     }
                 }
             }
+
+
             return trackMusic;
         } catch (InvalidMidiDataException | IOException e) {
             e.printStackTrace();
