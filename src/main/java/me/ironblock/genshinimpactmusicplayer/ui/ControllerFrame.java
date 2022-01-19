@@ -36,7 +36,13 @@ public class ControllerFrame extends JFrame {
     public static final int frameWidth = 680;
     public static final int frameHeight = 320;
 
+    public static final int tuneFrameWidth = 450;
+    public static final int tuneFrameHeight = 120;
+
     public static ControllerFrame instance;
+
+    private final JFrame tuneFrame = new JFrame();
+
 
     private final JLabel label_file_path = new JLabel("文件路径");
     private final JLabel label_speed = new JLabel("速度");
@@ -96,14 +102,16 @@ public class ControllerFrame extends JFrame {
         this.setBounds(((int) (frameWidth / 2 - w / 2)), ((int) (frameHeight / 2 - h / 2)), frameWidth, frameHeight);
         this.setLayout(null);
 
+        tuneFrame.setBounds(((int) (tuneFrameWidth / 2 - w / 2))-50, ((int) (tuneFrameHeight / 2 - h / 2))-50, tuneFrameWidth, tuneFrameHeight);
+        tuneFrame.setLayout(null);
         //label
         label_file_path.setBounds(20, 30, 85, 30);
         label_speed.setBounds(20, 70, 85, 30);
         label_tps.setBounds(280, 70, 50, 25);
         label_parser.setBounds(20, 110, 90, 30);
         label_keyMap.setBounds(20, 150, 85, 30);
-        label_pitch.setBounds(350, 30, 80, 30);
-        label_tune.setBounds(470, 30, 50, 30);
+        label_pitch.setBounds(10, 30, 80, 30);
+        label_tune.setBounds(130, 30, 50, 30);
         label_currentPlayTime.setBounds(20, 184, 60, 40);
         label_totalPlayTime.setBounds(300, 184, 60, 40);
         //button
@@ -111,13 +119,13 @@ public class ControllerFrame extends JFrame {
         button_start.setBounds(20, 230, 85, 50);
         button_pause.setBounds(130, 230, 85, 50);
         button_stop.setBounds(230, 230, 85, 50);
-        button_autoTune.setBounds(568, 30, 100, 30);
+        button_autoTune.setBounds(248, 30, 100, 30);
 
         //textFields
         textField_file_path.setBounds(130, 30, 150, 25);
         textField_speed.setBounds(130, 70, 150, 25);
-        textField_pitch.setBounds(410, 30, 50, 30);
-        textField_tune.setBounds(505, 30, 50, 30);
+        textField_pitch.setBounds(70, 30, 50, 30);
+        textField_tune.setBounds(165, 30, 50, 30);
 
         textArea_info.setBounds(350, 30, 250, 250);
 
@@ -176,13 +184,13 @@ public class ControllerFrame extends JFrame {
         if (!Launch.DEBUG_MODE)
             this.setAlwaysOnTop(true);
 
+
         this.add(button_choseFile);
-        this.add(button_autoTune);
+        tuneFrame.add(button_autoTune);
         this.add(label_file_path);
         this.add(label_speed);
         this.add(label_tps);
         this.add(textField_file_path);
-//        this.add(textArea_info);
         this.add(textField_speed);
         this.add(button_start);
         this.add(button_pause);
@@ -191,24 +199,29 @@ public class ControllerFrame extends JFrame {
         this.add(comboBox_keyMap);
         this.add(label_parser);
         this.add(label_keyMap);
-        this.add(label_tune);
-        this.add(label_pitch);
-        this.add(textField_tune);
-        this.add(textField_pitch);
+        tuneFrame.add(label_tune);
+        tuneFrame.add(label_pitch);
+        tuneFrame.add(textField_tune);
+        tuneFrame.add(textField_pitch);
         this.add(label_currentPlayTime);
         this.add(label_totalPlayTime);
         this.add(jSlider);
 
+
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        tuneFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
         for (String s : KeyMapLoader.getInstance().getAllLoadedMapName()) {
             comboBox_keyMap.addItem(s);
         }
 
         drag();
         this.setResizable(false);
+        tuneFrame.setResizable(false);
 //        this.setAlwaysOnTop(true);
         super.setTitle(programName + " " + programVersion + " by " + programAuthor);
         this.setVisible(true);
+        tuneFrame.setVisible(true);
     }
 
     /**
@@ -359,7 +372,7 @@ public class ControllerFrame extends JFrame {
     }
 
     private static final int tuneMin = -20;
-    private static final int tuneMax = 10;
+    private static final int tuneMax = 20;
 
     private void autoTune() {
         if (!textField_file_path.getText().isEmpty()) {
@@ -510,7 +523,7 @@ public class ControllerFrame extends JFrame {
     private final Map<Integer, JTextField> trackTextFieldMap = new HashMap<>();
     private void addTracksUIForMusic(TrackMusic music) {
         for (Component component : components) {
-            this.remove(component);
+            tuneFrame.remove(component);
         }
         components.clear();
 
@@ -521,10 +534,10 @@ public class ControllerFrame extends JFrame {
             JTextField textField_pitch = new JTextField("0");
             JButton button = new JButton("静音");
 
-            label_trackDescriptor.setBounds(350, 50 + loopTime * 70, 300, 45);
-            label_pitch.setBounds(380,85+loopTime*70,80,30);
-            textField_pitch.setBounds(450,85+loopTime*70,80,30);
-            button.setBounds(530,85+loopTime*70,80,30);
+            label_trackDescriptor.setBounds(10, 50 + loopTime * 70, 300, 45);
+            label_pitch.setBounds(10,85+loopTime*70,80,30);
+            textField_pitch.setBounds(90,85+loopTime*70,80,30);
+            button.setBounds(190,85+loopTime*70,80,30);
 
 
             button.addActionListener(e -> onMuteButtonClicked(trackIndex,e));
@@ -536,10 +549,10 @@ public class ControllerFrame extends JFrame {
             });
 
 
-            this.add(label_trackDescriptor);
-            this.add(label_pitch);
-            this.add(textField_pitch);
-            this.add(button);
+            tuneFrame.add(label_trackDescriptor);
+            tuneFrame.add(label_pitch);
+            tuneFrame.add(textField_pitch);
+            tuneFrame.add(button);
 
             trackTextFieldMap.put(trackIndex, textField_pitch);
 
@@ -553,8 +566,10 @@ public class ControllerFrame extends JFrame {
 
             loopTime++;
         }
-        this.setVisible(false);
-        this.setVisible(true);
+
+        tuneFrame.setBounds(tuneFrame.getX(),tuneFrame.getY(),tuneFrameWidth,tuneFrameHeight+loopTime*70);
+        tuneFrame.setVisible(false);
+        tuneFrame.setVisible(true);
     }
 
     private void onMuteButtonClicked(int track,ActionEvent event){
