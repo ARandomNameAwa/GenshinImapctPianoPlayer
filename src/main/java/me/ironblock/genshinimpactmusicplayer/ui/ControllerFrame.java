@@ -12,6 +12,7 @@ import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
@@ -36,7 +37,7 @@ public class ControllerFrame extends JFrame {
     public static final int frameWidth = 680;
     public static final int frameHeight = 320;
 
-    public static final int tuneFrameWidth = 450;
+    public static final int tuneFrameWidth = 550;
     public static final int tuneFrameHeight = 120;
 
     public static ControllerFrame instance;
@@ -73,6 +74,7 @@ public class ControllerFrame extends JFrame {
 
     private final JFileChooser fileChooser = new JFileChooser(new File("."));
     private final JSlider jSlider = new JSlider(0, 100, 0);
+    private final JCheckBox checkbox_syncPitch = new JCheckBox("每个音轨升降八度同步");
 
     private final PlayController playController = new PlayController();
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
@@ -119,7 +121,7 @@ public class ControllerFrame extends JFrame {
         button_start.setBounds(20, 230, 85, 50);
         button_pause.setBounds(130, 230, 85, 50);
         button_stop.setBounds(230, 230, 85, 50);
-        button_autoTune.setBounds(248, 30, 100, 30);
+        button_autoTune.setBounds(402, 30, 100, 30);
 
         //textFields
         textField_file_path.setBounds(130, 30, 150, 25);
@@ -133,6 +135,8 @@ public class ControllerFrame extends JFrame {
         comboBox_keyMap.setBounds(130, 150, 200, 30);
 
         jSlider.setBounds(58, 180, 240, 50);
+        checkbox_syncPitch.setBounds(238,30,160,30);
+        checkbox_syncPitch.setSelected(true);
 
         //Listeners
         button_start.addActionListener(e -> this.onStartButtonClicked());
@@ -180,6 +184,8 @@ public class ControllerFrame extends JFrame {
             }
         });
 
+        checkbox_syncPitch.addChangeListener(this::onJCheckBoxStateChanged);
+
 
         if (!Launch.DEBUG_MODE)
             this.setAlwaysOnTop(true);
@@ -203,6 +209,8 @@ public class ControllerFrame extends JFrame {
         tuneFrame.add(label_pitch);
         tuneFrame.add(textField_tune);
         tuneFrame.add(textField_pitch);
+        tuneFrame.add(checkbox_syncPitch);
+
         this.add(label_currentPlayTime);
         this.add(label_totalPlayTime);
         this.add(jSlider);
@@ -533,7 +541,7 @@ public class ControllerFrame extends JFrame {
             JLabel label_pitch = new JLabel("升降八度");
             JTextField textField_pitch = new JTextField("0");
             JButton button = new JButton("静音");
-
+            textField_pitch.setEditable(!checkbox_syncPitch.isSelected());
             label_trackDescriptor.setBounds(10, 50 + loopTime * 70, 300, 45);
             label_pitch.setBounds(10,85+loopTime*70,80,30);
             textField_pitch.setBounds(90,85+loopTime*70,80,30);
@@ -579,6 +587,22 @@ public class ControllerFrame extends JFrame {
         }else{
             playController.getTrackMusic().dismuteTrack(track);
             ((JButton) event.getSource()).setText("静音");
+        }
+    }
+
+
+    private void onJCheckBoxStateChanged(ChangeEvent e){
+        JCheckBox source = ((JCheckBox) e.getSource());
+        if (source.isSelected()){
+            textField_pitch.setEditable(true);
+            for (JTextField value : trackTextFieldMap.values()) {
+                value.setEditable(false);
+            }
+        }else{
+            textField_pitch.setEditable(false);
+            for (JTextField value : trackTextFieldMap.values()) {
+                value.setEditable(true);
+            }
         }
     }
 
