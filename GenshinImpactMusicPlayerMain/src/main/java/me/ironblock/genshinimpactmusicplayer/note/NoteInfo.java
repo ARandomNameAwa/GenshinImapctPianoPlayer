@@ -1,7 +1,5 @@
 package me.ironblock.genshinimpactmusicplayer.note;
 
-import com.sun.org.apache.xalan.internal.lib.NodeInfo;
-
 import java.util.Objects;
 
 /**

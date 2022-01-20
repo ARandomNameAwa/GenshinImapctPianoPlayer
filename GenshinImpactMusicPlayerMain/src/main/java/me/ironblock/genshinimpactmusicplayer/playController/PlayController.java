@@ -1,10 +1,10 @@
 package me.ironblock.genshinimpactmusicplayer.playController;
 
+import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
+import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.music.KeyActionMusic;
-import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
-import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
 
 import java.io.InputStream;
 

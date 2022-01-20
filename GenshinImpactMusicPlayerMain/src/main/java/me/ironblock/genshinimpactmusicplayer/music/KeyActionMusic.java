@@ -1,9 +1,8 @@
 package me.ironblock.genshinimpactmusicplayer.music;
 
-import com.sun.org.apache.xalan.internal.lib.NodeInfo;
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
 import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
+import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 
 import java.util.*;
 

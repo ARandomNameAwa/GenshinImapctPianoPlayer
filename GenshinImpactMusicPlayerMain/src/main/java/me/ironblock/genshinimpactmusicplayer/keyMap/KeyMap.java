@@ -2,11 +2,9 @@ package me.ironblock.genshinimpactmusicplayer.keyMap;
 
 import me.ironblock.genshinimpactmusicplayer.music.TuneInfo;
 import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
-import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 键映射

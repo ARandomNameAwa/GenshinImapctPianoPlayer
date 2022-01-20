@@ -1,6 +1,5 @@
 package me.ironblock.genshinimpactmusicplayer.musicParser;
 
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
 import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
 import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
@@ -8,8 +7,6 @@ import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
 import java.io.InputStream;
 import java.util.*;
-
-import static javafx.scene.input.KeyCode.V;
 
 /**
  * 字符串音乐解析器
