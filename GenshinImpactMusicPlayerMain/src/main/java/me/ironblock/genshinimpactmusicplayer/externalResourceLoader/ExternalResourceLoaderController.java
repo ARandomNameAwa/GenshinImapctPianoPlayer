@@ -71,15 +71,9 @@ public class ExternalResourceLoaderController {
 
     /**
      * 以后做
+     * TODO:
      */
     private void loadMouseMaps() {
-
-    }
-
-    /**
-     * 以后做
-     */
-    private void loadPlugin() {
 
     }
 

@@ -30,10 +30,9 @@ import java.util.List;
  */
 public class ControllerFrame extends JFrame {
     public static final String programName = "Genshin Impact Music Player";
-    public static final String programVersion = "v1.1.0";
-    public static final String programAuthor = "Iron_Block";
+    public static final String programVersion = "v1.2.0";
 
-    public static final int frameWidth = 680;
+    public static final int frameWidth = 450;
     public static final int frameHeight = 320;
 
     public static final int tuneFrameWidth = 550;
@@ -62,8 +61,6 @@ public class ControllerFrame extends JFrame {
     private final JTextField textField_tune = new JTextField("0");
     private final JTextField textField_pitch = new JTextField("0");
 
-    private final JTextArea textArea_info = new JTextArea();
-
 
     private final JButton button_start = new JButton("Start");
     private final JButton button_pause = new JButton("Pause");
@@ -89,7 +86,6 @@ public class ControllerFrame extends JFrame {
      */
     private void setup() {
 
-
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double width = screenSize.getWidth();
         double height = screenSize.getHeight();
@@ -103,7 +99,7 @@ public class ControllerFrame extends JFrame {
         this.setBounds(((int) (frameWidth / 2 - w / 2)), ((int) (frameHeight / 2 - h / 2)), frameWidth, frameHeight);
         this.setLayout(null);
 
-        tuneFrame.setBounds(((int) (tuneFrameWidth / 2 - w / 2))-50, ((int) (tuneFrameHeight / 2 - h / 2))-50, tuneFrameWidth, tuneFrameHeight);
+        tuneFrame.setBounds(((int) (tuneFrameWidth / 2 - w / 2)) - 50, ((int) (tuneFrameHeight / 2 - h / 2)) - 50, tuneFrameWidth, tuneFrameHeight);
         tuneFrame.setLayout(null);
         //label
         label_file_path.setBounds(20, 30, 85, 30);
@@ -128,13 +124,12 @@ public class ControllerFrame extends JFrame {
         textField_pitch.setBounds(70, 30, 50, 30);
         textField_tune.setBounds(165, 30, 50, 30);
 
-        textArea_info.setBounds(350, 30, 250, 250);
 
         comboBox_parser.setBounds(130, 110, 200, 30);
         comboBox_keyMap.setBounds(130, 150, 200, 30);
 
         jSlider.setBounds(58, 180, 240, 50);
-        checkbox_syncPitch.setBounds(238,30,160,30);
+        checkbox_syncPitch.setBounds(238, 30, 160, 30);
         checkbox_syncPitch.setSelected(true);
 
         //Listeners
@@ -225,8 +220,7 @@ public class ControllerFrame extends JFrame {
         drag();
         this.setResizable(false);
         tuneFrame.setResizable(false);
-//        this.setAlwaysOnTop(true);
-        super.setTitle(programName + " " + programVersion + " by " + programAuthor);
+        super.setTitle(programName + " " + programVersion);
         this.setVisible(true);
         tuneFrame.setVisible(true);
     }
@@ -237,7 +231,7 @@ public class ControllerFrame extends JFrame {
      * @param title 标题
      */
     public void setTitle(String title) {
-        super.setTitle(programName + " " + programVersion + " by " + programAuthor + ":" + title);
+        super.setTitle(programName + " " + programVersion + ":" + title);
     }
 
     /**
@@ -248,23 +242,16 @@ public class ControllerFrame extends JFrame {
             System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
             if (!playController.TrackMusicLoaded())
-            playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()),textField_file_path.getText());
+                playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
 
             playController.startPlay(getCurrentTune());
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
             textField_pitch.setEditable(false);
             textField_tune.setEditable(false);
             button_autoTune.setEnabled(false);
-        } catch (Exception exceptionNeedToBeDisplayed) {
+        } catch (Exception e) {
+            e.printStackTrace();
 
-            exceptionNeedToBeDisplayed.printStackTrace();
-            setTitle(exceptionNeedToBeDisplayed.toString());
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            PrintWriter writer = new PrintWriter(byteArrayOutputStream);
-            exceptionNeedToBeDisplayed.printStackTrace(writer);
-            writer.flush();
-            System.out.println(byteArrayOutputStream);
-            textArea_info.setText(byteArrayOutputStream.toString());
         }
     }
 
@@ -306,12 +293,10 @@ public class ControllerFrame extends JFrame {
      */
     public void updateInfoTextField(int actualSpeed, long currentTick, long lengthTick, int speed, boolean finished) {
         if (!finished) {
-            textArea_info.setText("Actual Speed:" + actualSpeed + "tps\n" + "currentTick:" + currentTick + "/" + lengthTick + "\n" + TimeUtils.getMMSSFromS((int) (currentTick / speed)) + TimeUtils.progressBar(((double) currentTick) / lengthTick, 20) + TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
             label_currentPlayTime.setText(TimeUtils.getMMSSFromS((int) (currentTick / speed)));
             label_totalPlayTime.setText(TimeUtils.getMMSSFromS(((int) (lengthTick / speed))));
             jSlider.setValue((int) (((double) currentTick) / lengthTick * 100));
         } else {
-            textArea_info.setText("Music Finished");
             textField_pitch.setEditable(true);
             textField_tune.setEditable(true);
             button_autoTune.setEnabled(true);
@@ -388,7 +373,7 @@ public class ControllerFrame extends JFrame {
                 AbstractMusicParser parser = parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString());
                 KeyMap keyMap = KeyMapLoader.getInstance().getLoadedKeyMap(Objects.requireNonNull(comboBox_keyMap.getSelectedItem()).toString());
 
-                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser,file.getAbsolutePath());
+                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser, file.getAbsolutePath());
                 playController.setActiveKeyMap(keyMap);
 
                 int bestTune = playController.autoTune(tuneMin, tuneMax);
@@ -398,7 +383,6 @@ public class ControllerFrame extends JFrame {
 
                 textField_pitch.setText(String.valueOf(octave));
                 textField_tune.setText(String.valueOf(note));
-
 
             }
 
@@ -410,8 +394,6 @@ public class ControllerFrame extends JFrame {
      */
     private void updateComboBox() {
         //update parser selector
-
-
         if (!textField_file_path.getText().isEmpty()) {
             File file = new File(textField_file_path.getText());
             if (file.exists()) {
@@ -460,7 +442,7 @@ public class ControllerFrame extends JFrame {
 
     private void onFilePathCompleted() {
         updateComboBox();
-        playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()),textField_file_path.getText());
+        playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
         addTracksUIForMusic(playController.getTrackMusic());
         IOUtils.closeAllStreams();
 
@@ -528,6 +510,7 @@ public class ControllerFrame extends JFrame {
 
     private final Set<Component> components = new HashSet<>();
     private final Map<Integer, JTextField> trackTextFieldMap = new HashMap<>();
+
     private void addTracksUIForMusic(TrackMusic music) {
         for (Component component : components) {
             tuneFrame.remove(component);
@@ -542,12 +525,12 @@ public class ControllerFrame extends JFrame {
             JButton button = new JButton("静音");
             textField_pitch.setEditable(!checkbox_syncPitch.isSelected());
             label_trackDescriptor.setBounds(10, 50 + loopTime * 70, 300, 45);
-            label_pitch.setBounds(10,85+loopTime*70,80,30);
-            textField_pitch.setBounds(90,85+loopTime*70,80,30);
-            button.setBounds(190,85+loopTime*70,80,30);
+            label_pitch.setBounds(10, 85 + loopTime * 70, 80, 30);
+            textField_pitch.setBounds(90, 85 + loopTime * 70, 80, 30);
+            button.setBounds(190, 85 + loopTime * 70, 80, 30);
 
 
-            button.addActionListener(e -> onMuteButtonClicked(trackIndex,e));
+            button.addActionListener(e -> onMuteButtonClicked(trackIndex, e));
             textField_pitch.addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyPressed(KeyEvent e) {
@@ -569,35 +552,33 @@ public class ControllerFrame extends JFrame {
             components.add(button);
 
 
-
-
             loopTime++;
         }
 
-        tuneFrame.setBounds(tuneFrame.getX(),tuneFrame.getY(),tuneFrameWidth,tuneFrameHeight+loopTime*70);
+        tuneFrame.setBounds(tuneFrame.getX(), tuneFrame.getY(), tuneFrameWidth, tuneFrameHeight + loopTime * 70);
         tuneFrame.setVisible(false);
         tuneFrame.setVisible(true);
     }
 
-    private void onMuteButtonClicked(int track,ActionEvent event){
-        if (((JButton) event.getSource()).getText().equals("静音")){
+    private void onMuteButtonClicked(int track, ActionEvent event) {
+        if (((JButton) event.getSource()).getText().equals("静音")) {
             playController.getTrackMusic().muteTrack(track);
             ((JButton) event.getSource()).setText("解除静音");
-        }else{
+        } else {
             playController.getTrackMusic().dismuteTrack(track);
             ((JButton) event.getSource()).setText("静音");
         }
     }
 
 
-    private void onJCheckBoxStateChanged(ChangeEvent e){
+    private void onJCheckBoxStateChanged(ChangeEvent e) {
         JCheckBox source = ((JCheckBox) e.getSource());
-        if (source.isSelected()){
+        if (source.isSelected()) {
             textField_pitch.setEditable(true);
             for (JTextField value : trackTextFieldMap.values()) {
                 value.setEditable(false);
             }
-        }else{
+        } else {
             textField_pitch.setEditable(false);
             for (JTextField value : trackTextFieldMap.values()) {
                 value.setEditable(true);
