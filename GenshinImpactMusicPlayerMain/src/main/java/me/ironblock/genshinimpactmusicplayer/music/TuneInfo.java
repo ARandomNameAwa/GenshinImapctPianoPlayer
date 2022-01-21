@@ -57,14 +57,14 @@ public class TuneInfo {
     /**
      * 获取这个音符的总不准确度
      */
-    public int getInaccuracy(){
+    public int getInaccuracy() {
         return overHighestPitchInaccuracy + belowLowestPitchInaccuracy + wrongNoteInaccuracy + tuneInaccuracy;
     }
 
     @Override
     public String toString() {
         return "TuneInfo{" +
-                "Inaccuracy="+getInaccuracy()+
+                "Inaccuracy=" + getInaccuracy() +
                 ",overHighestPitchInaccuracy=" + overHighestPitchInaccuracy +
                 ", belowLowestPitchInaccuracy=" + belowLowestPitchInaccuracy +
                 ", wrongNoteInaccuracy=" + wrongNoteInaccuracy +

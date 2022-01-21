@@ -28,6 +28,7 @@ public class IOUtils {
     }
 
     private static final Set<InputStream> inputStreams = new HashSet<>();
+
     public static InputStream openStream(String in) {
         try {
             InputStream inputStream = new FileInputStream(in);
@@ -40,7 +41,7 @@ public class IOUtils {
 
     }
 
-    public static void closeAllStreams(){
+    public static void closeAllStreams() {
         for (InputStream inputStream : inputStreams) {
             try {
                 inputStream.close();

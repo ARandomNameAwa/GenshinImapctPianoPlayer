@@ -17,7 +17,7 @@ public class NoteInfo {
 
     public int vk_Code;
 
-    public NoteInfo(boolean isVkCode,int vk_Code){
+    public NoteInfo(boolean isVkCode, int vk_Code) {
         this.isVKCode = isVkCode;
         this.vk_Code = vk_Code;
     }
@@ -35,10 +35,10 @@ public class NoteInfo {
         return octave * 12 + note;
     }
 
-    public void addKey(int key){
-       int tmp = octave*12+ note+key;
-        octave = tmp/12;
-        note = tmp%12;
+    public void addKey(int key) {
+        int tmp = octave * 12 + note + key;
+        octave = tmp / 12;
+        note = tmp % 12;
     }
 
     public void increaseOneKey() {
@@ -58,11 +58,11 @@ public class NoteInfo {
     }
 
 
-    public boolean isVKCode(){
+    public boolean isVKCode() {
         return isVKCode;
     }
 
-    public int getVk_Code(){
+    public int getVk_Code() {
         return vk_Code;
     }
 
@@ -78,11 +78,11 @@ public class NoteInfo {
         if (o == null || getClass() != o.getClass())
             return false;
         NoteInfo noteInfo = (NoteInfo) o;
-        return octave == noteInfo.octave && note == noteInfo.note&&noteInfo.vk_Code==vk_Code;
+        return octave == noteInfo.octave && note == noteInfo.note && noteInfo.vk_Code == vk_Code;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(octave, note,vk_Code);
+        return Objects.hash(octave, note, vk_Code);
     }
 }

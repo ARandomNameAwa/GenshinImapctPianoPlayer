@@ -6,12 +6,13 @@ import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
 import me.ironblock.genshinimpactmusicplayer.utils.KeyMapUtils;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.Locale;
+import java.util.Stack;
 
 /**
  * 字符串音乐解析器
  */
-public class StringMusicParser extends AbstractMusicParser{
+public class StringMusicParser extends AbstractMusicParser {
     /**
      * 解析字符串音乐
      *
@@ -19,7 +20,7 @@ public class StringMusicParser extends AbstractMusicParser{
      * @return 解析出的音乐
      */
     @Override
-    public TrackMusic parseMusic(InputStream musicStream){
+    public TrackMusic parseMusic(InputStream musicStream) {
         String musicIn = IOUtils.readStringFully(musicStream).toLowerCase(Locale.ROOT);
         TrackMusic trackMusic = new TrackMusic();
         long currentTick = 0;
@@ -33,8 +34,8 @@ public class StringMusicParser extends AbstractMusicParser{
                 currentTick++;
                 enableStack = false;
                 for (Character character : stack) {
-                    NoteInfo noteInfo = new NoteInfo(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(character)));
-                    trackMusic.putNode(0, (int) (currentTick*9), noteInfo);
+                    NoteInfo noteInfo = new NoteInfo(true, KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(character)));
+                    trackMusic.putNode(0, (int) (currentTick * 9), noteInfo);
                 }
                 stack.clear();
                 continue;
@@ -50,20 +51,20 @@ public class StringMusicParser extends AbstractMusicParser{
                 enableStack = true;
                 continue;
             }
-            if (c != '\n'){
+            if (c != '\n') {
                 currentTick++;
             }
             if (c != '\n' && c != ' ') {
-                NoteInfo noteInfo = new NoteInfo(true,KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(c)));
-                trackMusic.putNode(0, (int) (currentTick*9), noteInfo);
+                NoteInfo noteInfo = new NoteInfo(true, KeyMapUtils.getVKCodeFromKeyChar(String.valueOf(c)));
+                trackMusic.putNode(0, (int) (currentTick * 9), noteInfo);
 
             }
 
 
         }
 
-        trackMusic.length = currentTick*9 + 1;
-        trackMusic.realDuration = ((double) trackMusic.length)/2;
+        trackMusic.length = currentTick * 9 + 1;
+        trackMusic.realDuration = ((double) trackMusic.length) / 2;
         trackMusic.tpsReal = 25;
         return trackMusic;
     }
@@ -77,8 +78,6 @@ public class StringMusicParser extends AbstractMusicParser{
     public String getMusicFileTypeName() {
         return "PressKey";
     }
-
-
 
 
 }

@@ -19,9 +19,9 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.io.File;
 import java.util.List;
+import java.util.*;
 
 /**
  * 控制窗口(也是主窗口)
@@ -363,8 +363,8 @@ public class ControllerFrame extends JFrame {
         }
     }
 
-    private static final int tuneMin = -20;
-    private static final int tuneMax = 20;
+    private static final int minPitch = -1;
+    private static final int maxPitch = 1;
 
     private void autoTune() {
         if (!textField_file_path.getText().isEmpty()) {
@@ -376,13 +376,23 @@ public class ControllerFrame extends JFrame {
                 playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser, file.getAbsolutePath());
                 playController.setActiveKeyMap(keyMap);
 
-                int bestTune = playController.autoTune(tuneMin, tuneMax);
+                Map<Integer, Integer> bestTune = playController.autoTune(minPitch, maxPitch, checkbox_syncPitch.isSelected());
+                if (checkbox_syncPitch.isSelected()) {
+                    int octave = bestTune.get(114514) / 12;
+                    int note = bestTune.get(114514) % 12;
+                    textField_pitch.setText(String.valueOf(octave));
+                    textField_tune.setText(String.valueOf(note));
+                } else {
+                    bestTune.forEach((track, best) -> {
+                        if (track == 114514) {
+                            textField_tune.setText(String.valueOf(best));
+                        } else {
+                            trackTextFieldMap.get(track).setText(String.valueOf(best));
+                        }
 
-                int octave = bestTune / 12;
-                int note = bestTune % 12;
+                    });
+                }
 
-                textField_pitch.setText(String.valueOf(octave));
-                textField_tune.setText(String.valueOf(note));
 
             }
 

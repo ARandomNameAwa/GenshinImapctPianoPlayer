@@ -1,12 +1,13 @@
 package me.ironblock.genshinimpactmusicplayer.playController;
 
-import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
-import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.music.KeyActionMusic;
+import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
+import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
 
 import java.io.InputStream;
+import java.util.Map;
 
 
 /**
@@ -18,8 +19,8 @@ public class PlayController {
     private KeyMap activeKeyMap;
     private String currentMusicName = "";
 
-    public void prepareMusicPlayed(InputStream file,AbstractMusicParser parser,String name){
-        if (!currentMusicName.equals(name)){
+    public void prepareMusicPlayed(InputStream file, AbstractMusicParser parser, String name) {
+        if (!currentMusicName.equals(name)) {
             trackMusic = parser.parseMusic(file);
             currentMusicName = name;
         }
@@ -27,10 +28,9 @@ public class PlayController {
 
     /**
      * 开始演奏
-     *
      */
     public void startPlay(int tune) {
-        KeyActionMusic keyActionMusic = KeyActionMusic.getFromTrackMusic(trackMusic,activeKeyMap,tune);
+        KeyActionMusic keyActionMusic = KeyActionMusic.getFromTrackMusic(trackMusic, activeKeyMap, tune);
         this.player.playMusic(keyActionMusic);
     }
 
@@ -49,37 +49,48 @@ public class PlayController {
     }
 
     public void setSpeed(double speed) {
-        player.setSpeed((int) (speed*trackMusic.tpsReal));
+        player.setSpeed((int) (speed * trackMusic.tpsReal));
     }
 
-    public int autoTune(int minTune,int maxTune){
-        return trackMusic.autoTune(activeKeyMap, minTune, maxTune);
+    /**
+     * 自动调音
+     *
+     * @param minPitch        调音扫描范围最小的八度
+     * @param maxPitch        调音扫描范围最大的八度
+     * @param tracksPitchSame 不同轨道的升降八度是否一致
+     * @return 如果tracksPitchSame为true 返回一个元素的Map,这个元素的key为114514,内容为pitch*12+tune 否则返回一个的Map
+     * 其中的元素的key为轨道编号,value为轨道的pitch,key为114514的value为所有轨道的tune
+     */
+    public Map<Integer, Integer> autoTune(int minPitch, int maxPitch, boolean tracksPitchSame) {
+        return trackMusic.autoTune(activeKeyMap, minPitch, maxPitch, tracksPitchSame);
     }
 
     public void setActiveKeyMap(KeyMap activeKeyMap) {
         this.activeKeyMap = activeKeyMap;
     }
 
-    public void jumpToTick(int tick){
+    public void jumpToTick(int tick) {
         player.getKeyActionMusicPlayed().jumpToTick(tick);
     }
-    public int getTotalTick(){
+
+    public int getTotalTick() {
         return (int) player.getKeyActionMusicPlayed().length;
     }
-    public int getSpeed(){
+
+    public int getSpeed() {
         return player.getSpeed();
     }
 
-    public boolean isPlaying(){
+    public boolean isPlaying() {
         return trackMusic != null && player.getKeyActionMusicPlayed() != null;
     }
 
-    public TrackMusic getTrackMusic(){
+    public TrackMusic getTrackMusic() {
         return trackMusic;
     }
 
-    public boolean TrackMusicLoaded(){
-        return trackMusic!=null;
+    public boolean TrackMusicLoaded() {
+        return trackMusic != null;
     }
 
 }

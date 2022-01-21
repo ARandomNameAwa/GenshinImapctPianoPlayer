@@ -70,6 +70,4 @@ public class MidiMusicParser extends AbstractMusicParser {
     }
 
 
-
-
 }
