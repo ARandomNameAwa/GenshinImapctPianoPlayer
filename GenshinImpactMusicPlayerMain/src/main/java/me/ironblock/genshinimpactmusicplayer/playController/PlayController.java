@@ -3,6 +3,7 @@ package me.ironblock.genshinimpactmusicplayer.playController;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.music.KeyActionMusic;
 import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
+import me.ironblock.genshinimpactmusicplayer.music.TuneStep;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
 
@@ -29,7 +30,7 @@ public class PlayController {
     /**
      * 开始演奏
      */
-    public void startPlay(int tune) {
+    public void startPlay(TuneStep tune) {
         KeyActionMusic keyActionMusic = KeyActionMusic.getFromTrackMusic(trackMusic, activeKeyMap, tune);
         this.player.playMusic(keyActionMusic);
     }
@@ -61,7 +62,7 @@ public class PlayController {
      * @return 如果tracksPitchSame为true 返回一个元素的Map,这个元素的key为114514,内容为pitch*12+tune 否则返回一个的Map
      * 其中的元素的key为轨道编号,value为轨道的pitch,key为114514的value为所有轨道的tune
      */
-    public Map<Integer, Integer> autoTune(int minPitch, int maxPitch, boolean tracksPitchSame) {
+    public TuneStep autoTune(int minPitch, int maxPitch, boolean tracksPitchSame) {
         return trackMusic.autoTune(activeKeyMap, minPitch, maxPitch, tracksPitchSame);
     }
 

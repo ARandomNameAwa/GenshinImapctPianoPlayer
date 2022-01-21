@@ -77,11 +77,11 @@ public class KeyMap {
         if (noteInfo1.getNoteIndex() > maxNoteIndex) {
             int wrongPitch = (noteInfo1.getNoteIndex() - maxNoteIndex) / 12 + 1;
             if (wrongPitch > 1) {
-                int inaccuracy = 12 * wrongPitch * wrongPitch * wrongPitch * noteInfo1.getNoteIndex() * noteInfo1.getNoteIndex() / 3;
+                int inaccuracy = 6 * wrongPitch * wrongPitch * wrongPitch * noteInfo1.getNoteIndex() * noteInfo1.getNoteIndex() / 3;
                 tuneInfo.setOverHighestPitchInaccuracy(inaccuracy);
                 return tuneInfo;
             } else {
-                tuneInfo.setOverHighestPitchInaccuracy(6 * noteInfo1.getNoteIndex());
+                tuneInfo.setOverHighestPitchInaccuracy(6);
                 noteInfo1.addKey(-12);
             }
         }
@@ -101,15 +101,15 @@ public class KeyMap {
             }
             if (upFind || downFind) {
                 if (tuneInfo.getInaccuracy() == 0) {
-                    tuneInfo.setWrongNoteInaccuracy(10 * noteInfo1.getNoteIndex());
+                    tuneInfo.setWrongNoteInaccuracy((int) (10 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
                 } else {
-                    tuneInfo.setWrongNoteInaccuracy(60 * noteInfo1.getNoteIndex());
+                    tuneInfo.setWrongNoteInaccuracy((int) (30 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
                 }
             } else {
                 if (tuneInfo.getInaccuracy() == 0) {
-                    tuneInfo.setWrongNoteInaccuracy(10 * noteInfo1.getNoteIndex());
+                    tuneInfo.setWrongNoteInaccuracy((int) (10 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
                 } else {
-                    tuneInfo.setWrongNoteInaccuracy(150 * noteInfo1.getNoteIndex());
+                    tuneInfo.setWrongNoteInaccuracy((int) (50 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
                 }
             }
         }

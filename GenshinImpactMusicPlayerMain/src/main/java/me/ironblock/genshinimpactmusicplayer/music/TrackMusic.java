@@ -112,12 +112,9 @@ public class TrackMusic {
      * @return 如果tracksPitchSame为true 返回一个元素的Map,这个元素的key为114514,内容为pitch*12+tune 否则返回一个的Map
      * 其中的元素的key为轨道编号,value为轨道的pitch,key为114514的value为所有轨道的tune
      */
-    public Map<Integer, Integer> autoTune(KeyMap keyMap, int minPitch, int maxPitch, boolean tracksPitchSame) {
+    public TuneStep autoTune(KeyMap keyMap, int minPitch, int maxPitch, boolean tracksPitchSame) {
         if (tracksPitchSame) {
-            Map<Integer, Integer> map = new HashMap<>();
-            int bestTune = autoTuneTrackPitchSame(keyMap, minPitch, maxPitch);
-            map.put(114514, bestTune);
-            return map;
+            return autoTuneTrackPitchSame(keyMap, minPitch, maxPitch);
         } else {
             return autoTunePitchNotSame(keyMap, minPitch, maxPitch);
         }
@@ -131,7 +128,7 @@ public class TrackMusic {
      * @param maxPitch 调音扫描范围最大的八度
      * @return pitch*12+tune
      */
-    private int autoTuneTrackPitchSame(KeyMap keyMap, int minPitch, int maxPitch) {
+    private TuneStep autoTuneTrackPitchSame(KeyMap keyMap, int minPitch, int maxPitch) {
         Map<Integer, TuneInfo> tuneInaccuracyMap = new HashMap<>();
         for (int i = minPitch * 12; i <= maxPitch * 12; i++) {
             TuneInfo tuneInfo = totalInaccuracy(keyMap, i);
@@ -145,9 +142,11 @@ public class TrackMusic {
             System.out.println("===================");
 
         }
-        return tuneInaccuracyMap.entrySet().stream()
-                .min(Comparator.comparingInt(tune -> tune.getValue().getInaccuracy()))
-                .orElse(null).getKey();
+        TuneStep tuneStep = new TuneStep();
+        tuneStep.tracksSame = true;
+        tuneStep.tune = Objects.requireNonNull(tuneInaccuracyMap.entrySet().stream()
+                .min(Comparator.comparingInt(tune -> tune.getValue().getInaccuracy())).orElse(null)).getKey();
+        return tuneStep;
     }
 
     /**
@@ -158,16 +157,18 @@ public class TrackMusic {
      * @param maxPitch 调音扫描范围最大的八度
      * @return 一个的Map, 其中的元素的key为轨道编号, value为轨道的pitch, key为114514的value为所有轨道的tune
      */
-    private Map<Integer, Integer> autoTunePitchNotSame(KeyMap keyMap, int minPitch, int maxPitch) {
+    private TuneStep autoTunePitchNotSame(KeyMap keyMap, int minPitch, int maxPitch) {
         List<TuneStep> tuneSteps = new ArrayList<>();
         for (int i = -6; i <= 6; i++) {
-            int[] pitchArray = new int[tracks.keySet().size()];
+            Set<Integer> trackSetNotMuted = tracks.keySet().stream().filter(track -> !isTrackMuted(track)).collect(Collectors.toSet());
+            int[] pitchArray = new int[trackSetNotMuted.size()];
             Arrays.fill(pitchArray, minPitch);
             while (pitchArray[pitchArray.length - 1] <= maxPitch) {
                 TuneStep tuneStep = new TuneStep();
+                tuneStep.tracksSame = false;
                 tuneStep.tune = i;
                 int loopTime = 0;
-                for (Integer integer : tracks.keySet()) {
+                for (Integer integer :trackSetNotMuted) {
                     tuneStep.trackPitch.put(integer, pitchArray[loopTime]);
                     loopTime++;
                 }
@@ -176,12 +177,19 @@ public class TrackMusic {
                 pitchArray[0]++;
                 for (int i1 = 0; i1 < pitchArray.length - 1; i1++) {
                     if (pitchArray[i1] > maxPitch) {
-                        pitchArray[i1] = 0;   //Inaccuracy=57690,overHighestPitchInaccuracy=0, belowLowestPitchInaccuracy=4160, wrongNoteInaccuracy=53530, tuneInaccuracy=0}
-                        pitchArray[i1 + 1]++; //Inaccuracy=77732,overHighestPitchInaccuracy=10944, belowLowestPitchInaccuracy=18, wrongNoteInaccuracy=66770, tuneInaccuracy=0
+                        pitchArray[i1] = minPitch;   //{Inaccuracy=299826,overHighestPitchInaccuracy=48, belowLowestPitchInaccuracy=147501, wrongNoteInaccuracy=152270, tuneInaccuracy=7}
+
+                        pitchArray[i1 + 1]++;
                     }
                 }
             }
         }
+
+        tuneSteps = tuneSteps.stream().filter(tuneStep->{
+            int max = tuneStep.trackPitch.values().stream().max(Comparator.comparingInt(i->i)).orElse(0);
+            int min = tuneStep.trackPitch.values().stream().min(Comparator.comparingInt(i->i)).orElse(0);
+            return (max - min) <= 1;
+        }).collect(Collectors.toList());
         Map<TuneStep, TuneInfo> tuneInfoList = tuneSteps.stream().collect(Collectors.toMap(tuneStep -> tuneStep, tuneStep -> {
                     TuneInfo tuneInfo = totalInaccuracyTracksNotSame(keyMap, tuneStep);
                     int tuneValue = Math.abs(tuneStep.trackPitch.values().stream().mapToInt(value -> value).sum() / tuneStep.trackPitch.values().size()) * 12 + tuneStep.tune;
@@ -198,9 +206,7 @@ public class TrackMusic {
             System.out.println("===========================");
 
         }
-        Map<Integer, Integer> returnMap = new HashMap<>(best.trackPitch);
-        returnMap.put(114514, best.tune);
-        return returnMap;
+        return best;
 
 
     }
@@ -288,18 +294,7 @@ public class TrackMusic {
         }
     }
 
-    static class TuneStep {
-        int tune;
-        final Map<Integer, Integer> trackPitch = new HashMap<>();
 
-        @Override
-        public String toString() {
-            return "TuneStep{" +
-                    "tune=" + tune +
-                    ", trackPitch=" + trackPitch +
-                    '}';
-        }
-    }
 
     @Override
     public boolean equals(Object o) {

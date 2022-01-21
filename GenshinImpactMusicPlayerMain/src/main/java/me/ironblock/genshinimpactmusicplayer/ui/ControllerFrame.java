@@ -4,6 +4,7 @@ import me.ironblock.genshinimpactmusicplayer.Launch;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
 import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
 import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
+import me.ironblock.genshinimpactmusicplayer.music.TuneStep;
 import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
 import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
 import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
@@ -376,20 +377,16 @@ public class ControllerFrame extends JFrame {
                 playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser, file.getAbsolutePath());
                 playController.setActiveKeyMap(keyMap);
 
-                Map<Integer, Integer> bestTune = playController.autoTune(minPitch, maxPitch, checkbox_syncPitch.isSelected());
+                TuneStep bestTune = playController.autoTune(minPitch, maxPitch, checkbox_syncPitch.isSelected());
                 if (checkbox_syncPitch.isSelected()) {
-                    int octave = bestTune.get(114514) / 12;
-                    int note = bestTune.get(114514) % 12;
+                    int octave = bestTune.tune / 12;
+                    int note = bestTune.tune % 12;
                     textField_pitch.setText(String.valueOf(octave));
                     textField_tune.setText(String.valueOf(note));
                 } else {
-                    bestTune.forEach((track, best) -> {
-                        if (track == 114514) {
-                            textField_tune.setText(String.valueOf(best));
-                        } else {
-                            trackTextFieldMap.get(track).setText(String.valueOf(best));
-                        }
-
+                    textField_tune.setText(String.valueOf(bestTune.tune));
+                    bestTune.trackPitch.forEach((track, best) -> {
+                        trackTextFieldMap.get(track).setText(String.valueOf(best));
                     });
                 }
 
@@ -435,10 +432,27 @@ public class ControllerFrame extends JFrame {
      *
      * @return 音调
      */
-    private int getCurrentTune() {
-        int pitch = Integer.parseInt(textField_pitch.getText());
-        int tune = Integer.parseInt(textField_tune.getText());
-        return pitch * 12 + tune;
+    private TuneStep getCurrentTune() {
+
+        if (checkbox_syncPitch.isSelected()){
+            int pitch = Integer.parseInt(textField_pitch.getText());
+            int tune = Integer.parseInt(textField_tune.getText());
+            TuneStep tuneStep = new TuneStep();
+            tuneStep.tracksSame = true;
+            tuneStep.tune = pitch * 12 + tune;
+            return tuneStep;
+        }else{
+            TuneStep tuneStep = new TuneStep();
+            tuneStep.tracksSame = false;
+            tuneStep.tune = Integer.parseInt(textField_tune.getText());
+            trackTextFieldMap.forEach((track,textField)->{
+                tuneStep.trackPitch.put(track, Integer.parseInt(textField.getText()));
+            });
+            return tuneStep;
+        }
+
+
+
     }
 
 

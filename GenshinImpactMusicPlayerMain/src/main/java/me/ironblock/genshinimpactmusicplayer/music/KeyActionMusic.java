@@ -100,7 +100,7 @@ public class KeyActionMusic {
 
     private static final int noteDelay = 10;
 
-    public static KeyActionMusic getFromTrackMusic(TrackMusic trackMusicIn, KeyMap keyMap, int tune) {
+    public static KeyActionMusic getFromTrackMusic(TrackMusic trackMusicIn, KeyMap keyMap, TuneStep tuneStep) {
         KeyActionMusic keyActionMusic = new KeyActionMusic();
         keyActionMusic.length = trackMusicIn.length;
 
@@ -109,6 +109,13 @@ public class KeyActionMusic {
         for (int i : tracks.keySet()) {
             Map<Integer, Set<NoteInfo>> track = tracks.get(i);
             if (!trackMusicIn.isTrackMuted(i)) {
+
+                int tune;
+                if (tuneStep.tracksSame){
+                    tune = tuneStep.tune;
+                }else{
+                    tune = tuneStep.trackPitch.get(i) * 12 + tuneStep.tune;
+                }
                 track.forEach((tick, nodeInfoSet) -> {
                     for (NoteInfo noteInfo : nodeInfoSet) {
                         if (noteInfo.isVKCode()) {
