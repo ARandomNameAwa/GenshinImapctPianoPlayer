@@ -25,10 +25,13 @@ import java.util.List;
 import java.util.*;
 
 /**
+ *
+ *
  * 控制窗口(也是主窗口)
  *
  * @author Iron__Block
  */
+
 public class ControllerFrame extends JFrame {
     public static final String programName = "Genshin Impact Music Player";
     public static final String programVersion = "v1.2.0";
@@ -250,6 +253,9 @@ public class ControllerFrame extends JFrame {
             textField_pitch.setEditable(false);
             textField_tune.setEditable(false);
             button_autoTune.setEnabled(false);
+            for (JTextField value : trackTextFieldMap.values()) {
+                value.setEditable(false);
+            }
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -278,9 +284,16 @@ public class ControllerFrame extends JFrame {
      */
     private void onStopButtonClicked() {
         playController.stopPlay();
-        textField_pitch.setEditable(true);
         textField_tune.setEditable(true);
         button_autoTune.setEnabled(true);
+        if (checkbox_syncPitch.isSelected()){
+            textField_pitch.setEditable(true);
+        }else{
+            for (JTextField value : trackTextFieldMap.values()) {
+                value.setEditable(true);
+            }
+        }
+
     }
 
     /**
