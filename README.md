@@ -49,7 +49,7 @@ Some games may ***ban*** you if you use this program,so make sure that your game
    C4:a
    D4:s
    ```
-For some key which can't be expressed by a single character, see [special keys and names]()
+For some key which can't be expressed by a single character, see [special keys and names](/docs/SpecialKeysAndNames.md)
 
 4. Save the file and restart the program,then you can see your key map.  
 
