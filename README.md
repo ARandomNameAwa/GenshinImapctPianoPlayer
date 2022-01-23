@@ -2,7 +2,7 @@
 
 # GameAutoMusicPlayer #
 
-#### A game auto music player for almost every game which can play music with keyboard
+#### A game auto music player for almost every game in which can play music with keyboard
 
 ### Very Important things: 
 
