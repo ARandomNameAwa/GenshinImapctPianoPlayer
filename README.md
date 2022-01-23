@@ -1,35 +1,63 @@
-# GenshinImapctPianoPlayer #
-#### <s>一个原神的自动弹琴脚本</s>    基本能用在所有能用键盘弹琴的游戏的自动弹琴脚本 ####     
-新人第一次在github上上传项目 请大佬们多多指教
-### 用法:
-  File Path: 要加载的mid或txt文件的路径   
-  Speed: 演奏音乐的速度 单位是刻每秒(tps)     
-  Parser: 解析文件的解析器,一般会根据所输入的文件后缀自动匹配     
-  Player: 演奏音乐的演奏器,会根据解析器解析出的音乐类型自动匹配     
-  Key Map: 使用的音符-键盘映射    
-  Start:开始演奏  
-  Pause:暂停或继续演奏  
-  Stop:停止演奏  
-### 右侧信息栏:
-  Actual Speed: 演奏的真实速度,卡顿时这个数值会下降  
-  Current Tick: 进度条,横杠左面的是目前的tick,右面的是总tick  
-### 自定义音符-键盘映射
-  在jar包的目录下创建一个叫做keyMaps的文件夹,在里面创建一个txt文件,   
-  里面按照以下形式填写音符和它对应的按键:    
-  ``` 音名+音高:按键 ```
-  例如:   
-  ``` 
-  C4:a
-  D4:s
-  ```
-  然后保存并重启程序,你就能在keyMap选项栏里看到你的音符-按键映射文件了
-  
-  
-  
-### 注意事项:
-  1.在演奏时改变演奏速度只有暂停然后继续或者重新开始演奏才会生效  
-  2.如果在输入完文件路径后如果没有反应,按一下回车就好了    
-  3.如果在创建完音符-按键映射文件后无法在程序的keyMap选项栏里找到,有可能是你的文件写的有错误      
+
+
+# GameAutoMusicPlayer #
+
+#### A game auto music player for almost every game which can play music with keyboard
+
+### Very Important things: 
+
+This program play music automatically by simulate key action of the keyboard , which is ***not*** allowed in some games.
+
+Some games may ***ban*** you if you use this program,so make sure that your game allows to use tools like this, and 
+
+**USE AT YOUR OWN RISK**.
+
+
+
+### Modules:
+
+  AutoMusicPlayerMain : The main program.
+
+  MouseMappingMaker:  It will be used in the future. ~~~NEVER~~~
+
+### How to use:
+1. Drag the music file you want to play to the program window. (This program now supports .mid file and .txt file)
+2. Choose the file type.
+3. Choose the key map you want to use.
+4. Change the tune of the music (by click on the text field and press up key and down key),or just click the auto tune button ,it will make the music sound better.
+5. Click the start button and then click your game window as soon as possible.
+
+### Features
+
+1. You can change the tune of the music before playing.
+2. You can change the key map( _keyboard layout_ ) freely ,which means you can use this program to play music in almost any game which you can play music with your keyboard
+3. You can change the speed of playing the music.
+4. You can mute the tracks which you don't want to play.
+5. You can make the music sound better in your game by clicking the "Auto tune" button,without modifying the music file.
+
+### How to make a key map
+
+1. Create a folder called keyMaps in the program's directory(if you run the program,the folder will be created automatically)
+
+2. Create a file called somename.txt
+
+3. Open the file, and write the note and its corresponding key in the following form: ```note name+octave:key```     
+
+   For example:
+
+   ```
+   C4:a
+   D4:s
+   ```
+For some key which can't be expressed by a single character, see [special keys and names]()
+
+4. Save the file and restart the program,then you can see your key map.  
+
    
-      可能的错误:冒号要用英文冒号
-  
+### Tips:
+
+1. If you change you play speed during playing the music, you need to click pause and resume or restart playing the music.
+2. If you can't find your key map,check if there are mistakes in your key map file.
+
+3. The colon in the key map file ***must*** be ":" , instead of "："
+
