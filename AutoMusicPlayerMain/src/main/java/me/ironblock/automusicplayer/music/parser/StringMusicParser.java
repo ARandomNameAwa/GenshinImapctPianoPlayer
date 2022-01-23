@@ -1,4 +1,4 @@
-package me.ironblock.automusicplayer.musicParser;
+package me.ironblock.automusicplayer.music.parser;
 
 import me.ironblock.automusicplayer.music.TrackMusic;
 import me.ironblock.automusicplayer.note.NoteInfo;
@@ -14,10 +14,10 @@ import java.util.Stack;
  */
 public class StringMusicParser extends AbstractMusicParser {
     /**
-     * 解析字符串音乐
+     * Parse String music
      *
-     * @param musicStream 文件流
-     * @return 解析出的音乐
+     * @param musicStream music file stream
+     * @return TrackMusic from the musicStream
      */
     @Override
     public TrackMusic parseMusic(InputStream musicStream) {

@@ -2,10 +2,10 @@ package me.ironblock.automusicplayer.utils;
 
 public class TimeUtils {
     /**
-     * 把秒换成分秒(mm:ss)形式
+     * Convert s to mm:ss
      *
-     * @param seconds 输入的秒数
-     * @return 分秒形式的字符串
+     * @param seconds seconds
+     * @return mm:ss
      */
     public static String getMMSSFromS(int seconds) {
         StringBuilder sb = new StringBuilder();
@@ -24,29 +24,9 @@ public class TimeUtils {
     }
 
     /**
-     * 返回一个字符串形式的进度条
+     * convert mm:ss to s
      *
-     * @param progress 目前的进度(从0~1)
-     * @param length   进度条的长度
-     * @return 进度条的字符串形式
-     */
-    public static String progressBar(double progress, int length) {
-        StringBuilder stringBuilder = new StringBuilder();
-        int now = (int) (length * progress - 1);
-        for (int i = 0; i < now; i++) {
-            stringBuilder.append("+");
-        }
-        stringBuilder.append("◆");
-        for (int i = 0; i < length - now; i++) {
-            stringBuilder.append("--");
-        }
-        return stringBuilder.toString();
-    }
-
-    /**
-     * 把MMSS变成S
-     *
-     * @param mmss MMSS
+     * @param mmss mm:ss
      * @return S
      */
     public static int getSFromMMSS(String mmss) {

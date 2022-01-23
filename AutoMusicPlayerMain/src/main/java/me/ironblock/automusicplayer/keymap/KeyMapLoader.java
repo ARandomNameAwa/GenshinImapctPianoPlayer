@@ -1,4 +1,4 @@
-package me.ironblock.automusicplayer.keyMap;
+package me.ironblock.automusicplayer.keymap;
 
 import me.ironblock.automusicplayer.note.NoteInfo;
 import me.ironblock.automusicplayer.utils.IOUtils;
@@ -13,9 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * 键映射文件加载器
- */
+
 public class KeyMapLoader {
     private static KeyMapLoader instance;
     private final Map<String, KeyMap> loadedKeyMap = new HashMap<>();
@@ -28,41 +26,36 @@ public class KeyMapLoader {
     }
 
     /**
-     * 加载keyMap
+     * Load a keyMap
      *
-     * @param inputStream 从这里加载
-     * @param name        加载后的keyMap的名字
-     * @return 加载的keyMap
+     * @param inputStream keyMap file stream
+     * @param name        the name of the keyMap
      */
-    public KeyMap loadKeyMapFromFile(InputStream inputStream, String name) {
-
-        return loadKeyMapFromString(IOUtils.readStringFully(inputStream), name);
+    public void loadKeyMapFromFile(InputStream inputStream, String name) {
+        loadKeyMapFromString(IOUtils.readStringFully(inputStream), name);
     }
 
     /**
-     * 加载keyMap
+     * Load a keyMap
      *
-     * @param fileName 加载的文件路径
-     * @return 加载后的keyMap
+     * @param fileName the file path of the keyMap file
      */
-    public KeyMap loadKeyMapFromFile(String fileName) {
+    public void loadKeyMapFromFile(String fileName) {
         File file = new File(fileName);
         try {
             loadKeyMapFromFile(new FileInputStream(file), file.getName().substring(0, file.getName().lastIndexOf(".")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     /**
-     * 加载keyMap
+     * Load a keyMap
      *
-     * @param text 从这个字符串里加载
-     * @param name 名字
-     * @return 加载后的keyMap
+     * @param text Load from this string
+     * @param name the name of the keyMap
      */
-    public KeyMap loadKeyMapFromString(String text, String name) {
+    public void loadKeyMapFromString(String text, String name) {
         String[] lines = text.split("\n");
         KeyMap keyMap = new KeyMap();
         int minNote = 0, maxNote = 0;
@@ -81,7 +74,7 @@ public class KeyMapLoader {
                     octave = Integer.parseInt(String.valueOf(keyValue[0].charAt(2)));
                     note = KeyMapUtils.getNoteIndexFromNoteName(keyValue[0].substring(0, 2));
                 } else {
-                    throw new IllegalArgumentException("音符写法无法解析");
+                    throw new IllegalArgumentException("Failed to parse the key Map");
                 }
                 NoteInfo noteInfo = new NoteInfo(octave, note);
                 keyMap.noteKeyMap.put(noteInfo, KeyMapUtils.getVKCodeFromKeyChar(keyValue[1]));
@@ -93,7 +86,7 @@ public class KeyMapLoader {
                 }
 
             } catch (Exception e) {
-                System.out.println("在解析KeyMap第" + lineNumber + "时出错");
+                System.out.println("Failed to parse the keyMap file at line " + lineNumber);
                 e.printStackTrace();
             }
         }
@@ -101,25 +94,23 @@ public class KeyMapLoader {
         keyMap.maxNoteIndex = maxNote;
         keyMap.minNoteOctave = minNote / 12;
         keyMap.maxNoteOctave = maxNote / 12;
-        System.out.println("keyMap" + name + "的最低音域是" + minNote + ",最高音域是" + maxNote);
         loadedKeyMap.put(name, keyMap);
-        return keyMap;
     }
 
     /**
-     * 通过名字获取加载过keyMap
+     * Get a loaded keyMap from a name
      *
-     * @param name 名字
-     * @return 如果加载过这个名字的keyMap, 则返回keyMap, 否则返回null
+     * @param name the name of the keyMap
+     * @return if the specific keyMap was loaded,return the keyMap,or return null
      */
     public KeyMap getLoadedKeyMap(String name) {
         return loadedKeyMap.get(name);
     }
 
     /**
-     * 获取所有加载过的keyMap的名字
+     * Get the names of all the loaded keyMaps
      *
-     * @return 所有加载过的keyMap的名字
+     * @return The names of all the loaded keyMaps
      */
     public Set<String> getAllLoadedMapName() {
         return loadedKeyMap.keySet();

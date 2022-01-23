@@ -8,13 +8,21 @@ import java.util.Objects;
  */
 
 public class NoteInfo {
-    //在第几个八度
+    /**
+     * The octave of the note
+     */
     public int octave;
-    //音名
+    /**
+     * The name of the note
+     */
     public int note;
-
+    /**
+     * if the note is expressed with vk code
+     */
     public boolean isVKCode;
-
+    /**
+     * the vk code of the note, if isVKCode is false,this will be 0
+     */
     public int vk_Code;
 
     public NoteInfo(boolean isVkCode, int vk_Code) {
@@ -28,7 +36,7 @@ public class NoteInfo {
     }
 
     public NoteInfo(int noteIndex) {
-        this((noteIndex / 12) /*- 1*/, noteIndex % 12);
+        this((noteIndex / 12), noteIndex % 12);
     }
 
     public int getNoteIndex() {

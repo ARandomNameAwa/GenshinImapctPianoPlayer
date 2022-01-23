@@ -1,4 +1,4 @@
-package me.ironblock.automusicplayer.musicParser;
+package me.ironblock.automusicplayer.music.parser;
 
 import me.ironblock.automusicplayer.music.TrackMusic;
 import me.ironblock.automusicplayer.note.NoteInfo;
@@ -6,20 +6,21 @@ import me.ironblock.automusicplayer.note.NoteInfo;
 import javax.sound.midi.*;
 import java.io.IOException;
 import java.io.InputStream;
-//I:\midiMusics\千本樱.mid
 
 /**
- * midi音乐解析器
+ * midi music parser
  */
 public class MidiMusicParser extends AbstractMusicParser {
-
-    private static final int tickDivision = 10;
+    /**
+     * Combine every tickDivision midi ticks to 1 TrackMusic tick
+     */
+    private static final int TICK_DIVISION = 10;
 
     /**
-     * 解析音乐
+     * Parse the music
      *
-     * @param musicStream midi文件的路径
-     * @return 解析出的音乐
+     * @param musicStream midi file stream
+     * @return music from the stream
      */
     @Override
     public TrackMusic parseMusic(InputStream musicStream) {
@@ -28,7 +29,7 @@ public class MidiMusicParser extends AbstractMusicParser {
 
             Sequence sequence = MidiSystem.getSequence(musicStream);
             trackMusic.realDuration = ((double) sequence.getMicrosecondLength()) / 1_000_000;
-            trackMusic.length = sequence.getTickLength() / tickDivision;
+            trackMusic.length = sequence.getTickLength() / TICK_DIVISION;
             trackMusic.tpsReal = (int) (trackMusic.length / trackMusic.realDuration);
             System.out.println("realDuration:" + trackMusic.realDuration);
             System.out.println("tpsReal:" + trackMusic.tpsReal);
@@ -44,7 +45,7 @@ public class MidiMusicParser extends AbstractMusicParser {
                         int note = key % 12;
                         if (sm.getCommand() == 0x90) {
                             NoteInfo noteInfo = new NoteInfo(octave, note);
-                            trackMusic.putNode(j, (int) (event.getTick() / tickDivision), noteInfo);
+                            trackMusic.putNode(j, (int) (event.getTick() / TICK_DIVISION), noteInfo);
                         }
                     }
                 }

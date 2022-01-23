@@ -5,12 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IOUtils {
-    /**
-     * 把一个文件按字符串的方式读出来
-     *
-     * @param inputStream 输入流
-     * @return 字符串
-     */
+
+    private static final Set<InputStream> inputStreams = new HashSet<>();
+
     public static String readStringFully(InputStream inputStream) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -26,8 +23,6 @@ public class IOUtils {
         return "";
 
     }
-
-    private static final Set<InputStream> inputStreams = new HashSet<>();
 
     public static InputStream openStream(String in) {
         try {

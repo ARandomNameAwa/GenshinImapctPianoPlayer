@@ -1,45 +1,42 @@
-package me.ironblock.automusicplayer.keyMap;
+package me.ironblock.automusicplayer.keymap;
 
-import me.ironblock.automusicplayer.music.TuneInfo;
+import me.ironblock.automusicplayer.music.TuneInaccuracy;
 import me.ironblock.automusicplayer.note.NoteInfo;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 键映射
- */
+
 public class KeyMap {
-    /**
-     * 音符-VK_Code对应
-     */
+
     protected final Map<NoteInfo, Integer> noteKeyMap = new HashMap<>();
     protected int minNoteIndex, maxNoteIndex;
     protected int minNoteOctave, maxNoteOctave;
 
 
     /**
-     * 获取一个音符对应的键的vk_code
+     * Get the vk code of the specific note
      *
-     * @return vk_code, 如果找不到返回-1
+     * @param noteInfo the specific note
+     * @return the vk_code of the specific note,if failed,return -1
      */
     public int getNoteKey(NoteInfo noteInfo) {
-        //有没有超过最低音域
+        //below the min note
         if (noteInfo.getNoteIndex() < minNoteIndex) {
             noteInfo.octave++;
         }
-        //有没有超过最高音域
+        //over the high note
         if (noteInfo.getNoteIndex() > maxNoteIndex) {
             noteInfo.octave--;
         }
-        //如果尝试调入音域失败,则返回-1
+        //if failed,return -1
         if (noteInfo.getNoteIndex() < minNoteIndex || noteInfo.getNoteIndex() > maxNoteIndex) {
             return -1;
         }
 
-        if (noteKeyMap.containsKey(noteInfo)) {  //如果有已知的key
+        if (noteKeyMap.containsKey(noteInfo)) {
             return noteKeyMap.get(noteInfo);
-        } else {          //尝试半音
+        } else {
             noteInfo.increaseOneKey();
             if (noteKeyMap.containsKey(noteInfo)) {
                 return noteKeyMap.get(noteInfo);
@@ -56,37 +53,42 @@ public class KeyMap {
 
     }
 
-    public TuneInfo getNoteInaccuracy(NoteInfo noteInfo, int tune) {
+    /**
+     * Get the inaccuracy of a specific note
+     *
+     * @param noteInfo the specific note
+     * @param tune     how to tune this note
+     * @return the inaccuracy of the note
+     */
+    public TuneInaccuracy getNoteInaccuracy(NoteInfo noteInfo, int tune) {
         NoteInfo noteInfo1 = new NoteInfo(noteInfo.getNoteIndex());
-        TuneInfo tuneInfo = new TuneInfo();
+        TuneInaccuracy tuneInaccuracy = new TuneInaccuracy();
         noteInfo1.addKey(tune);
-        //有没有超过最低音域
         if (noteInfo1.getNoteIndex() < minNoteIndex) {
             int wrongPitch = (minNoteIndex - noteInfo1.getNoteIndex()) / 12 + 1;
             if (wrongPitch > 1) {
                 int inaccuracy = 2 * wrongPitch * noteInfo1.getNoteIndex() * noteInfo1.getNoteIndex() / 10;
-                tuneInfo.setBelowLowestPitchInaccuracy(inaccuracy);
-                return tuneInfo;
+                tuneInaccuracy.setBelowLowestPitchInaccuracy(inaccuracy);
+                return tuneInaccuracy;
             } else {
-                tuneInfo.setBelowLowestPitchInaccuracy(6);
+                tuneInaccuracy.setBelowLowestPitchInaccuracy(6);
                 noteInfo1.addKey(12);
             }
 
         }
-        //有没有超过最高音域
         if (noteInfo1.getNoteIndex() > maxNoteIndex) {
             int wrongPitch = (noteInfo1.getNoteIndex() - maxNoteIndex) / 12 + 1;
             if (wrongPitch > 1) {
                 int inaccuracy = 6 * wrongPitch * wrongPitch * wrongPitch * noteInfo1.getNoteIndex() * noteInfo1.getNoteIndex() / 3;
-                tuneInfo.setOverHighestPitchInaccuracy(inaccuracy);
-                return tuneInfo;
+                tuneInaccuracy.setOverHighestPitchInaccuracy(inaccuracy);
+                return tuneInaccuracy;
             } else {
-                tuneInfo.setOverHighestPitchInaccuracy(6);
+                tuneInaccuracy.setOverHighestPitchInaccuracy(6);
                 noteInfo1.addKey(-12);
             }
         }
 
-        if (!noteKeyMap.containsKey(noteInfo1)) {  //如果有已知的key
+        if (!noteKeyMap.containsKey(noteInfo1)) {
             boolean upFind = false;
             boolean downFind = false;
 
@@ -100,20 +102,20 @@ public class KeyMap {
                 downFind = true;
             }
             if (upFind || downFind) {
-                if (tuneInfo.getInaccuracy() == 0) {
-                    tuneInfo.setWrongNoteInaccuracy((int) (10 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
+                if (tuneInaccuracy.getInaccuracy() == 0) {
+                    tuneInaccuracy.setWrongNoteInaccuracy((int) (10 * Math.pow(noteInfo1.getNoteIndex(), 0.4)));
                 } else {
-                    tuneInfo.setWrongNoteInaccuracy((int) (30 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
+                    tuneInaccuracy.setWrongNoteInaccuracy((int) (30 * Math.pow(noteInfo1.getNoteIndex(), 0.4)));
                 }
             } else {
-                if (tuneInfo.getInaccuracy() == 0) {
-                    tuneInfo.setWrongNoteInaccuracy((int) (10 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
+                if (tuneInaccuracy.getInaccuracy() == 0) {
+                    tuneInaccuracy.setWrongNoteInaccuracy((int) (10 * Math.pow(noteInfo1.getNoteIndex(), 0.4)));
                 } else {
-                    tuneInfo.setWrongNoteInaccuracy((int) (50 * Math.pow(noteInfo1.getNoteIndex(),0.4)));
+                    tuneInaccuracy.setWrongNoteInaccuracy((int) (50 * Math.pow(noteInfo1.getNoteIndex(), 0.4)));
                 }
             }
         }
-        return tuneInfo;
+        return tuneInaccuracy;
     }
 
 }

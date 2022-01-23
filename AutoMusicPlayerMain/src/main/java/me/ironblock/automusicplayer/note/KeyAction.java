@@ -8,11 +8,11 @@ import java.util.Objects;
  */
 public class KeyAction {
     /**
-     * 表示这个按键是按下还是松开
+     * the key is pressed or released
      */
     private boolean command;
     /**
-     * 表示这个是按键
+     * the key's vk_code
      */
     private int key;
 
