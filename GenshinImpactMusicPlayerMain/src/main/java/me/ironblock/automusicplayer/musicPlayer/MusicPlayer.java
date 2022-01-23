@@ -1,9 +1,9 @@
-package me.ironblock.genshinimpactmusicplayer.musicPlayer;
+package me.ironblock.automusicplayer.musicPlayer;
 
-import me.ironblock.genshinimpactmusicplayer.music.KeyActionMusic;
-import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
-import me.ironblock.genshinimpactmusicplayer.ui.ControllerFrame;
-import me.ironblock.genshinimpactmusicplayer.utils.Timer;
+import me.ironblock.automusicplayer.music.KeyActionMusic;
+import me.ironblock.automusicplayer.note.KeyAction;
+import me.ironblock.automusicplayer.ui.ControllerFrame;
+import me.ironblock.automusicplayer.utils.Timer;
 
 import java.awt.*;
 import java.util.Set;

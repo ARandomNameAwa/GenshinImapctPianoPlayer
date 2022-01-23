@@ -1,4 +1,4 @@
-package me.ironblock.genshinimpactmusicplayer.note;
+package me.ironblock.automusicplayer.note;
 
 import java.util.Objects;
 

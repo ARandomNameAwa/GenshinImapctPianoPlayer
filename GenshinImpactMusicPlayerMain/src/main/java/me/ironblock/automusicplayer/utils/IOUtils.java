@@ -1,4 +1,4 @@
-package me.ironblock.genshinimpactmusicplayer.utils;
+package me.ironblock.automusicplayer.utils;
 
 import java.io.*;
 import java.util.HashSet;

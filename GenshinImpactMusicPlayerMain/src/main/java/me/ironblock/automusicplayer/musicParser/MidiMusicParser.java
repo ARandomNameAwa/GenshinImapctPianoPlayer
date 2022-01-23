@@ -1,7 +1,7 @@
-package me.ironblock.genshinimpactmusicplayer.musicParser;
+package me.ironblock.automusicplayer.musicParser;
 
-import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
-import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
+import me.ironblock.automusicplayer.music.TrackMusic;
+import me.ironblock.automusicplayer.note.NoteInfo;
 
 import javax.sound.midi.*;
 import java.io.IOException;

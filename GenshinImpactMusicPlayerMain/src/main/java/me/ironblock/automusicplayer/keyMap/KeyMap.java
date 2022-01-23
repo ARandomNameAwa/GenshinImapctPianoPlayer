@@ -1,7 +1,7 @@
-package me.ironblock.genshinimpactmusicplayer.keyMap;
+package me.ironblock.automusicplayer.keyMap;
 
-import me.ironblock.genshinimpactmusicplayer.music.TuneInfo;
-import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
+import me.ironblock.automusicplayer.music.TuneInfo;
+import me.ironblock.automusicplayer.note.NoteInfo;
 
 import java.util.HashMap;
 import java.util.Map;

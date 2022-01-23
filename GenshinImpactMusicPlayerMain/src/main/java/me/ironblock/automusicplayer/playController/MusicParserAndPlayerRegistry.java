@@ -1,8 +1,8 @@
-package me.ironblock.genshinimpactmusicplayer.playController;
+package me.ironblock.automusicplayer.playController;
 
-import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
-import me.ironblock.genshinimpactmusicplayer.musicParser.MidiMusicParser;
-import me.ironblock.genshinimpactmusicplayer.musicParser.StringMusicParser;
+import me.ironblock.automusicplayer.musicParser.AbstractMusicParser;
+import me.ironblock.automusicplayer.musicParser.MidiMusicParser;
+import me.ironblock.automusicplayer.musicParser.StringMusicParser;
 
 import java.util.*;
 

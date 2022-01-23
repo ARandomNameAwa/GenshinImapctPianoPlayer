@@ -1,8 +1,8 @@
-package me.ironblock.genshinimpactmusicplayer.music;
+package me.ironblock.automusicplayer.music;
 
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
-import me.ironblock.genshinimpactmusicplayer.note.KeyAction;
-import me.ironblock.genshinimpactmusicplayer.note.NoteInfo;
+import me.ironblock.automusicplayer.keyMap.KeyMap;
+import me.ironblock.automusicplayer.note.KeyAction;
+import me.ironblock.automusicplayer.note.NoteInfo;
 
 import java.util.*;
 

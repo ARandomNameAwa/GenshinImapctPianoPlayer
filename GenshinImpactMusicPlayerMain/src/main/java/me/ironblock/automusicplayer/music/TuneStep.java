@@ -1,4 +1,4 @@
-package me.ironblock.genshinimpactmusicplayer.music;
+package me.ironblock.automusicplayer.music;
 
 import java.util.HashMap;
 import java.util.Map;

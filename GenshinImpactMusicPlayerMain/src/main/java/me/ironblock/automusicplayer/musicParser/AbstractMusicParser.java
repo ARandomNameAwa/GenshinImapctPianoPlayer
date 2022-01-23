@@ -1,6 +1,6 @@
-package me.ironblock.genshinimpactmusicplayer.musicParser;
+package me.ironblock.automusicplayer.musicParser;
 
-import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
+import me.ironblock.automusicplayer.music.TrackMusic;
 
 import java.io.InputStream;
 

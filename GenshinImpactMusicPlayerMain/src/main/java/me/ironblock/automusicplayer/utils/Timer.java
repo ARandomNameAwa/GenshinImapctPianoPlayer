@@ -1,4 +1,4 @@
-package me.ironblock.genshinimpactmusicplayer.utils;
+package me.ironblock.automusicplayer.utils;
 
 /**
  * 供循环使用的计时器,使用纳秒计时

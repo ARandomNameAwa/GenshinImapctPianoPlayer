@@ -1,8 +1,8 @@
-package me.ironblock.genshinimpactmusicplayer;
+package me.ironblock.automusicplayer;
 
-import me.ironblock.genshinimpactmusicplayer.externalResourceLoader.ExternalResourceLoaderController;
-import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
-import me.ironblock.genshinimpactmusicplayer.ui.ControllerFrame;
+import me.ironblock.automusicplayer.externalResourceLoader.ExternalResourceLoaderController;
+import me.ironblock.automusicplayer.playController.MusicParserAndPlayerRegistry;
+import me.ironblock.automusicplayer.ui.ControllerFrame;
 
 //I:\midiMusics\千本樱.mid
 

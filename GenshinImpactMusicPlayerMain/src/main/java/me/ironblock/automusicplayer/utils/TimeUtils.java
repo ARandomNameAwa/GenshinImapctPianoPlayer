@@ -1,4 +1,4 @@
-package me.ironblock.genshinimpactmusicplayer.utils;
+package me.ironblock.automusicplayer.utils;
 
 public class TimeUtils {
     /**

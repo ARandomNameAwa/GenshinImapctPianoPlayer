@@ -1,14 +1,13 @@
-package me.ironblock.genshinimpactmusicplayer.playController;
+package me.ironblock.automusicplayer.playController;
 
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
-import me.ironblock.genshinimpactmusicplayer.music.KeyActionMusic;
-import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
-import me.ironblock.genshinimpactmusicplayer.music.TuneStep;
-import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
-import me.ironblock.genshinimpactmusicplayer.musicPlayer.MusicPlayer;
+import me.ironblock.automusicplayer.keyMap.KeyMap;
+import me.ironblock.automusicplayer.music.KeyActionMusic;
+import me.ironblock.automusicplayer.music.TrackMusic;
+import me.ironblock.automusicplayer.music.TuneStep;
+import me.ironblock.automusicplayer.musicParser.AbstractMusicParser;
+import me.ironblock.automusicplayer.musicPlayer.MusicPlayer;
 
 import java.io.InputStream;
-import java.util.Map;
 
 
 /**

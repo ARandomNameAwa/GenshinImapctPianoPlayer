@@ -4,16 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.ironblock.genshinimpactmusicplayer</groupId>
-    <artifactId>GenshinImpactMusicPlayer</artifactId>
+    <groupId>me.ironblock.automusicplayer</groupId>
+    <artifactId>AutoMusicPlayer</artifactId>
     <version>1.2.0</version>
     <modules>
-        <module>GenshinImpactMusicPlayerMain</module>
+        <module>AutoMusicPlayerMain</module>
         <module>MouseMappingMaker</module>
     </modules>
     <packaging>pom</packaging>
 
-    <name>GenshinImpactMusicPlayer</name>
+    <name>AutoMusicPlayer</name>
 
     <properties>
         <java.version>1.8</java.version>
@@ -45,7 +45,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>me.ironblock.genshinimpactmusicplayer.Launch</mainClass>
+                                    <mainClass>me.ironblock.automusicplayer.Launch</mainClass>
                                 </transformer>
 
                             </transformers>

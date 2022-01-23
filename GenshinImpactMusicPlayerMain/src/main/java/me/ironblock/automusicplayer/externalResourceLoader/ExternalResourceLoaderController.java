@@ -1,6 +1,6 @@
-package me.ironblock.genshinimpactmusicplayer.externalResourceLoader;
+package me.ironblock.automusicplayer.externalResourceLoader;
 
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
+import me.ironblock.automusicplayer.keyMap.KeyMapLoader;
 
 import java.io.File;
 

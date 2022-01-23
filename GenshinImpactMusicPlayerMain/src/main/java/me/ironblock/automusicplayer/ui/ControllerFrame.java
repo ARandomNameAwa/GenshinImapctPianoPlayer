@@ -1,15 +1,15 @@
-package me.ironblock.genshinimpactmusicplayer.ui;
+package me.ironblock.automusicplayer.ui;
 
-import me.ironblock.genshinimpactmusicplayer.Launch;
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMap;
-import me.ironblock.genshinimpactmusicplayer.keyMap.KeyMapLoader;
-import me.ironblock.genshinimpactmusicplayer.music.TrackMusic;
-import me.ironblock.genshinimpactmusicplayer.music.TuneStep;
-import me.ironblock.genshinimpactmusicplayer.musicParser.AbstractMusicParser;
-import me.ironblock.genshinimpactmusicplayer.playController.MusicParserAndPlayerRegistry;
-import me.ironblock.genshinimpactmusicplayer.playController.PlayController;
-import me.ironblock.genshinimpactmusicplayer.utils.IOUtils;
-import me.ironblock.genshinimpactmusicplayer.utils.TimeUtils;
+import me.ironblock.automusicplayer.Launch;
+import me.ironblock.automusicplayer.keyMap.KeyMap;
+import me.ironblock.automusicplayer.keyMap.KeyMapLoader;
+import me.ironblock.automusicplayer.music.TrackMusic;
+import me.ironblock.automusicplayer.music.TuneStep;
+import me.ironblock.automusicplayer.musicParser.AbstractMusicParser;
+import me.ironblock.automusicplayer.playController.MusicParserAndPlayerRegistry;
+import me.ironblock.automusicplayer.playController.PlayController;
+import me.ironblock.automusicplayer.utils.IOUtils;
+import me.ironblock.automusicplayer.utils.TimeUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
