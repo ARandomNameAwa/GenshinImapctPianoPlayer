@@ -6,9 +6,9 @@
 
 ### Very Important things: 
 
-This program play music automatically by simulating key action of the keyboard , which is ***not*** allowed in some games.
+This program play music automatically by simulating key actions of the keyboard , which is ***not*** allowed in some games.
 
-Some games may ***ban*** you if you use this program,so make sure that your game allows to use tools like this, and 
+Some games may ***ban*** you if you use this program,so make sure that your game allows to use tools like this, so 
 
 **USE AT YOUR OWN RISK**.
 
