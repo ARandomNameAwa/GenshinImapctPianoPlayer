@@ -20,7 +20,6 @@ public class TestLoadNative {
                 System.out.println(s);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
     }
