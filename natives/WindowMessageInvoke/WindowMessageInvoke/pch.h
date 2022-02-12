@@ -6,8 +6,17 @@
 
 #ifndef PCH_H
 #define PCH_H
-
 // 添加要在此处预编译的标头
 #include "framework.h"
-
 #endif //PCH_H
+
+//定义宏
+#ifdef IMPORT_DLL
+#else
+#define IMPORT_DLL extern "C" _declspec(dllimport) //指的是允许将其给外部调用
+#endif
+
+IMPORT_DLL int add(int a, int b);
+IMPORT_DLL int minus(int a, int b);
+IMPORT_DLL int multiply(int a, int b);
+IMPORT_DLL double divide(int a, int b);
