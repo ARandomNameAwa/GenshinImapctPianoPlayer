@@ -13,10 +13,8 @@
 //定义宏
 #ifdef IMPORT_DLL
 #else
-#define IMPORT_DLL extern "C" _declspec(dllimport) //指的是允许将其给外部调用
+#define MYLIBAPI  extern   "C"     __declspec( dllexport ) 
 #endif
 
-IMPORT_DLL int add(int a, int b);
-IMPORT_DLL int minus(int a, int b);
-IMPORT_DLL int multiply(int a, int b);
-IMPORT_DLL double divide(int a, int b);
+MYLIBAPI BOOL sendKeyBoardMessageToWindow(wchar_t*  windowTitle,int key, int state);
+MYLIBAPI  wchar_t** listWindows();

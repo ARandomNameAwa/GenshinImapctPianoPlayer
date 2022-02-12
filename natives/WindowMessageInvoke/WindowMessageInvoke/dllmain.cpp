@@ -16,11 +16,9 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     }
     return TRUE;
 }
-
-extern "C" __declspec(dllexport) bool sendKeyBoardMessageToWindow(wchar_t* windowName,int key,int state) {
-    HWND windowHandler = ::FindWindow(NULL,windowName);
+MYLIBAPI BOOL sendKeyBoardMessageToWindow(wchar_t* windowTitle, int key, int state){
     return true;
 }
-extern "C" __declspec(dllexport) wchar_t** getWindowNamesOfTheProcess() {
+MYLIBAPI  wchar_t** listWindows(){
     return NULL;
 }

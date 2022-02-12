@@ -10,14 +10,8 @@ import me.ironblock.automusicplayer.resource.ExternalResourceLoaderController;
  * @Date :2022/2/12 19:57
  */
 public interface WindowsMessage extends Library{
-    WindowsMessage INSTANCE = Native.load("WindowMessageInvoke", WindowsMessage.class);
-
-
-
-
-
-
-
+    WindowsMessage INSTANCE = ExternalResourceLoaderController.loadDll("WindowMessageInvoke",WindowsMessage.class);
+//    WindowsMessage INSTANCE = Native.load("WindowMessageInvoke",WindowsMessage.class);
 
     //    boolean sendKeyBoardMessageToWindow(WString windowName, int key, int state);
 //    WString[] listWindows();
