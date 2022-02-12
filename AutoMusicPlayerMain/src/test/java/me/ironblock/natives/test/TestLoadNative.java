@@ -16,7 +16,6 @@ public class TestLoadNative {
             WindowsMessage a = WindowsMessage.INSTANCE;
             WString string = a.listWindows();
             String[] tmp = string.toString().split(";");
-            System.out.println();
             for (String s : tmp) {
                 System.out.println(s);
             }

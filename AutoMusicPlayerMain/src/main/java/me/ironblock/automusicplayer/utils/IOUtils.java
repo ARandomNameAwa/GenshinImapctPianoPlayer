@@ -1,11 +1,15 @@
 package me.ironblock.automusicplayer.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import sun.rmi.runtime.Log;
+
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
 public class IOUtils {
-
+    public static final Logger LOGGER = LogManager.getLogger(IOUtils.class);
     private static final Set<InputStream> inputStreams = new HashSet<>();
 
     public static String readStringFully(InputStream inputStream) {
@@ -18,7 +22,7 @@ public class IOUtils {
             }
             return sb.toString();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("",e);
         }
         return "";
 
@@ -30,7 +34,7 @@ public class IOUtils {
             inputStreams.add(inputStream);
             return inputStream;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.error("",e);
         }
         return null;
 
@@ -41,7 +45,7 @@ public class IOUtils {
             try {
                 inputStream.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("",e);
             }
         }
     }

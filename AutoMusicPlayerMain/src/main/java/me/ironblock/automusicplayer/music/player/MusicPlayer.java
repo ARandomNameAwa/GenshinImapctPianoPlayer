@@ -4,6 +4,8 @@ import me.ironblock.automusicplayer.music.KeyActionMusic;
 import me.ironblock.automusicplayer.note.KeyAction;
 import me.ironblock.automusicplayer.ui.ControllerFrame;
 import me.ironblock.automusicplayer.utils.Timer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.util.Set;
@@ -13,6 +15,8 @@ import java.util.Set;
  * @Date :2022/1/16 0:09
  */
 public class MusicPlayer {
+    public static final Logger LOGGER = LogManager.getLogger(MusicPlayer.class);
+
     private final Timer timer = new Timer(20);
     private final Timer updateTimer = new Timer(1);
     protected Thread musicPlayerThread;
@@ -32,7 +36,7 @@ public class MusicPlayer {
         try {
             this.robot = new Robot();
         } catch (AWTException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to init awt robot.....How could this happen.",e);
         }
     }
 
@@ -66,7 +70,7 @@ public class MusicPlayer {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.warn("Thread interrupted while sleeping:",e);
         }
         while (!keyActionMusicPlayed.isMusicFinished() && isPlaying) {
             if (!paused) {
@@ -85,7 +89,7 @@ public class MusicPlayer {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.warn("Thread interrupted while sleeping:",e);
             }
         }
         isPlaying = false;
@@ -118,10 +122,10 @@ public class MusicPlayer {
     public void switchPause() {
         if (paused) {
             resume();
-            System.out.println("Resume!");
+            LOGGER.info("Resume!");
         } else {
             pause();
-            System.out.println("Pause");
+            LOGGER.info("Pause");
         }
     }
 

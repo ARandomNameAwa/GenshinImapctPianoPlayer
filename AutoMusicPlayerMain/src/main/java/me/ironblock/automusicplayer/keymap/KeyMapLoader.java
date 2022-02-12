@@ -3,6 +3,8 @@ package me.ironblock.automusicplayer.keymap;
 import me.ironblock.automusicplayer.note.NoteInfo;
 import me.ironblock.automusicplayer.utils.IOUtils;
 import me.ironblock.automusicplayer.utils.KeyMapUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +17,8 @@ import java.util.Set;
 
 
 public class KeyMapLoader {
+    public static final Logger LOGGER = LogManager.getLogger(KeyMapLoader.class);
+
     private static KeyMapLoader instance;
     private final Map<String, KeyMap> loadedKeyMap = new HashMap<>();
 
@@ -45,7 +49,7 @@ public class KeyMapLoader {
         try {
             loadKeyMapFromFile(new FileInputStream(file), file.getName().substring(0, file.getName().lastIndexOf(".")));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.error("Failed to load key map from file:"+fileName+":",e);
         }
     }
 
@@ -86,8 +90,7 @@ public class KeyMapLoader {
                 }
 
             } catch (Exception e) {
-                System.out.println("Failed to parse the keyMap file at line " + lineNumber);
-                e.printStackTrace();
+                LOGGER.error("Failed to parse the keyMap file at line " + lineNumber+":",e);
             }
         }
         keyMap.minNoteIndex = minNote;

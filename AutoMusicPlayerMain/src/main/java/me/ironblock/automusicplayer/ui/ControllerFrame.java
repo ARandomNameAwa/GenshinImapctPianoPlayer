@@ -10,6 +10,8 @@ import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
 import me.ironblock.automusicplayer.playcontroller.PlayController;
 import me.ironblock.automusicplayer.utils.IOUtils;
 import me.ironblock.automusicplayer.utils.TimeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -39,6 +41,8 @@ public class ControllerFrame extends JFrame {
 
     public static final int TUNE_FRAME_WIDTH = 550;
     public static final int TUNE_FRAME_HEIGHT = 120;
+
+    public static final Logger LOGGER = LogManager.getLogger(ControllerFrame.class);
     private static final int MIN_OCTAVE = -1;
     private static final int MAX_OCTAVE = 1;
     public static ControllerFrame instance;
@@ -221,7 +225,7 @@ public class ControllerFrame extends JFrame {
 
     private void onStartButtonClicked() {
         try {
-            System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
+            LOGGER.info("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
             if (!playController.trackMusicLoaded()) {
                 playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
@@ -235,8 +239,7 @@ public class ControllerFrame extends JFrame {
                 value.setEditable(false);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-
+           LOGGER.error("Failed to start playing music:",e);
         }
     }
 
@@ -244,7 +247,7 @@ public class ControllerFrame extends JFrame {
         try {
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            LOGGER.warn("the text is not a number:",e);
         }
         playController.switchPause();
         if ("Pause".equals(button_pause.getText())) {
@@ -461,12 +464,11 @@ public class ControllerFrame extends JFrame {
                         }
 
                     } else {
-
                         dtde.rejectDrop();
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("Failed to create drag event :",e);
                 }
 
             }

@@ -83,15 +83,14 @@ public class ExternalResourceLoaderController {
      * Load keyMap
      */
     private void loadKeyMaps() {
-        System.out.println("Loading default keyMap....");
+        LOGGER.info("Loading default keyMap....");
         for (int i = 0; i < PREINSTALLED_KEY_MAPS.length; i++) {
             try {
                 KeyMapLoader.getInstance().loadKeyMapFromFile(ExternalResourceLoaderController.class.getClassLoader().getResourceAsStream(PREINSTALLED_KEY_MAPS[i]), PREINSTALLED_KEY_MAP_NAMES[i]);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("Failed to load keyMap:",e);
             }
         }
-        System.out.println("KeyMap Path:" + KEY_MAP_PATH);
         if (!KEY_MAP_PATH.exists()) {
             KEY_MAP_PATH.mkdirs();
         }
@@ -100,7 +99,7 @@ public class ExternalResourceLoaderController {
         if (keyMaps != null && keyMaps.length > 0) {
             for (File keyMap : keyMaps) {
                 if (keyMap.getName().endsWith("txt")) {
-                    System.out.println("Loading KeyMap " + keyMap);
+                    LOGGER.info("Loading KeyMap " + keyMap);
                     KeyMapLoader.getInstance().loadKeyMapFromFile(keyMap.getAbsolutePath());
                 }
             }
@@ -125,7 +124,6 @@ public class ExternalResourceLoaderController {
             if (!dllCopyTo.exists()){
                 LOGGER.error("Dll not exists:"+dllCopyTo.getAbsolutePath());
             }
-
             return Native.load(dllCopyTo.getAbsolutePath(),clazz);
         }else{
             LOGGER.error("Can't load dll for some reason.");
