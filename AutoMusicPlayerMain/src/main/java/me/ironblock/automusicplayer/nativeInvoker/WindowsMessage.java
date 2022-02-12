@@ -14,7 +14,7 @@ public interface WindowsMessage extends Library{
     WindowsMessage INSTANCE = ExternalResourceLoaderController.loadDll("WindowMessageInvoke",WindowsMessage.class);
 //    WindowsMessage INSTANCE = Native.load("WindowMessageInvoke",WindowsMessage.class);
 
-    //    boolean sendKeyBoardMessageToWindow(WString windowName, int key, int state);
+    boolean sendKeyBoardMessageToWindow(WString windowName, int key, int state);
     WString listWindows();
 
 }

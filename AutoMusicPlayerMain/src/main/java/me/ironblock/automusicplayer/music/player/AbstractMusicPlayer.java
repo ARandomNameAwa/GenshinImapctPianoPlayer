@@ -12,13 +12,12 @@ import java.util.Set;
 
 /**
  * @author :Iron__Block
- * @Date :2022/1/16 0:09
+ * @Date :2022/2/13 1:13
  */
-public class MusicPlayer {
-    public static final Logger LOGGER = LogManager.getLogger(MusicPlayer.class);
-
-    private final Timer timer = new Timer(20);
-    private final Timer updateTimer = new Timer(1);
+public abstract class AbstractMusicPlayer {
+    public static final Logger LOGGER = LogManager.getLogger(AbstractMusicPlayer.class);
+    protected final Timer timer = new Timer(20);
+    protected final Timer updateTimer = new Timer(1);
     protected Thread musicPlayerThread;
     /**
      * Music being played
@@ -28,25 +27,11 @@ public class MusicPlayer {
      * the speed of the music (in tps)
      */
     protected int speed;
-    private Robot robot;
-    private boolean isPlaying, paused;
+
+    protected boolean isPlaying, paused;
 
 
-    public MusicPlayer() {
-        try {
-            this.robot = new Robot();
-        } catch (AWTException e) {
-            LOGGER.error("Failed to init awt robot.....How could this happen.",e);
-        }
-    }
-
-    public void playNote(KeyAction note) {
-        if (note.getCommand()) {
-            robot.keyPress(note.getKey());
-        } else {
-            robot.keyRelease(note.getKey());
-        }
-    }
+    public abstract void playNote(KeyAction note);
 
     public void playMusic(KeyActionMusic keyActionMusic) {
 
@@ -65,7 +50,6 @@ public class MusicPlayer {
         isPlaying = true;
 
     }
-
     protected void playMusicPlayerThread() {
         try {
             Thread.sleep(2000);
@@ -81,9 +65,7 @@ public class MusicPlayer {
                         for (KeyAction k : set) {
                             playNote(k);
                         }
-
                     }
-
                 }
             }
             try {

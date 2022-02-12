@@ -4,6 +4,8 @@ import com.sun.jna.WString;
 import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.resource.ExternalResourceLoaderController;
 
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 /**
@@ -19,8 +21,13 @@ public class TestLoadNative {
             for (String s : tmp) {
                 System.out.println(s);
             }
+            Thread.sleep(1000);
+            System.out.println(a.sendKeyBoardMessageToWindow(new WString("原神"), KeyEvent.VK_A, 1));
+            Thread.sleep(1000);
+            System.out.println(a.sendKeyBoardMessageToWindow(new WString("原神"),  KeyEvent.VK_A, 0));
         } catch (Exception e) {
+            e.printStackTrace();
         }
-
+//
     }
 }

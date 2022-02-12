@@ -21,9 +21,27 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 MYLIBAPI BOOL sendKeyBoardMessageToWindow(wchar_t* windowTitle, int key, int state){
+    HWND hwnd = ::FindWindow(NULL, windowTitle);
+    if (hwnd==0)
+    {
+        return FALSE;
+    }
+    PostMessage(hwnd, WM_ACTIVATE, 1, 0);
+    if (state == 1 )  //按下
+    {
+        PostMessage(hwnd, WM_KEYDOWN, unsigned int(key), 0x1e0001);
+        PostMessage(hwnd, WM_CHAR, unsigned int(key), 0x1e0001);
+    }
+    else if (state == 0)    //松开
+    {
+        PostMessage(hwnd, WM_KEYUP, unsigned int(key), 0xc01e0001);
+    }
+
     return true;
 }
 std::set<std::string>* titles;
+
+
 
 MYLIBAPI  wchar_t* listWindows(){
     titles = new std::set<std::string>();

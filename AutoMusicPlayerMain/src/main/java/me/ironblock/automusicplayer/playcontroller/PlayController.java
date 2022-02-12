@@ -5,13 +5,15 @@ import me.ironblock.automusicplayer.music.KeyActionMusic;
 import me.ironblock.automusicplayer.music.TrackMusic;
 import me.ironblock.automusicplayer.music.TuneStep;
 import me.ironblock.automusicplayer.music.parser.AbstractMusicParser;
-import me.ironblock.automusicplayer.music.player.MusicPlayer;
+import me.ironblock.automusicplayer.music.player.AbstractMusicPlayer;
+import me.ironblock.automusicplayer.music.player.PostMessageMusicPlayer;
+import me.ironblock.automusicplayer.music.player.RobotMusicPlayer;
 
 import java.io.InputStream;
 
 
 public class PlayController {
-    private final MusicPlayer player = new MusicPlayer();
+    private final AbstractMusicPlayer player = new PostMessageMusicPlayer();
     private TrackMusic trackMusic;
     private KeyMap activeKeyMap;
     private String currentMusicName = "";
