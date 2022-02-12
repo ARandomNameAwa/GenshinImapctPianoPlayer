@@ -17,3 +17,10 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
+extern "C" __declspec(dllexport) int sendKeyBoardMessageToWindow(wchar_t* windowName,int key,int state) {
+    HWND windowHandler = ::FindWindow(NULL,windowName);
+    return true;
+}
+extern "C" __declspec(dllexport) wchar_t** listWindows() {
+    return NULL;
+}
