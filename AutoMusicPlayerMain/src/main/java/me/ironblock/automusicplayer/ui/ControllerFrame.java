@@ -12,6 +12,7 @@ import me.ironblock.automusicplayer.utils.IOUtils;
 import me.ironblock.automusicplayer.utils.TimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -294,7 +295,12 @@ public class ControllerFrame extends JFrame {
     }
 
     private void onOctaveTextFieldKeyTyped(KeyEvent event) {
-        int key = Integer.parseInt(((JTextField) event.getSource()).getText());
+        int key = 0;
+        try {
+            key = Integer.parseInt(((JTextField) event.getSource()).getText());
+        } catch (NumberFormatException e) {
+            LOGGER.error("填的不是数字",e);
+        }
 
         if (event.getKeyCode() == 38) {
             //up
