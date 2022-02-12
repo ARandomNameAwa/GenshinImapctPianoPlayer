@@ -43,6 +43,7 @@ public class ExternalResourceLoaderController {
         LOGGER.info("Setting KEY_MAP_PATH to "+ KEY_MAP_PATH.getAbsolutePath());
         LOGGER.info("Setting DLL_PATH to "+ DLL_PATH.getAbsolutePath());
 
+        dll_available = true;
         String os = System.getProperty("os.name");
         if (!os.toLowerCase().startsWith("win")) {
             LOGGER.error("The os is not windows so dll can't be loaded.");

@@ -13,8 +13,13 @@
 //定义宏
 #ifdef IMPORT_DLL
 #else
-#define MYLIBAPI  extern   "C"     __declspec( dllexport ) 
+#define MYLIBAPI  extern   "C"   __declspec( dllexport ) 
 #endif
 
+
 MYLIBAPI BOOL sendKeyBoardMessageToWindow(wchar_t*  windowTitle,int key, int state);
-MYLIBAPI  wchar_t** listWindows();
+MYLIBAPI  wchar_t* listWindows();
+BOOL CALLBACK EnumWindowsProc(
+	HWND hwnd,
+	LPARAM lParam);
+wchar_t* multiByteToWideChar(const std::string& pKey);

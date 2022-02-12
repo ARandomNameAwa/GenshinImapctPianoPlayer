@@ -2,6 +2,7 @@ package me.ironblock.automusicplayer.nativeInvoker;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.WString;
 import me.ironblock.automusicplayer.resource.ExternalResourceLoaderController;
 
 
@@ -14,7 +15,7 @@ public interface WindowsMessage extends Library{
 //    WindowsMessage INSTANCE = Native.load("WindowMessageInvoke",WindowsMessage.class);
 
     //    boolean sendKeyBoardMessageToWindow(WString windowName, int key, int state);
-//    WString[] listWindows();
+    WString listWindows();
 
 }
 

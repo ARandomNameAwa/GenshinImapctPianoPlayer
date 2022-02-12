@@ -1,5 +1,6 @@
 package me.ironblock.natives.test;
 
+import com.sun.jna.WString;
 import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.resource.ExternalResourceLoaderController;
 
@@ -11,6 +12,17 @@ import java.io.File;
  */
 public class TestLoadNative {
     public static void main(String[] args) {
-        WindowsMessage a = WindowsMessage.INSTANCE;
+        try {
+            WindowsMessage a = WindowsMessage.INSTANCE;
+            WString string = a.listWindows();
+            String[] tmp = string.toString().split(";");
+            System.out.println();
+            for (String s : tmp) {
+                System.out.println(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
