@@ -90,7 +90,6 @@ BOOL CALLBACK EnumWindowsProc(
             ::GetWindowText(hwnd, caption, 200);
             std::string name = TCHAR2STRING(caption);
             if (strcmp(name.c_str(), ""))
-                std::cout << name << std::endl;
                 titles->insert(name);
             }
         }

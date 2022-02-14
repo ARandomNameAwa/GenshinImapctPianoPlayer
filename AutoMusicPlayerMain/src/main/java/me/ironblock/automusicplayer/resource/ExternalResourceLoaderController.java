@@ -130,4 +130,9 @@ public class ExternalResourceLoaderController {
             return null;
         }
     }
+
+
+    public static void loadJar(File jarfile){
+//        ExternalResourceLoaderController.class.getClassLoader()
+    }
 }

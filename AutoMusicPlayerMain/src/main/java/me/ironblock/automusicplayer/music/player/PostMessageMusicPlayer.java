@@ -10,10 +10,16 @@ import me.ironblock.automusicplayer.note.KeyAction;
  */
 public class PostMessageMusicPlayer extends AbstractMusicPlayer{
 
-
+    private String windowTitle;
 
     @Override
     public void playNote(KeyAction note) {
-        WindowsMessage.INSTANCE.sendKeyBoardMessageToWindow(new WString("原神"),note.getKey(),(note.getCommand()?1:0));
+        if (!WindowsMessage.INSTANCE.sendKeyBoardMessageToWindow(new WString(windowTitle), note.getKey(), (note.getCommand() ? 1 : 0))){
+            AbstractMusicPlayer.LOGGER.error("Failed to post message to the window:"+windowTitle);
+        }
+    }
+
+    public void setPostMessageWindow(String windowTitle){
+        this.windowTitle = windowTitle;
     }
 }

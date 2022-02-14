@@ -13,10 +13,13 @@ import java.io.InputStream;
 
 
 public class PlayController {
-    private final AbstractMusicPlayer player = new PostMessageMusicPlayer();
+    private final AbstractMusicPlayer postMessagePlayer = new PostMessageMusicPlayer();
+    private final AbstractMusicPlayer robotPlayer = new RobotMusicPlayer();
     private TrackMusic trackMusic;
     private KeyMap activeKeyMap;
     private String currentMusicName = "";
+    private boolean usePostMessage = false;
+
 
     public void prepareMusicPlayed(InputStream file, AbstractMusicParser parser, String name) {
         if (!currentMusicName.equals(name)) {
@@ -28,17 +31,26 @@ public class PlayController {
 
     public void startPlay(TuneStep tune) {
         KeyActionMusic keyActionMusic = KeyActionMusic.getFromTrackMusic(trackMusic, activeKeyMap, tune);
-        this.player.playMusic(keyActionMusic);
+        if (usePostMessage){
+            this.postMessagePlayer.playMusic(keyActionMusic);
+        }else{
+            this.robotPlayer.playMusic(keyActionMusic);
+        }
     }
 
 
     public void stopPlay() {
-        player.stop();
+        this.postMessagePlayer.stop();
+        this.robotPlayer.stop();
     }
 
 
     public void switchPause() {
-        player.switchPause();
+        if (usePostMessage){
+            this.postMessagePlayer.switchPause();
+        }else{
+            this.robotPlayer.switchPause();
+        }
     }
 
     /**
@@ -58,23 +70,40 @@ public class PlayController {
     }
 
     public void jumpToTick(int tick) {
-        player.getKeyActionMusicPlayed().jumpToTick(tick);
+        if (usePostMessage){
+            this.postMessagePlayer.getKeyActionMusicPlayed().jumpToTick(tick);
+        }else{
+            this.robotPlayer.getKeyActionMusicPlayed().jumpToTick(tick);
+        }
     }
 
     public int getTotalTick() {
-        return (int) player.getKeyActionMusicPlayed().length;
+        if (usePostMessage){
+           return (int) this.postMessagePlayer.getKeyActionMusicPlayed().length;
+        }else{
+            return (int) this.robotPlayer.getKeyActionMusicPlayed().length;
+        }
     }
 
     public int getSpeed() {
-        return player.getSpeed();
+        if (usePostMessage){
+            return this.postMessagePlayer.getSpeed();
+        }else{
+            return this.robotPlayer.getSpeed();
+        }
     }
 
     public void setSpeed(double speed) {
-        player.setSpeed((int) (speed * trackMusic.tpsReal));
+        if (usePostMessage){
+            postMessagePlayer.setSpeed((int) (speed * trackMusic.tpsReal));
+        }else{
+            robotPlayer.setSpeed((int) (speed * trackMusic.tpsReal));
+        }
     }
 
     public boolean isPlaying() {
-        return trackMusic != null && player.getKeyActionMusicPlayed() != null;
+        boolean playerPlaying = postMessagePlayer.getKeyActionMusicPlayed() != null|| robotPlayer.getKeyActionMusicPlayed() != null;
+        return trackMusic != null && playerPlaying;
     }
 
     public TrackMusic getTrackMusic() {
@@ -85,4 +114,11 @@ public class PlayController {
         return trackMusic != null;
     }
 
+    public void setPostMessage(boolean postMessage){
+        this.usePostMessage = postMessage;
+    }
+
+    public void setPostMessageWindow(String windowTitle){
+        ((PostMessageMusicPlayer) postMessagePlayer).setPostMessageWindow(windowTitle);
+    }
 }
