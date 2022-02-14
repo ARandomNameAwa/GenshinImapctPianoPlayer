@@ -1,5 +1,6 @@
 package me.ironblock.automusicplayer;
 
+import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
 import me.ironblock.automusicplayer.resource.ExternalResourceLoaderController;
 import me.ironblock.automusicplayer.ui.ControllerFrame;

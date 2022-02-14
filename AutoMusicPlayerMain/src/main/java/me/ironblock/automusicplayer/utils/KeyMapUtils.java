@@ -1,6 +1,9 @@
 package me.ironblock.automusicplayer.utils;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.event.KeyEvent;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -11,6 +14,7 @@ public class KeyMapUtils {
     private static final Map<String, Integer> NOTE_NAME_NOTE_INDEX_MAP = new HashMap<>();
     private static final Map<Integer, String> NOTE_INDEX_NOTE_NAME_MAP = new HashMap<>();
 
+    public static final Logger LOGGER = LogManager.getLogger(KeyMapUtils.class);
     static {
         for (int i = 0; i < NOTE_NAMES.length; i++) {
             NOTE_NAME_NOTE_INDEX_MAP.put(NOTE_NAMES[i], i);
@@ -35,10 +39,10 @@ public class KeyMapUtils {
                 Field field = KeyEvent.class.getDeclaredField("VK_" + key.toUpperCase());
                 return (int) field.get(null);
             } catch (NoSuchFieldException | IllegalAccessException e) {
-                e.printStackTrace();
+                LOGGER.warn("The key "+ key + " isn't a key on the keyboard",e);
             }
         }
-        System.out.println("Failed to parse" + key);
+        LOGGER.info("Failed to parse" + key);
         return 0;
     }
 

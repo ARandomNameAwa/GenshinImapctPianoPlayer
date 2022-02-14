@@ -1,18 +1,25 @@
 package me.ironblock.automusicplayer.ui;
 
+import com.sun.jna.WString;
 import me.ironblock.automusicplayer.Launch;
 import me.ironblock.automusicplayer.keymap.KeyMap;
 import me.ironblock.automusicplayer.keymap.KeyMapLoader;
 import me.ironblock.automusicplayer.music.TrackMusic;
 import me.ironblock.automusicplayer.music.TuneStep;
 import me.ironblock.automusicplayer.music.parser.AbstractMusicParser;
+import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
 import me.ironblock.automusicplayer.playcontroller.PlayController;
 import me.ironblock.automusicplayer.utils.IOUtils;
 import me.ironblock.automusicplayer.utils.TimeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
@@ -32,13 +39,15 @@ import java.util.*;
 
 public class ControllerFrame extends JFrame {
     public static final String PROGRAM_NAME = "Genshin Impact Music Player";
-    public static final String PROGRAM_VERSION = "v1.2.0";
+    public static final String PROGRAM_VERSION = "v1.3.0";
 
-    public static final int FRAME_WIDTH = 450;
+    public static final int FRAME_WIDTH = 600;
     public static final int FRAME_HEIGHT = 320;
 
     public static final int TUNE_FRAME_WIDTH = 550;
     public static final int TUNE_FRAME_HEIGHT = 120;
+
+    public static final Logger LOGGER = LogManager.getLogger(ControllerFrame.class);
     private static final int MIN_OCTAVE = -1;
     private static final int MAX_OCTAVE = 1;
     public static ControllerFrame instance;
@@ -67,10 +76,19 @@ public class ControllerFrame extends JFrame {
     private final JSlider jSlider = new JSlider(0, 100, 0);
     private final JCheckBox checkbox_sameOctave = new JCheckBox("EveryTrackOctaveSame");
     private final PlayController playController = new PlayController();
+    private final ButtonGroup buttonGroup_player = new ButtonGroup();
+    private final JRadioButton radioButton_robot = new JRadioButton("AWT Robot");
+    private final JRadioButton radioButton_postMessage = new JRadioButton("PostMessage");
+    private final JLabel jLabel_selectPostMessageWindow = new JLabel("Window:");
+    private final JComboBox<String> jComboBox_windowTitles = new JComboBox<>();
+
     private final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
     private final Set<Component> components = new HashSet<>();
     private final Map<Integer, JTextField> trackTextFieldMap = new HashMap<>();
     private boolean mousePressingSlider = false;
+
+
+
 
     public static void init() {
         instance = new ControllerFrame();
@@ -124,7 +142,30 @@ public class ControllerFrame extends JFrame {
         jSlider.setBounds(58, 180, 240, 50);
         checkbox_sameOctave.setBounds(238, 30, 180, 30);
         checkbox_sameOctave.setSelected(true);
+        //radioButtons
+        buttonGroup_player.add(radioButton_robot);
+        buttonGroup_player.add(radioButton_postMessage);
+        radioButton_robot.setBounds(350,30,150,30);
+        radioButton_postMessage.setBounds(350,70,150,30);
+        radioButton_robot.setSelected(true);
+        //Attempt to load the dll
+        radioButton_postMessage.setEnabled(false);
 
+        try {
+            WindowsMessage.INSTANCE.getClass();
+            radioButton_postMessage.setEnabled(true);
+            refreshWindows();
+        } catch (Throwable e) {
+            LOGGER.error("Failed to load postMessage dll,so postMessage player can't be used.",e);
+        }
+
+        jLabel_selectPostMessageWindow.setBounds(350,110,150,30);
+        jLabel_selectPostMessageWindow.setVisible(false);
+        jComboBox_windowTitles.setBounds(350,140,150,30);
+        jComboBox_windowTitles.setVisible(false);
+
+        radioButton_robot.addActionListener((event)-> onRobotPlayerSelected());
+        radioButton_postMessage.addActionListener((event)->onPostMessagePlayerSelected());
         //Listeners
         button_start.addActionListener(e -> this.onStartButtonClicked());
         button_pause.addActionListener(e -> this.onPauseButtonClicked());
@@ -172,7 +213,22 @@ public class ControllerFrame extends JFrame {
         });
 
         checkbox_sameOctave.addChangeListener(this::onJCheckBoxStateChanged);
+        jComboBox_windowTitles.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                refreshWindows();
+            }
 
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                playController.setPostMessageWindow(((String) jComboBox_windowTitles.getSelectedItem()));
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+
+            }
+        });
 
         if (!Launch.DEBUG_MODE) {
             this.setAlwaysOnTop(true);
@@ -193,6 +249,10 @@ public class ControllerFrame extends JFrame {
         this.add(comboBox_keyMap);
         this.add(label_parser);
         this.add(label_keyMap);
+        this.add(radioButton_robot);
+        this.add(radioButton_postMessage);
+        this.add(jLabel_selectPostMessageWindow);
+        this.add(jComboBox_windowTitles);
         tuneFrame.add(label_tune);
         tuneFrame.add(label_pitch);
         tuneFrame.add(textField_tune);
@@ -221,7 +281,9 @@ public class ControllerFrame extends JFrame {
 
     private void onStartButtonClicked() {
         try {
-            System.out.println("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
+            LOGGER.info("Setting keyMap to " + comboBox_keyMap.getSelectedItem());
+            playController.setPostMessageWindow(((String) jComboBox_windowTitles.getSelectedItem()));
+            LOGGER.info("Setting post message window to "+ jComboBox_windowTitles.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
             if (!playController.trackMusicLoaded()) {
                 playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
@@ -235,8 +297,7 @@ public class ControllerFrame extends JFrame {
                 value.setEditable(false);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-
+           LOGGER.error("Failed to start playing music:",e);
         }
     }
 
@@ -244,7 +305,7 @@ public class ControllerFrame extends JFrame {
         try {
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
         } catch (NumberFormatException e) {
-            e.printStackTrace();
+            LOGGER.warn("the text is not a number:",e);
         }
         playController.switchPause();
         if ("Pause".equals(button_pause.getText())) {
@@ -291,7 +352,12 @@ public class ControllerFrame extends JFrame {
     }
 
     private void onOctaveTextFieldKeyTyped(KeyEvent event) {
-        int key = Integer.parseInt(((JTextField) event.getSource()).getText());
+        int key = 0;
+        try {
+            key = Integer.parseInt(((JTextField) event.getSource()).getText());
+        } catch (NumberFormatException e) {
+            LOGGER.error("填的不是数字",e);
+        }
 
         if (event.getKeyCode() == 38) {
             //up
@@ -461,12 +527,11 @@ public class ControllerFrame extends JFrame {
                         }
 
                     } else {
-
                         dtde.rejectDrop();
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("Failed to create drag event :",e);
                 }
 
             }
@@ -572,6 +637,27 @@ public class ControllerFrame extends JFrame {
             for (JTextField value : trackTextFieldMap.values()) {
                 value.setEditable(true);
             }
+        }
+    }
+
+    private void onRobotPlayerSelected(){
+        playController.setPostMessage(false);
+        jLabel_selectPostMessageWindow.setVisible(false);
+        jComboBox_windowTitles.setVisible(false);
+    }
+
+    private void onPostMessagePlayerSelected(){
+        playController.setPostMessage(true);
+        jLabel_selectPostMessageWindow.setVisible(true);
+        jComboBox_windowTitles.setVisible(true);
+    }
+
+    private void refreshWindows(){
+        WString string = WindowsMessage.INSTANCE.listWindows();
+        String[] tmp = string.toString().split(";");
+        jComboBox_windowTitles.removeAllItems();
+        for (String s : tmp) {
+            jComboBox_windowTitles.addItem(s);
         }
     }
 

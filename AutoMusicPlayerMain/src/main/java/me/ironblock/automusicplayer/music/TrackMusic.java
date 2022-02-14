@@ -4,6 +4,8 @@ import me.ironblock.automusicplayer.Launch;
 import me.ironblock.automusicplayer.keymap.KeyMap;
 import me.ironblock.automusicplayer.note.NoteInfo;
 import me.ironblock.automusicplayer.utils.KeyMapUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
  * @Date :2022/1/18 20:42
  */
 public class TrackMusic {
+    public static final Logger LOGGER = LogManager.getLogger(TrackMusic.class);
+
     private final Map<Integer, Map<Integer, Set<NoteInfo>>> tracks = new HashMap<>();
     private final Map<Integer, Boolean> tracksMuted = new HashMap<>();
     private final Map<Integer, String> trackInfoMap = new HashMap<>();
@@ -142,9 +146,9 @@ public class TrackMusic {
 
         }
         if (Launch.DEBUG_MODE) {
-            System.out.println("======pitchSame====");
-            tuneInaccuracyMap.forEach(((integer, tuneInaccuracy) -> System.out.println(integer + "---->" + tuneInaccuracy.toString())));
-            System.out.println("===================");
+            LOGGER.info("======pitchSame====");
+            tuneInaccuracyMap.forEach(((integer, tuneInaccuracy) -> LOGGER.info(integer + "---->" + tuneInaccuracy.toString())));
+            LOGGER.info("===================");
 
         }
         TuneStep tuneStep = new TuneStep();
@@ -204,11 +208,11 @@ public class TrackMusic {
         ));
         TuneStep best = Objects.requireNonNull(tuneInfoList.entrySet().stream().min(Comparator.comparingInt(node -> node.getValue().getInaccuracy())).orElse(null)).getKey();
         if (Launch.DEBUG_MODE) {
-            System.out.println("=======Track Not Same======");
+            LOGGER.info("=======Track Not Same======");
             tuneInfoList.forEach((key, value) -> {
-                System.out.println(key + "---->" + value);
+                LOGGER.info(key + "---->" + value);
             });
-            System.out.println("===========================");
+            LOGGER.info("===========================");
 
         }
         return best;
