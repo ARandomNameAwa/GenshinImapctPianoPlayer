@@ -92,6 +92,7 @@ BOOL CALLBACK EnumWindowsProc(
             if (strcmp(name.c_str(), ""))
                 titles->insert(name);
             }
+            
         }
 	return TRUE;
 
