@@ -1,5 +1,7 @@
 package me.ironblock.automusicplayer.ui;
 
+import com.alee.laf.WebLookAndFeel;
+import com.alee.skin.dark.WebDarkSkin;
 import com.sun.jna.WString;
 import me.ironblock.automusicplayer.Launch;
 import me.ironblock.automusicplayer.keymap.KeyMap;
@@ -10,6 +12,7 @@ import me.ironblock.automusicplayer.music.parser.AbstractMusicParser;
 import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
 import me.ironblock.automusicplayer.playcontroller.PlayController;
+import me.ironblock.automusicplayer.ui.annotations.WindowFrame;
 import me.ironblock.automusicplayer.utils.IOUtils;
 import me.ironblock.automusicplayer.utils.TimeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,7 +39,6 @@ import java.util.*;
  *
  * @author Iron__Block
  */
-
 public class ControllerFrame extends JFrame {
     public static final String PROGRAM_NAME = "Genshin Impact Music Player";
     public static final String PROGRAM_VERSION = "v1.3.0";
@@ -91,8 +93,37 @@ public class ControllerFrame extends JFrame {
 
 
     public static void init() {
-        instance = new ControllerFrame();
-        instance.setup();
+        SwingUtilities.invokeLater ( new Runnable ()
+        {
+            @Override
+            public void run ()
+            {
+                // Install WebLaF as application LaF
+                WebLookAndFeel.install ();
+
+                // You can also specify preferred skin right-away
+//                WebLookAndFeel.install ( WebDarkSkin.class );
+
+                // You can also do that in one of the old-fashioned ways
+                // UIManager.setLookAndFeel ( new WebLookAndFeel () );
+                // UIManager.setLookAndFeel ( "com.alee.laf.WebLookAndFeel" );
+                // UIManager.setLookAndFeel ( WebLookAndFeel.class.getCanonicalName () );
+
+                // You can also configure other WebLaF managers as you like now
+                // StyleManager
+                // SettingsManager
+                // LanguageManager
+                // ...
+
+                // Initialize your application once you're done setting everything up
+                instance = new ControllerFrame();
+                instance.setup();
+
+                // You can also use Web* components to get access to some extended WebLaF features
+                // WebFrame frame = ...
+            }
+        } );
+
     }
 
     /**
