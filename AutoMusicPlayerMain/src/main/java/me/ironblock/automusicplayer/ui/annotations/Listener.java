@@ -4,23 +4,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.EventListener;
 
 /**
  * @author :Iron__Block
- * @Date :2022/2/17 2:10
+ * @Date :2022/2/18 14:30
  */
-
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WindowComponent {
+public @interface Listener {
     String name();
-    int x();
-    int y();
-    int width();
-    int height();
-    String initPara() default "";
-    String parent() default "";
-    String initializer() default "";
-    String[] listeners() default {};
-
+    Class<? extends EventListener> parent();
 }

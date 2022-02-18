@@ -1,5 +1,6 @@
 package me.ironblock.automusicplayer.ui.annotations;
 
+import javax.swing.*;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,4 +20,8 @@ public @interface WindowFrame {
     int width();
     int height();
     boolean autoCenter();
+    int defaultCloseOperation() default WindowConstants.EXIT_ON_CLOSE;
+    String initializer() default "";
+    String[] listeners() default {};
+
 }

@@ -12,6 +12,7 @@ import me.ironblock.automusicplayer.music.parser.AbstractMusicParser;
 import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
 import me.ironblock.automusicplayer.playcontroller.PlayController;
+import me.ironblock.automusicplayer.ui.annotations.WindowComponent;
 import me.ironblock.automusicplayer.ui.annotations.WindowFrame;
 import me.ironblock.automusicplayer.utils.IOUtils;
 import me.ironblock.automusicplayer.utils.TimeUtils;
@@ -53,6 +54,7 @@ public class ControllerFrame extends JFrame {
     private static final int MIN_OCTAVE = -1;
     private static final int MAX_OCTAVE = 1;
     public static ControllerFrame instance;
+
     private final JFrame tuneFrame = new JFrame();
     private final JLabel label_file_path = new JLabel("File Path");
     private final JLabel label_speed = new JLabel("Speed");

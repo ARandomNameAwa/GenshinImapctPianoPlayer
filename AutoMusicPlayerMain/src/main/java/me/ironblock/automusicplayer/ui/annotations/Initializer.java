@@ -7,20 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * @author :Iron__Block
- * @Date :2022/2/17 2:10
+ * @Date :2022/2/18 13:54
+ * Methods annotated by this must be static
  */
-
-@Target(ElementType.FIELD)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WindowComponent {
+public @interface Initializer {
     String name();
-    int x();
-    int y();
-    int width();
-    int height();
-    String initPara() default "";
-    String parent() default "";
-    String initializer() default "";
-    String[] listeners() default {};
 
 }
