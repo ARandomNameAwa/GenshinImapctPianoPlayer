@@ -11,7 +11,6 @@ import java.util.Map;
 public class UIContext {
     private final Map<String, Frame> windowFrames = new HashMap<>();
     private final Map<String, Component> components = new HashMap<>();
-//    private final Map<String, Component> components = new HashMap<>();
 
     public void addWindowFrame(String name,Frame windowFrame){
         windowFrames.put(name,windowFrame);

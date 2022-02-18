@@ -22,5 +22,6 @@ public @interface WindowComponent {
     String parent() default "";
     String initializer() default "";
     String[] listeners() default {};
+    String background() default "";
 
 }

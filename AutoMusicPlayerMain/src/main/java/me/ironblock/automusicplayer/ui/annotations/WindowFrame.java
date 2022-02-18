@@ -23,5 +23,6 @@ public @interface WindowFrame {
     int defaultCloseOperation() default WindowConstants.EXIT_ON_CLOSE;
     String initializer() default "";
     String[] listeners() default {};
+    String background() default "";
 
 }

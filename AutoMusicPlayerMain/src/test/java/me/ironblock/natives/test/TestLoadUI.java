@@ -1,7 +1,11 @@
 package me.ironblock.natives.test;
 
+import com.alee.laf.WebLookAndFeel;
+import me.ironblock.automusicplayer.ui.ControllerFrame;
 import me.ironblock.automusicplayer.ui.loader.UIContext;
 import me.ironblock.automusicplayer.ui.loader.UILoader;
+
+import javax.swing.*;
 
 /**
  * @author :Iron__Block
@@ -9,11 +13,31 @@ import me.ironblock.automusicplayer.ui.loader.UILoader;
  */
 public class TestLoadUI {
     public static void main(String[] args) {
-        try {
-            UILoader.loadUIFromPackage("me.ironblock.automusicplayer.ui.frames");
-            UILoader.UI.getFrameFromName("mainFrame").setVisible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            SwingUtilities.invokeLater (() -> {
+                // Install WebLaF as application LaF
+                WebLookAndFeel.install ();
+                // You can also specify preferred skin right-away
+//                WebLookAndFeel.install ( WebDarkSkin.class );
+                // You can also do that in one of the old-fashioned ways
+                // UIManager.setLookAndFeel ( new WebLookAndFeel () );
+                // UIManager.setLookAndFeel ( "com.alee.laf.WebLookAndFeel" );
+                // UIManager.setLookAndFeel ( WebLookAndFeel.class.getCanonicalName () );
+
+                // You can also configure other WebLaF managers as you like now
+                // StyleManager
+                // SettingsManager
+                // LanguageManager
+                // ...
+                try {
+                    UILoader.loadUIFromPackage("me.ironblock.automusicplayer.ui.frames");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                UILoader.UI.getFrameFromName("mainFrame").setVisible(true);
+                // Initialize your application once you're done setting everything up
+
+                // You can also use Web* components to get access to some extended WebLaF features
+                // WebFrame frame = ...
+            });
     }
 }

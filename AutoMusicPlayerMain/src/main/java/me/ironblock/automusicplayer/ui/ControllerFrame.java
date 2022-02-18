@@ -549,30 +549,23 @@ public class ControllerFrame extends JFrame {
             @Override
             public void drop(DropTargetDropEvent dtde) {
                 try {
-
                     if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                         dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                         List<File> list = (List<File>) (dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
-
                         if (list.size() > 0) {
                             textField_file_path.setText(list.get(0).getAbsolutePath());
                             onFilePathCompleted();
                         }
-
                     } else {
                         dtde.rejectDrop();
                     }
-
                 } catch (Exception e) {
                     LOGGER.error("Failed to create drag event :",e);
                 }
-
             }
 
 
         });
-
-
     }
 
     private void onSliderDragged(ChangeEvent event) {

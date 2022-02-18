@@ -22,7 +22,7 @@ public class ExternalResourceLoaderController {
 
 //    public static final File mouseMapPath;
 
-    public static final String[] PREINSTALLED_KEY_MAPS = new String[]{"nbsKeyMap.txt", "GenshinImpactKeyMap.txt", "everyonePiano.txt"};
+    public static final String[] PREINSTALLED_KEY_MAPS = new String[]{"keyMaps/nbsKeyMap.txt", "keyMaps/GenshinImpactKeyMap.txt", "keyMaps/everyonePiano.txt"};
     public static final String[] PREINSTALLED_KEY_MAP_NAMES = new String[]{"NbsEditor", "GenshinImpact", "everyonePiano"};
     private static ExternalResourceLoaderController instance;
 
