@@ -1,7 +1,10 @@
 package me.ironblock.natives.test;
 
 import com.alee.laf.WebLookAndFeel;
+import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
+import me.ironblock.automusicplayer.resource.ExternalResourceLoaderController;
 import me.ironblock.automusicplayer.ui.ControllerFrame;
+import me.ironblock.automusicplayer.ui.frames.MainFrame;
 import me.ironblock.automusicplayer.ui.loader.UIContext;
 import me.ironblock.automusicplayer.ui.loader.UILoader;
 
@@ -29,6 +32,10 @@ public class TestLoadUI {
                 // LanguageManager
                 // ...
                 try {
+                    //Load resources
+                    ExternalResourceLoaderController.getInstance().loadAll();
+                    //Load parsers
+                    MusicParserRegistry.init();
                     UILoader.loadUIFromPackage("me.ironblock.automusicplayer.ui.frames");
                 } catch (Exception e) {
                     e.printStackTrace();

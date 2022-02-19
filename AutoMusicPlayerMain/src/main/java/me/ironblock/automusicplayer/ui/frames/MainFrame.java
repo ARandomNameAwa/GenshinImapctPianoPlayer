@@ -1,33 +1,47 @@
 package me.ironblock.automusicplayer.ui.frames;
 
-import com.alee.extended.list.FileListModel;
-import com.alee.extended.list.WebFileList;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
-import com.alee.laf.list.WebListModel;
 import com.alee.laf.radiobutton.WebRadioButton;
+import com.alee.laf.scroll.WebScrollPane;
 import com.alee.laf.slider.WebSlider;
 import com.alee.laf.text.WebTextField;
 import com.sun.jna.WString;
+import me.ironblock.automusicplayer.music.parser.AbstractMusicParser;
 import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
+import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
+import me.ironblock.automusicplayer.playcontroller.PlayController;
 import me.ironblock.automusicplayer.ui.annotations.Initializer;
 import me.ironblock.automusicplayer.ui.annotations.Listener;
 import me.ironblock.automusicplayer.ui.annotations.WindowComponent;
 import me.ironblock.automusicplayer.ui.annotations.WindowFrame;
+import me.ironblock.automusicplayer.ui.components.TuneStepLabel;
 import me.ironblock.automusicplayer.ui.loader.UIContext;
 import me.ironblock.automusicplayer.ui.loader.UILoader;
+import oracle.jrockit.jfr.JFR;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.*;
+import java.util.List;
 
 /**
  * @author :Iron__Block
@@ -49,7 +63,7 @@ public class MainFrame extends JFrame {
     public WebLabel label1;
     @WindowComponent(name = "labelPlaySettings",x = 400, y = 0,width = 140,height = 45,initPara = "Play Settings")
     public WebLabel label2;
-    @WindowComponent(name = "fileList",x = 50,y = 50,width = 330,height = 560)
+    @WindowComponent(name = "fileList",x = 50,y = 50,width = 330,height = 560,initializer = "addScroll",listeners = {"jListMouseListener"})
     public WebList list1;
     @WindowComponent(name = "slider",x = 50,y = 650,width = 880,height = 35,initializer = "initSlider")
     public WebSlider slider;
@@ -81,7 +95,7 @@ public class MainFrame extends JFrame {
     public WebComboBox comboBox2;
     @WindowComponent(name = "labelTuneSettings",x = 400, y = 250,width = 140,height = 45,initPara = "Tune Settings")
     public WebLabel label7;
-    @WindowComponent(name = "tuneList",x = 440,y = 300,width = 480,height = 310)
+    @WindowComponent(name = "tuneList",x = 440,y = 300,width = 480,height = 310,initializer = "addScroll")
     public WebList tuneList;
     @WindowComponent(name = "lastSong",x = 400,y = 690,width = 50,height = 50,background = "/images/lastSong.png")
     public WebButton button5;
@@ -91,13 +105,21 @@ public class MainFrame extends JFrame {
     public WebButton button9;
     @WindowComponent(name = "nextSong",x = 550,y = 690,width = 50,height = 50,background = "/images/nextSong.png")
     public WebButton button10;
+    @WindowComponent(name = "currentMusic",x= 430,y = 620,width = 200,height = 50,initPara = "Please select a music to play.")
+    public WebLabel label8;
+    @WindowComponent(name = "currentTime",x= 50,y = 660,width = 200,height = 50,initPara = "00:00")
+    public WebLabel label9;
+    @WindowComponent(name = "totalTime",x= 900,y = 660,width = 200,height = 50,initPara = "00:00")
+    public WebLabel label10;
 
 
-
+    private static String selectedMusic = "";
+    private static final PlayController playController = new PlayController();
 
     @Initializer(name = "initFrame")
     public static void initFrame(JFrame frame){
         frame.setResizable(false);
+        drag(frame);
     }
 
 
@@ -147,6 +169,19 @@ public class MainFrame extends JFrame {
     public static void makeInvisible(Component component){
         component.setVisible(false);
     }
+
+    @Initializer(name = "addScroll")
+    public static boolean addScroll(JList<String> list,Frame frame){
+        JScrollPane s = new JScrollPane(list);
+        s.setBounds(list.getBounds());
+        s.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        s.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        frame.add(s);
+        return false;
+    }
+
+    private static final Map<String, String> fileNameAndPathMap = new HashMap<>();
+
     @Listener(name = "addFileActionListener",parent = ActionListener.class)
     public static class addFileActionListener implements ActionListener {
         private final JFileChooser fileChooser = new JFileChooser(new File("."));
@@ -156,15 +191,13 @@ public class MainFrame extends JFrame {
 
             int status = fileChooser.showOpenDialog(ui.getFrameFromName("mainFrame"));
             if (status == JFileChooser.FILES_ONLY) {
-                ListModel<String> fileList = ((JList<String>) ui.getComponentFromName("fileList")).getModel();
                 try {
-                    Method method = fileList.getClass().getMethod("add",Object.class);
-                    method.invoke(fileList,fileChooser.getSelectedFile().getAbsolutePath());
+                    addToJList((JList<String>) ui.getComponentFromName("fileList"),fileChooser.getSelectedFile().getName());
+                    fileNameAndPathMap.put(fileChooser.getSelectedFile().getName(),fileChooser.getSelectedFile().getAbsolutePath());
                 } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
                     LOGGER.warn("Failed to add element for"+ e.getSource());
                     ex.printStackTrace();
                 }
-                ((JList<String>) ui.getComponentFromName("fileList")).setModel(fileList);
             }
         }
     }
@@ -174,21 +207,155 @@ public class MainFrame extends JFrame {
         public void actionPerformed(ActionEvent e) {
             UIContext ui = UILoader.UI;
             JList<String> list =  ((JList<String>) ui.getComponentFromName("fileList"));
-            ListModel<String> fileList =list.getModel();
             try {
-                Method method = fileList.getClass().getMethod("remove",Object.class);
-
                 for (String s : list.getSelectedValuesList()) {
-                    method.invoke(fileList,s);
+                    removeFromList(list,s);
+                    fileNameAndPathMap.remove(s);
                 }
             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
                 LOGGER.warn("Failed to add element for"+ e.getSource());
                 ex.printStackTrace();
             }
-            ((JList<String>) ui.getComponentFromName("fileList")).setModel(fileList);
+        }
+    }
 
+    @Listener(name = "jListMouseListener",parent = MouseListener.class)
+    public static class jListMouseListener implements MouseListener{
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+                UIContext ui = UILoader.UI;
+                JList<String> list =  ((JList<String>) ui.getComponentFromName("fileList"));
+                if (list.getSelectedValue()!=null){
+                    selectedMusic =list.getSelectedValue();
+                    JLabel label =  (JLabel)ui.getComponentFromName("currentMusic");
+                    label.setText(selectedMusic);
+                    onSongSelected(fileNameAndPathMap.get(selectedMusic));
+                    loadSongWithParser(fileNameAndPathMap.get(selectedMusic),getSelectedParser());
+                }
+
+            }
+        }
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
 
         }
     }
+
+
+
+    private static void addToJList(JList<String> list,Object content) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ListModel<String> fileList = list.getModel();
+        Method method = fileList.getClass().getMethod("add",Object.class);
+        method.invoke(fileList,content);
+        list.setModel(fileList);
+    }
+
+    private static void removeFromList(JList<String> list,Object content) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        ListModel<String> fileList =list.getModel();
+        Method method = fileList.getClass().getMethod("remove",Object.class);
+        method.invoke(fileList,content);
+        list.setModel(fileList);
+    }
+
+    /**
+     * register drag event
+     */
+    private static void drag(Frame frame) {
+
+        new DropTarget(frame, DnDConstants.ACTION_COPY_OR_MOVE, new DropTargetAdapter() {
+            @Override
+            public void drop(DropTargetDropEvent dtde) {
+                try {
+                    if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                        dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                        java.util.List<File> list = (List<File>) (dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor));
+                        if (list.size() > 0) {
+                            UIContext ui = UILoader.UI;
+                            JList<String> list1 =  ((JList<String>) ui.getComponentFromName("fileList"));
+                            for (File file : list) {
+                                addToJList(list1,file.getName());
+                                fileNameAndPathMap.put(file.getName(),file.getAbsolutePath());
+                            }
+                        }
+                    } else {
+                        dtde.rejectDrop();
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("Failed to create drag event :",e);
+                }
+            }
+
+
+        });
+    }
+
+    private static final Map<String, AbstractMusicParser> parserNameMap = new HashMap<>();
+
+    private static void onSongSelected(String filePath){
+        File file = new File(filePath);
+        if (file.exists()) {
+            String[] tmp = file.getName().split("\\.");
+            Set<AbstractMusicParser> parsers = MusicParserRegistry.getSuffixParsers(tmp[tmp.length - 1]);
+            UIContext ui = UILoader.UI;
+            JComboBox<String> parsersCombo = (JComboBox<String>) ui.getComponentFromName("ComboBoxFileType");
+            if (parsers != null && !parsers.isEmpty()) {
+                String prevSelectItem = (String) parsersCombo.getSelectedItem();
+                parsersCombo.removeAllItems();
+                parserNameMap.clear();
+
+                for (AbstractMusicParser parser : parsers) {
+                    parserNameMap.put(parser.getMusicFileTypeName(), parser);
+                    parsersCombo.addItem(parser.getMusicFileTypeName());
+                }
+                if (prevSelectItem != null && !prevSelectItem.isEmpty()) {
+                    if (parserNameMap.containsKey(prevSelectItem)) {
+                        parsersCombo.setSelectedItem(prevSelectItem);
+                    }
+                }
+            }
+        }
+    }
+
+
+    private static void loadSongWithParser(String filePath,AbstractMusicParser musicParser){
+        try {
+            File file = new File(filePath);
+            FileInputStream stream = new FileInputStream(file);
+            playController.loadMusicWithParser(stream,musicParser,file.getName());
+            stream.close();
+        } catch (IOException e) {
+            LOGGER.error("Failed to load song :",e);
+            return;
+        }
+        UIContext ui = UILoader.UI;
+        WebList tuneList = (WebList) ui.getComponentFromName("tuneList");
+        tuneList.setEnabled(false);
+        TuneStepLabel label = new TuneStepLabel();
+
+
+    }
+
+    private static AbstractMusicParser getSelectedParser(){
+        UIContext ui = UILoader.UI;
+        JComboBox<String> comboBoxFileType = (JComboBox<String>) ui.getComponentFromName("ComboBoxFileType");
+        return parserNameMap.get(comboBoxFileType.getSelectedItem());
+    }
+
 
 }

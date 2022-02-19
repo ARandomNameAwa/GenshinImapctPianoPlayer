@@ -19,13 +19,17 @@ public class PlayController {
     private KeyMap activeKeyMap;
     private String currentMusicName = "";
     private boolean usePostMessage = false;
+    private TuneStep tuneStep;
 
 
-    public void prepareMusicPlayed(InputStream file, AbstractMusicParser parser, String name) {
+    public void loadMusicWithParser(InputStream file, AbstractMusicParser parser, String name) {
         if (!currentMusicName.equals(name)) {
             trackMusic = parser.parseMusic(file);
             currentMusicName = name;
         }
+    }
+    private void setTuneStep(TuneStep tuneStepIn){
+        this.tuneStep = tuneStepIn;
     }
 
 

@@ -1,7 +1,6 @@
 package me.ironblock.automusicplayer.ui;
 
 import com.alee.laf.WebLookAndFeel;
-import com.alee.skin.dark.WebDarkSkin;
 import com.sun.jna.WString;
 import me.ironblock.automusicplayer.Launch;
 import me.ironblock.automusicplayer.keymap.KeyMap;
@@ -12,13 +11,10 @@ import me.ironblock.automusicplayer.music.parser.AbstractMusicParser;
 import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
 import me.ironblock.automusicplayer.playcontroller.PlayController;
-import me.ironblock.automusicplayer.ui.annotations.WindowComponent;
-import me.ironblock.automusicplayer.ui.annotations.WindowFrame;
 import me.ironblock.automusicplayer.utils.IOUtils;
 import me.ironblock.automusicplayer.utils.TimeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -319,7 +315,7 @@ public class ControllerFrame extends JFrame {
             LOGGER.info("Setting post message window to "+ jComboBox_windowTitles.getSelectedItem());
             playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap((String) comboBox_keyMap.getSelectedItem()));
             if (!playController.trackMusicLoaded()) {
-                playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
+                playController.loadMusicWithParser(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
             }
             playController.startPlay(getCurrentTune());
             playController.setSpeed(Double.parseDouble(textField_speed.getText()));
@@ -445,7 +441,7 @@ public class ControllerFrame extends JFrame {
                 AbstractMusicParser parser = parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString());
                 KeyMap keyMap = KeyMapLoader.getInstance().getLoadedKeyMap(Objects.requireNonNull(comboBox_keyMap.getSelectedItem()).toString());
 
-                playController.prepareMusicPlayed(IOUtils.openStream(file.getAbsolutePath()), parser, file.getAbsolutePath());
+                playController.loadMusicWithParser(IOUtils.openStream(file.getAbsolutePath()), parser, file.getAbsolutePath());
                 playController.setActiveKeyMap(keyMap);
 
                 TuneStep bestTune = playController.autoTune(MIN_OCTAVE, MAX_OCTAVE, checkbox_sameOctave.isSelected());
@@ -535,7 +531,7 @@ public class ControllerFrame extends JFrame {
 
     private void onFilePathCompleted() {
         updateComboBox();
-        playController.prepareMusicPlayed(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
+        playController.loadMusicWithParser(IOUtils.openStream(textField_file_path.getText()), parserNameMap.get(Objects.requireNonNull(comboBox_parser.getSelectedItem()).toString()), textField_file_path.getText());
         addTracksUIForMusic(playController.getTrackMusic());
         IOUtils.closeAllStreams();
 

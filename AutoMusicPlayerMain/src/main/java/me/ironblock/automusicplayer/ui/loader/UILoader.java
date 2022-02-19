@@ -115,7 +115,6 @@ public class UILoader {
                     } else {
                         componentInstance = (Component) classType.getConstructor(String.class).newInstance(componentAnnotation.initPara());
                     }
-                    frame.add(componentInstance);
                     uiContext.addComponents(componentAnnotation.name(), componentInstance);
 
                     if (!componentAnnotation.background().isEmpty()) {
@@ -123,18 +122,6 @@ public class UILoader {
                     }
 
                     componentInstance.setBounds(componentAnnotation.x(), componentAnnotation.y(), componentAnnotation.width(), componentAnnotation.height());
-                    if (!componentAnnotation.initializer().isEmpty()) {
-                        Method init = initializerMap.get(componentAnnotation.initializer());
-                        if (init != null) {
-                            if (init.getParameterCount() == 1) {
-                                init.invoke(null, componentInstance);
-                            } else {
-                                LOGGER.warn("The initializer " + componentAnnotation.initializer() + "of " + componentAnnotation.name() + " doesn't have one parameter,can't invoke it.");
-                            }
-                        } else {
-                            LOGGER.error("Component " + componentAnnotation.name() + "'s initializer: " + componentAnnotation.initializer() + " doesn't exists.");
-                        }
-                    }
                     if (componentAnnotation.listeners().length > 0) {
                         for (String listener : componentAnnotation.listeners()) {
                             Object listenerInstance = listenersMap.get(listener);
@@ -143,6 +130,31 @@ public class UILoader {
                             addListenerMethod.invoke(componentInstance, listenerInstance);
                         }
                     }
+
+                    if (!componentAnnotation.initializer().isEmpty()) {
+                        Method init = initializerMap.get(componentAnnotation.initializer());
+                        if (init != null) {
+                            if (init.getParameterCount() == 1) {
+                                Object ret = init.invoke(null, componentInstance);
+                                if (ret instanceof Boolean){
+                                    if (ret != Boolean.TRUE)
+                                    continue;
+                                }
+                            }else if(init.getParameterCount() == 2){
+                                Object ret = init.invoke(null, componentInstance,frame);
+                                if (ret instanceof Boolean){
+                                    if (ret != Boolean.TRUE)
+                                    continue;
+                                }
+                            } else {
+                                LOGGER.warn("The initializer " + componentAnnotation.initializer() + "of " + componentAnnotation.name() + " doesn't have one parameter,can't invoke it.");
+                            }
+                        } else {
+                            LOGGER.error("Component " + componentAnnotation.name() + "'s initializer: " + componentAnnotation.initializer() + " doesn't exists.");
+                        }
+                    }
+                    frame.add(componentInstance);
+
 
                 }
             }
@@ -164,8 +176,6 @@ public class UILoader {
                 }
 
             }
-
-
         }
         UI = uiContext;
     }
