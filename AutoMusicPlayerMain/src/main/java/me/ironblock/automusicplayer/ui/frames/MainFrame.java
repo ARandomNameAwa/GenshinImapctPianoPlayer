@@ -1,23 +1,33 @@
 package me.ironblock.automusicplayer.ui.frames;
 
+import com.alee.extended.list.FileListModel;
 import com.alee.extended.list.WebFileList;
 import com.alee.laf.button.WebButton;
 import com.alee.laf.combobox.WebComboBox;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.list.WebList;
+import com.alee.laf.list.WebListModel;
 import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.slider.WebSlider;
 import com.alee.laf.text.WebTextField;
 import com.sun.jna.WString;
 import me.ironblock.automusicplayer.nativeInvoker.WindowsMessage;
 import me.ironblock.automusicplayer.ui.annotations.Initializer;
+import me.ironblock.automusicplayer.ui.annotations.Listener;
 import me.ironblock.automusicplayer.ui.annotations.WindowComponent;
 import me.ironblock.automusicplayer.ui.annotations.WindowFrame;
+import me.ironblock.automusicplayer.ui.loader.UIContext;
+import me.ironblock.automusicplayer.ui.loader.UILoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @author :Iron__Block
@@ -40,12 +50,12 @@ public class MainFrame extends JFrame {
     @WindowComponent(name = "labelPlaySettings",x = 400, y = 0,width = 140,height = 45,initPara = "Play Settings")
     public WebLabel label2;
     @WindowComponent(name = "fileList",x = 50,y = 50,width = 330,height = 560)
-    public WebFileList list1;
+    public WebList list1;
     @WindowComponent(name = "slider",x = 50,y = 650,width = 880,height = 35,initializer = "initSlider")
     public WebSlider slider;
-    @WindowComponent(name = "addFile",x= 50,y = 610,width = 30,height = 30,background = "/images/addFile.png")
+    @WindowComponent(name = "addFile",x= 50,y = 610,width = 30,height = 30,background = "/images/addFile.png",listeners = {"addFileActionListener"})
     public WebButton button1;
-    @WindowComponent(name = "deleteFile",x = 80,y = 610,width = 30,height = 30,background = "/images/deleteFile.png")
+    @WindowComponent(name = "deleteFile",x = 80,y = 610,width = 30,height = 30,background = "/images/deleteFile.png",listeners = {"deleteFileListener"})
     public WebButton button2;
     @WindowComponent(name = "labelSpeed",x = 440,y = 50,width = 120,height = 40,initPara = "Speed:")
     public WebLabel label5;
@@ -136,6 +146,49 @@ public class MainFrame extends JFrame {
     @Initializer(name = "makeInvisible")
     public static void makeInvisible(Component component){
         component.setVisible(false);
+    }
+    @Listener(name = "addFileActionListener",parent = ActionListener.class)
+    public static class addFileActionListener implements ActionListener {
+        private final JFileChooser fileChooser = new JFileChooser(new File("."));
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            UIContext ui = UILoader.UI;
+
+            int status = fileChooser.showOpenDialog(ui.getFrameFromName("mainFrame"));
+            if (status == JFileChooser.FILES_ONLY) {
+                ListModel<String> fileList = ((JList<String>) ui.getComponentFromName("fileList")).getModel();
+                try {
+                    Method method = fileList.getClass().getMethod("add",Object.class);
+                    method.invoke(fileList,fileChooser.getSelectedFile().getAbsolutePath());
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+                    LOGGER.warn("Failed to add element for"+ e.getSource());
+                    ex.printStackTrace();
+                }
+                ((JList<String>) ui.getComponentFromName("fileList")).setModel(fileList);
+            }
+        }
+    }
+    @Listener(name = "deleteFileListener",parent = ActionListener.class)
+    public static class deleteFileListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            UIContext ui = UILoader.UI;
+            JList<String> list =  ((JList<String>) ui.getComponentFromName("fileList"));
+            ListModel<String> fileList =list.getModel();
+            try {
+                Method method = fileList.getClass().getMethod("remove",Object.class);
+
+                for (String s : list.getSelectedValuesList()) {
+                    method.invoke(fileList,s);
+                }
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+                LOGGER.warn("Failed to add element for"+ e.getSource());
+                ex.printStackTrace();
+            }
+            ((JList<String>) ui.getComponentFromName("fileList")).setModel(fileList);
+
+
+        }
     }
 
 }
