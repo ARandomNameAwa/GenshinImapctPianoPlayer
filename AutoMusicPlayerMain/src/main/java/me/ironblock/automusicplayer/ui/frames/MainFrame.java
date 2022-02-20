@@ -11,6 +11,7 @@ import com.alee.laf.slider.WebSlider;
 import com.alee.laf.text.WebTextField;
 import com.sun.jna.WString;
 import me.ironblock.automusicplayer.config.PlayListConfig;
+import me.ironblock.automusicplayer.config.TuneStepConfig;
 import me.ironblock.automusicplayer.keymap.KeyMap;
 import me.ironblock.automusicplayer.keymap.KeyMapLoader;
 import me.ironblock.automusicplayer.music.TuneStep;
@@ -63,6 +64,7 @@ public class MainFrame extends JFrame {
     public static final int FRAME_HEIGHT = 800;
 
     public static final PlayListConfig PLAY_LIST_CONFIG = new PlayListConfig();
+    public static final TuneStepConfig TUNE_STEP_CONFIG  = new TuneStepConfig();
 
     @WindowComponent(name = "labelFileList", x = 50, y = 0, width = 140, height = 45, initPara = "PlayLists")
     public WebLabel label1;
@@ -106,13 +108,13 @@ public class MainFrame extends JFrame {
     public WebLabel label7;
     @WindowComponent(name = "tuneList", x = 440, y = 390, width = 480, height = 180, initializer = "addScroll")
     public WebList tuneList;
-    @WindowComponent(name = "lastSong", x = 400, y = 690, width = 50, height = 50, background = "/images/lastSong.png")
+    @WindowComponent(name = "lastSong", x = 400, y = 690, width = 50, height = 50, background = "/images/lastSong.png",listeners = {"lastMusic"})
     public WebButton button5;
     @WindowComponent(name = "pause", x = 450, y = 690, width = 50, height = 50, background = "/images/resume.png", listeners = "startPlay")
     public WebButton button8;
     @WindowComponent(name = "stop", x = 500, y = 690, width = 50, height = 50, background = "/images/stop.png", listeners = "stopPlay")
     public WebButton button9;
-    @WindowComponent(name = "nextSong", x = 550, y = 690, width = 50, height = 50, background = "/images/nextSong.png")
+    @WindowComponent(name = "nextSong", x = 550, y = 690, width = 50, height = 50, background = "/images/nextSong.png",listeners = "nextMusic")
     public WebButton button10;
     @WindowComponent(name = "currentMusic", x = 430, y = 620, width = 200, height = 50, initPara = "Please select a music to play.")
     public WebLabel label8;
@@ -224,8 +226,6 @@ public class MainFrame extends JFrame {
         playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap(comboBox.getSelectedItem().toString()));
     }
 
-//    private static final Map<String, String> PLAY_LIST_CONFIG.getFileNameAndPathMap() = new HashMap<>();
-
     @Listener(name = "addFileActionListener", parent = ActionListener.class)
     public static class addFileActionListener implements ActionListener {
         private final JFileChooser fileChooser = new JFileChooser(new File("."));
@@ -274,6 +274,11 @@ public class MainFrame extends JFrame {
                 UIContext ui = UILoader.UI;
                 JList<String> list = ((JList<String>) ui.getComponentFromName("fileList"));
                 if (list.getSelectedValue() != null) {
+                    try {
+                        TUNE_STEP_CONFIG.writeTuneStepToConfig(selectedMusic,getCurrentTune());
+                    } catch (IOException ex) {
+                        LOGGER.error("Failed to save tune step.",e);
+                    }
                     selectedMusic = list.getSelectedValue();
                     JLabel label = (JLabel) ui.getComponentFromName("currentMusic");
                     label.setText(selectedMusic);
@@ -282,6 +287,8 @@ public class MainFrame extends JFrame {
                     JButton button = (JButton) ui.getComponentFromName("pause");
                     UILoader.trySetIcon(button, "/images/pause.png");
                     playController.stopPlay();
+                    setSpeed();
+                    updateTuneInfo();
                     playController.startPlay();
 
                 }
@@ -306,6 +313,70 @@ public class MainFrame extends JFrame {
         @Override
         public void mouseExited(MouseEvent e) {
 
+        }
+    }
+    @Listener(name = "lastMusic", parent = ActionListener.class)
+    public static class lastMusic implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            UIContext ui = UILoader.UI;
+            try {
+                TUNE_STEP_CONFIG.writeTuneStepToConfig(selectedMusic,getCurrentTune());
+            } catch (IOException ex) {
+                LOGGER.error("Failed to save tune step.",e);
+            }
+            List<String> list1 = new ArrayList<>(PLAY_LIST_CONFIG.getFileNameAndPathMap().keySet());
+            list1 = list1.stream().sorted(Comparator.comparingInt(s -> s.charAt(0))).collect(Collectors.toList());
+            int index = list1.indexOf(selectedMusic);
+            index--;
+            if (index <= 0){
+                index = list1.size()-1;
+            }
+            selectedMusic = list1.get(index);
+
+                JLabel label = (JLabel) ui.getComponentFromName("currentMusic");
+                label.setText(selectedMusic);
+                onSongSelected(PLAY_LIST_CONFIG.getFileNameAndPathMap().get(selectedMusic));
+                updateTuneInfo();
+                loadSongWithParser(PLAY_LIST_CONFIG.getFileNameAndPathMap().get(selectedMusic), getSelectedParser());
+                JButton button = (JButton) ui.getComponentFromName("pause");
+                UILoader.trySetIcon(button, "/images/pause.png");
+                playController.stopPlay();
+                setSpeed();
+                playController.startPlay();
+        }
+    }
+
+    @Listener(name = "nextMusic", parent = ActionListener.class)
+    public static class NextMusic implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            UIContext ui = UILoader.UI;
+
+            List<String> list1 = new ArrayList<>(PLAY_LIST_CONFIG.getFileNameAndPathMap().keySet());
+            list1 = list1.stream().sorted(Comparator.comparingInt(s -> s.charAt(0))).collect(Collectors.toList());
+            try {
+                TUNE_STEP_CONFIG.writeTuneStepToConfig(selectedMusic,getCurrentTune());
+            } catch (IOException ex) {
+                LOGGER.error("Failed to save tune step",ex);
+            }
+            int index = list1.indexOf(selectedMusic);
+            index++;
+            if (index >= list1.size()){
+                index = 0;
+            }
+            selectedMusic = list1.get(index);
+
+            JLabel label = (JLabel) ui.getComponentFromName("currentMusic");
+            label.setText(selectedMusic);
+            onSongSelected(PLAY_LIST_CONFIG.getFileNameAndPathMap().get(selectedMusic));
+            updateTuneInfo();
+            loadSongWithParser(PLAY_LIST_CONFIG.getFileNameAndPathMap().get(selectedMusic), getSelectedParser());
+            JButton button = (JButton) ui.getComponentFromName("pause");
+            UILoader.trySetIcon(button, "/images/pause.png");
+            playController.stopPlay();
+            setSpeed();
+            playController.startPlay();
         }
     }
 
@@ -696,8 +767,8 @@ public class MainFrame extends JFrame {
     private static final Map<Integer, TuneStepLabel> tunePanels = new HashMap<>();
 
     private static void loadSongWithParser(String filePath, AbstractMusicParser musicParser) {
+        File file = new File(filePath);
         try {
-            File file = new File(filePath);
             FileInputStream stream = new FileInputStream(file);
             LOGGER.info("Loading song:" + file.getName() + ",path:" + file.getAbsolutePath());
             playController.loadMusicWithParser(stream, musicParser, file.getName());
@@ -710,6 +781,14 @@ public class MainFrame extends JFrame {
         resetLoadTuneUI();
         loadTuneUI();
         updateTuneInfo();
+        try {
+            TuneStep tuneStep = TUNE_STEP_CONFIG.getTuneStepFromConfig(file.getName());
+            if (tuneStep!=null){
+                setToTuneStep(tuneStep);
+            }
+        } catch (IOException e) {
+            LOGGER.error("Failed to load config.",e);
+        }
     }
 
     private static void loadTuneUI() {
@@ -750,6 +829,12 @@ public class MainFrame extends JFrame {
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             LOGGER.error("Impossible exception occurred", e);
         }
+        WebTextField tune = (WebTextField) ui.getComponentFromName("tune");
+        WebTextField octave = (WebTextField) ui.getComponentFromName("octave");
+        WebToggleButton webToggleButton = (WebToggleButton) ui.getComponentFromName("EveryTrackOctaveSame");
+        tune.setText("0");
+        octave.setText("0");
+        webToggleButton.setSelected(false);
     }
 
     private static AbstractMusicParser getSelectedParser() {
@@ -864,5 +949,31 @@ public class MainFrame extends JFrame {
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             LOGGER.error("Impossible exception occurred!", e);
         }
+    }
+
+    public static void setToTuneStep(TuneStep tuneStep){
+        UIContext ui = UILoader.UI;
+        WebToggleButton octaveSame = (WebToggleButton) ui.getComponentFromName("EveryTrackOctaveSame");
+        WebTextField octave = (WebTextField) ui.getComponentFromName("octave");
+        WebTextField tuneTF = (WebTextField) ui.getComponentFromName("tune");
+        octaveSame.setSelected(tuneStep.tracksSame);
+        if (tuneStep.tracksSame) {
+            octave.setText(String.valueOf(tuneStep.tune/12));
+            tuneTF.setText(String.valueOf(tuneStep.tune%12));
+            tunePanels.forEach((track, textField) -> {
+                textField.setEnableOctave(false);
+            });
+        } else {
+            tuneTF.setText(String.valueOf(tuneStep.tune));
+            tunePanels.forEach((track, textField) -> {
+                textField.setEnableOctave(true);
+                try {
+                    textField.setOctave(tuneStep.trackOctave.get(track));
+                } catch (Exception e) {
+                    LOGGER.warn("set tune step failed.",e);
+                }
+            });
+        }
+        updateUI();
     }
 }

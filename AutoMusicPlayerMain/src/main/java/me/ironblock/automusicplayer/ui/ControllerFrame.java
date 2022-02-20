@@ -36,6 +36,7 @@ import java.util.*;
  *
  * @author Iron__Block
  */
+@Deprecated
 public class ControllerFrame extends JFrame {
     public static final String PROGRAM_NAME = "Genshin Impact Music Player";
     public static final String PROGRAM_VERSION = "v1.3.0";
