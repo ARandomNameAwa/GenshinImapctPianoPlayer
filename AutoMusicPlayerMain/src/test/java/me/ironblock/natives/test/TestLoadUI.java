@@ -21,9 +21,11 @@ public class TestLoadUI {
         UnhandledExceptionHandler.setHandler();
         SwingUtilities.invokeLater (() -> {
                 UnhandledExceptionHandler.setHandler();
-
+            long start1 = System.currentTimeMillis();
                 // Install WebLaF as application LaF
                 WebLookAndFeel.install ();
+            long start2 = System.currentTimeMillis();
+            MainFrame.LOGGER.info("Loading look and feel took "+(start2-start1)+" ms.");
                 // You can also specify preferred skin right-away
 //                WebLookAndFeel.install ( WebDarkSkin.class );
                 // You can also do that in one of the old-fashioned ways
@@ -42,6 +44,8 @@ public class TestLoadUI {
                     //Load parsers
                     MusicParserRegistry.init();
                     UILoader.loadUIFromPackage("me.ironblock.automusicplayer.ui.frames");
+                    long start3 = System.currentTimeMillis();
+                    MainFrame.LOGGER.info("Loading UI took "+(start3-start2)+" ms.");
                     UILoader.UI.getFrameFromName("mainFrame").setVisible(true);
                 } catch (Exception e) {
                     MainFrame.LOGGER.fatal("Unhandled exception:",e);

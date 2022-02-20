@@ -1,9 +1,6 @@
 package me.ironblock.automusicplayer.ui.loader;
 
-import me.ironblock.automusicplayer.ui.annotations.Initializer;
-import me.ironblock.automusicplayer.ui.annotations.Listener;
-import me.ironblock.automusicplayer.ui.annotations.WindowComponent;
-import me.ironblock.automusicplayer.ui.annotations.WindowFrame;
+import me.ironblock.automusicplayer.ui.annotations.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
@@ -40,6 +37,8 @@ public class UILoader {
         //Initializers
         Map<String, Method> initializerMap = new HashMap<>();
         Set<Method> methodsAnnotatedWith = reflections.getMethodsAnnotatedWith(Initializer.class);
+        Set<Method> postProcessors = reflections.getMethodsAnnotatedWith(PostProcessor.class);
+
         for (Method method : methodsAnnotatedWith) {
             Initializer initializerAnnotation = method.getAnnotation(Initializer.class);
             initializerMap.put(initializerAnnotation.name(), method);
@@ -178,6 +177,13 @@ public class UILoader {
             }
         }
         UI = uiContext;
+        for (Method postProcessor : postProcessors) {
+            if (postProcessor.getParameterCount() == 0){
+                postProcessor.invoke(null);
+            }else{
+                LOGGER.warn(postProcessor.getName()+" has more than 0 paras.");
+            }
+        }
     }
 
     public static void trySetIcon(Component component, String resource) {

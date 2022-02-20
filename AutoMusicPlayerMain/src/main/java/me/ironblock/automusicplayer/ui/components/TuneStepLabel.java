@@ -82,5 +82,7 @@ public class TuneStepLabel extends WebLabel {
         octaveTF.setText(String.valueOf(octave));
     }
 
-
+    public void setEnableOctave(boolean bool){
+        octaveTF.setEnabled(bool);
+    }
 }

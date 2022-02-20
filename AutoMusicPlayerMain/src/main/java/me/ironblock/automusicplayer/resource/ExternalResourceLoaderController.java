@@ -17,6 +17,7 @@ public class ExternalResourceLoaderController {
     public static final File RUN_PATH;
     public static final File KEY_MAP_PATH;
     public static final File DLL_PATH;
+    public static final File CONFIG_PATH;
 
     public static boolean dll_available;
 
@@ -39,6 +40,8 @@ public class ExternalResourceLoaderController {
             DLL_PATH = new File(RUN_PATH,"Dll");
         }
         KEY_MAP_PATH = new File(RUN_PATH, "keyMaps");
+        CONFIG_PATH = new File(RUN_PATH, "configs");
+
         LOGGER.info("Setting RUN_PATH to "+ RUN_PATH.getAbsolutePath());
         LOGGER.info("Setting KEY_MAP_PATH to "+ KEY_MAP_PATH.getAbsolutePath());
         LOGGER.info("Setting DLL_PATH to "+ DLL_PATH.getAbsolutePath());
@@ -58,6 +61,13 @@ public class ExternalResourceLoaderController {
             KEY_MAP_PATH.mkdirs();
             LOGGER.info("KEY_MAP_PATH doesn't exist so created the folder.");
         }
+
+        if (!CONFIG_PATH.exists()){
+            CONFIG_PATH.mkdirs();
+            LOGGER.info("CONFIG_PATH doesn't exist so created the folder.");
+        }
+
+
 
 
 
