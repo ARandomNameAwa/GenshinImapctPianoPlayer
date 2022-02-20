@@ -180,7 +180,7 @@ public class UILoader {
         UI = uiContext;
     }
 
-    private static void trySetIcon(Component component, String resource) {
+    public static void trySetIcon(Component component, String resource) {
         Image image;
         try {
             InputStream resourceAsStream = UILoader.class.getResourceAsStream(resource);

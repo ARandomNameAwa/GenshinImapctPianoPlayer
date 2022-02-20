@@ -7,6 +7,7 @@ import me.ironblock.automusicplayer.ui.ControllerFrame;
 import me.ironblock.automusicplayer.ui.frames.MainFrame;
 import me.ironblock.automusicplayer.ui.loader.UIContext;
 import me.ironblock.automusicplayer.ui.loader.UILoader;
+import me.ironblock.automusicplayer.utils.UnhandledExceptionHandler;
 
 import javax.swing.*;
 
@@ -16,7 +17,10 @@ import javax.swing.*;
  */
 public class TestLoadUI {
     public static void main(String[] args) {
-            SwingUtilities.invokeLater (() -> {
+        UnhandledExceptionHandler.setHandler();
+        SwingUtilities.invokeLater (() -> {
+                UnhandledExceptionHandler.setHandler();
+
                 // Install WebLaF as application LaF
                 WebLookAndFeel.install ();
                 // You can also specify preferred skin right-away
