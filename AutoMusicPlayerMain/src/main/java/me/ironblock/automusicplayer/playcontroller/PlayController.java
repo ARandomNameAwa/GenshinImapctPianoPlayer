@@ -28,13 +28,22 @@ public class PlayController {
             currentMusicName = name;
         }
     }
-    private void setTuneStep(TuneStep tuneStepIn){
+    public void setTuneStep(TuneStep tuneStepIn){
         this.tuneStep = tuneStepIn;
     }
 
 
     public void startPlay(TuneStep tune) {
         KeyActionMusic keyActionMusic = KeyActionMusic.getFromTrackMusic(trackMusic, activeKeyMap, tune);
+        if (usePostMessage){
+            this.postMessagePlayer.playMusic(keyActionMusic);
+        }else{
+            this.robotPlayer.playMusic(keyActionMusic);
+        }
+    }
+
+    public void startPlay(){
+        KeyActionMusic keyActionMusic = KeyActionMusic.getFromTrackMusic(trackMusic, activeKeyMap, tuneStep);
         if (usePostMessage){
             this.postMessagePlayer.playMusic(keyActionMusic);
         }else{
@@ -106,8 +115,17 @@ public class PlayController {
     }
 
     public boolean isPlaying() {
+        boolean musicPlay = postMessagePlayer.isPlaying() || robotPlayer.isPlaying();
         boolean playerPlaying = postMessagePlayer.getKeyActionMusicPlayed() != null|| robotPlayer.getKeyActionMusicPlayed() != null;
-        return trackMusic != null && playerPlaying;
+        return trackMusic != null && playerPlaying&&musicPlay;
+    }
+
+    public boolean isPaused(){
+        if (usePostMessage){
+            return postMessagePlayer.isPaused();
+        }else{
+            return robotPlayer.isPaused();
+        }
     }
 
     public TrackMusic getTrackMusic() {

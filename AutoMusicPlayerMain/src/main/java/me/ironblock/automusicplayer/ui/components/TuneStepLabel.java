@@ -4,13 +4,10 @@ import com.alee.laf.button.WebButton;
 import com.alee.laf.button.WebToggleButton;
 import com.alee.laf.label.WebLabel;
 import com.alee.laf.text.WebTextField;
-import me.ironblock.automusicplayer.music.TuneStep;
 import me.ironblock.automusicplayer.ui.frames.MainFrame;
 import me.ironblock.automusicplayer.ui.loader.UILoader;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 /**
  * @author :Iron__Block
@@ -20,19 +17,19 @@ public class TuneStepLabel extends WebLabel {
 
 
     private final WebToggleButton button = new WebToggleButton("Disable");
-    private final WebLabel description = new WebLabel();
-    private final WebLabel octaveLabel = new WebLabel("Octave:");
-    private final WebLabel trackIndexLabel = new WebLabel();
     private final WebTextField octaveTF = new WebTextField("0");
     public final WebButton add = new WebButton();
     public final WebButton sub = new WebButton();
 
     public TuneStepLabel(int trackIndex,String trackDescription) {
+        WebLabel description = new WebLabel();
         description.setText(trackDescription);
+        WebLabel trackIndexLabel = new WebLabel();
         trackIndexLabel.setText("Track "+trackIndex+":");
         this.setSize(480,40);
         button.setBounds(370,0,60,30);
         trackIndexLabel.setBounds(0,0,370,30);
+        WebLabel octaveLabel = new WebLabel("Octave:");
         octaveLabel.setBounds(200,0,50,30);
         description.setBounds(0,30,480,10);
         octaveTF.setBounds(250,0,50,30);
@@ -45,6 +42,7 @@ public class TuneStepLabel extends WebLabel {
             try {
                 int currentOctave = Integer.parseInt(octaveTF.getText());
                 octaveTF.setText(String.valueOf(currentOctave+1));
+                MainFrame.updateTuneInfo();
             } catch (NumberFormatException ex) {
                 MainFrame.LOGGER.warn("Number Format Exception:",ex);
             }
@@ -53,6 +51,7 @@ public class TuneStepLabel extends WebLabel {
             try {
                 int currentOctave = Integer.parseInt(octaveTF.getText());
                 octaveTF.setText(String.valueOf(currentOctave-1));
+                MainFrame.updateTuneInfo();
             } catch (NumberFormatException ex) {
                 MainFrame.LOGGER.warn("Number Format Exception:",ex);
             }
@@ -79,6 +78,9 @@ public class TuneStepLabel extends WebLabel {
         return Integer.parseInt(octaveTF.getText());
     }
 
+    public void setOctave(int octave){
+        octaveTF.setText(String.valueOf(octave));
+    }
 
 
 }

@@ -10,6 +10,7 @@ import com.alee.laf.radiobutton.WebRadioButton;
 import com.alee.laf.slider.WebSlider;
 import com.alee.laf.text.WebTextField;
 import com.sun.jna.WString;
+import me.ironblock.automusicplayer.keymap.KeyMap;
 import me.ironblock.automusicplayer.keymap.KeyMapLoader;
 import me.ironblock.automusicplayer.music.TuneStep;
 import me.ironblock.automusicplayer.music.parser.AbstractMusicParser;
@@ -24,20 +25,21 @@ import me.ironblock.automusicplayer.ui.annotations.WindowFrame;
 import me.ironblock.automusicplayer.ui.components.TuneStepLabel;
 import me.ironblock.automusicplayer.ui.loader.UIContext;
 import me.ironblock.automusicplayer.ui.loader.UILoader;
+import me.ironblock.automusicplayer.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.rmi.runtime.Log;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -89,17 +91,17 @@ public class MainFrame extends JFrame {
     public WebComboBox comboBox1;
     @WindowComponent(name = "playMode", x = 440, y = 150, width = 120, height = 40, initPara = "PlayMode:")
     public WebLabel label3;
-    @WindowComponent(name = "postMessage", x = 730, y = 150, width = 120, height = 40, initPara = "PostMessage", initializer = "initPostMessage")
+    @WindowComponent(name = "postMessage", x = 730, y = 150, width = 120, height = 40, initPara = "PostMessage", initializer = "initPostMessage",listeners = "selectPostMessage")
     public WebRadioButton button4;
-    @WindowComponent(name = "awt", x = 590, y = 150, width = 120, height = 40, initPara = "AWT Robot", initializer = "initRadioButton")
+    @WindowComponent(name = "awt", x = 590, y = 150, width = 120, height = 40, initPara = "AWT Robot", initializer = "initRadioButton",listeners = "selectAwt")
     public WebRadioButton button3;
     @WindowComponent(name = "labelKeyMap", x = 440, y = 200, width = 120, height = 40, initPara = "Key Map")
     public WebLabel label11;
-    @WindowComponent(name = "ComboBoxKeyMap", x = 590, y = 200, width = 240, height = 40, initializer = "initKeyMap")
+    @WindowComponent(name = "ComboBoxKeyMap", x = 590, y = 200, width = 240, height = 40, initializer = "initKeyMap",listeners = "keyMapListener")
     public WebComboBox comboBox3;
     @WindowComponent(name = "labelSelectWindow", x = 440, y = 250, width = 120, height = 40, initPara = "Select window:")
     public WebLabel label4;
-    @WindowComponent(name = "ComboBoxSelectWindow", x = 590, y = 250, width = 240, height = 40, initializer = "initComboBoxWindowTitle")
+    @WindowComponent(name = "ComboBoxSelectWindow", x = 590, y = 250, width = 240, height = 40, initializer = "initComboBoxWindowTitle",listeners = {"WindowTitleRefresher","windowTitle"})
     public WebComboBox comboBox2;
     @WindowComponent(name = "labelTuneSettings", x = 400, y = 300, width = 140, height = 45, initPara = "Tune Settings")
     public WebLabel label7;
@@ -107,9 +109,9 @@ public class MainFrame extends JFrame {
     public WebList tuneList;
     @WindowComponent(name = "lastSong", x = 400, y = 690, width = 50, height = 50, background = "/images/lastSong.png")
     public WebButton button5;
-    @WindowComponent(name = "pause", x = 450, y = 690, width = 50, height = 50, background = "/images/resume.png")
+    @WindowComponent(name = "pause", x = 450, y = 690, width = 50, height = 50, background = "/images/resume.png",listeners = "startPlay")
     public WebButton button8;
-    @WindowComponent(name = "stop", x = 500, y = 690, width = 50, height = 50, background = "/images/stop.png")
+    @WindowComponent(name = "stop", x = 500, y = 690, width = 50, height = 50, background = "/images/stop.png",listeners = "stopPlay")
     public WebButton button9;
     @WindowComponent(name = "nextSong", x = 550, y = 690, width = 50, height = 50, background = "/images/nextSong.png")
     public WebButton button10;
@@ -148,7 +150,6 @@ public class MainFrame extends JFrame {
         drag(frame);
     }
 
-
     private final static ButtonGroup group = new ButtonGroup();
 
     @Initializer(name = "initRadioButton")
@@ -158,6 +159,7 @@ public class MainFrame extends JFrame {
     }
 
     private static boolean dllLoadSuccessful = false;
+
 
     @Initializer(name = "initPostMessage")
     public static void initPostMessage(JRadioButton button) {
@@ -183,6 +185,7 @@ public class MainFrame extends JFrame {
             for (String s : tmp) {
                 comboBox.addItem(s);
             }
+            playController.setPostMessageWindow(comboBox.getSelectedItem().toString());
         } else {
             comboBox.setEnabled(false);
         }
@@ -214,8 +217,8 @@ public class MainFrame extends JFrame {
         for (String s : KeyMapLoader.getInstance().getAllLoadedMapName()) {
             comboBox.addItem(s);
         }
+        playController.setActiveKeyMap(KeyMapLoader.getInstance().getLoadedKeyMap(comboBox.getSelectedItem().toString()));
     }
-
 
     private static final Map<String, String> fileNameAndPathMap = new HashMap<>();
 
@@ -300,6 +303,7 @@ public class MainFrame extends JFrame {
             try {
                 int i = (int)(Double.parseDouble(textField.getText())*10);
                 textField.setText(String.valueOf((i+1)/10d));
+                setSpeed();
             } catch (NumberFormatException ex) {
                 LOGGER.warn(ex);
             }
@@ -320,17 +324,18 @@ public class MainFrame extends JFrame {
                     i-=1;
                 }
                 textField.setText(String.valueOf(i/10d));
+                setSpeed();
             } catch (NumberFormatException ex) {
                 LOGGER.warn(ex);
             }
         }
     }
-
     @Listener(name = "autoTune",parent = ActionListener.class)
     public static class AutoTuneListener implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
             autoTune();
+            updateTuneInfo();
         }
     }
     @Listener(name = "addOctave",parent = ActionListener.class)
@@ -342,6 +347,7 @@ public class MainFrame extends JFrame {
             try {
                 int i = Integer.parseInt(textField.getText());
                 textField.setText(String.valueOf(i+1));
+                updateTuneInfo();
             } catch (NumberFormatException ex) {
                 LOGGER.error(ex);
             }
@@ -357,6 +363,7 @@ public class MainFrame extends JFrame {
             try {
                 int i = Integer.parseInt(textField.getText());
                 textField.setText(String.valueOf(i-1));
+                updateTuneInfo();
             } catch (NumberFormatException ex) {
                 LOGGER.error(ex);
             }
@@ -372,6 +379,7 @@ public class MainFrame extends JFrame {
             try {
                 int i = Integer.parseInt(textField.getText());
                 textField.setText(String.valueOf(i+1));
+                updateTuneInfo();
             } catch (NumberFormatException ex) {
                 LOGGER.error(ex);
             }
@@ -387,12 +395,103 @@ public class MainFrame extends JFrame {
             try {
                 int i = Integer.parseInt(textField.getText());
                 textField.setText(String.valueOf(i-1));
+                updateTuneInfo();
             } catch (NumberFormatException ex) {
                 LOGGER.error(ex);
             }
 
         }
     }
+    @Listener(name = "keyMapListener",parent = ItemListener.class)
+    public static class KeyMapSelected implements ItemListener {
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            UIContext ui = UILoader.UI;
+            if (ui!=null){
+                LOGGER.info("Setting keyMap to " + getSelectedKeyMap());
+                playController.setActiveKeyMap(getSelectedKeyMap());
+            }
+        }
+    }
+    @Listener(name = "selectAwt",parent = ActionListener.class)
+    public static class SelectAwt implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (((WebRadioButton) e.getSource()).isSelected()){
+                playController.setPostMessage(false);
+                LOGGER.info("Setting post message window to false");
+                setSpeed();
+            }
+        }
+    }
+    @Listener(name = "selectPostMessage",parent = ActionListener.class)
+    public static class SelectPostMessage implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (((WebRadioButton) e.getSource()).isSelected()){
+                playController.setPostMessage(true);
+                LOGGER.info("Setting post message window to true");
+                setSpeed();
+            }
+        }
+    }
+    @Listener(name = "windowTitle",parent = ItemListener.class)
+    public static class WindowTitleChanged implements ItemListener{
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            if (e.getStateChange()==ItemEvent.SELECTED)
+            playController.setPostMessageWindow(((JComboBox<String>) e.getSource()).getSelectedItem().toString());
+        }
+    }
+    @Listener(name = "startPlay",parent = ActionListener.class)
+    public static class StartPlay implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (playController.isPlaying()){
+                if (playController.isPaused()){
+                    UILoader.trySetIcon((Component) e.getSource(),"/images/pause.png");
+                }else{
+                    UILoader.trySetIcon((Component) e.getSource(),"/images/resume.png");
+                }
+                playController.switchPause();
+            }else{
+                UILoader.trySetIcon((Component) e.getSource(),"/images/pause.png");
+                playController.startPlay();
+            }
+
+        }
+    }
+    @Listener(name = "stopPlay",parent = ActionListener.class)
+    public static class StopPlay implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            playController.stopPlay();
+            UIContext ui = UILoader.UI;
+            UILoader.trySetIcon(ui.getComponentFromName("pause"),"/images/resume.png");
+        }
+    }
+    @Listener(name = "WindowTitleRefresher",parent = PopupMenuListener.class)
+    public static class WindowTitleRefresher implements PopupMenuListener{
+        @Override
+        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+            JComboBox<String> comboBox = ((JComboBox<String>) e.getSource());
+            Object last = comboBox.getSelectedItem();
+            WString string = WindowsMessage.INSTANCE.listWindows();
+            String[] tmp = string.toString().split(";");
+            comboBox.removeAllItems();
+            for (String s : tmp) {
+                comboBox.addItem(s);
+            }
+            comboBox.setSelectedItem(last);
+        }
+        @Override
+        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        }
+        @Override
+        public void popupMenuCanceled(PopupMenuEvent e) {
+        }
+    }
+
 
     private static void addToJList(JList<String> list, Object content) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         ListModel<String> fileList = list.getModel();
@@ -413,8 +512,6 @@ public class MainFrame extends JFrame {
         fileList.removeAll();
         list.setModel(fileList);
     }
-
-
     /**
      * register drag event
      */
@@ -517,6 +614,7 @@ public class MainFrame extends JFrame {
             FileInputStream stream = new FileInputStream(file);
             LOGGER.info("Loading song:"+file.getName()+",path:"+file.getAbsolutePath());
             playController.loadMusicWithParser(stream, musicParser, file.getName());
+            setSpeed();
             stream.close();
         } catch (IOException e) {
             LOGGER.error("Failed to load song :", e);
@@ -524,6 +622,7 @@ public class MainFrame extends JFrame {
         }
         resetLoadTuneUI();
         loadTuneUI();
+        updateTuneInfo();
     }
 
     private static void loadTuneUI() {
@@ -571,9 +670,30 @@ public class MainFrame extends JFrame {
         JComboBox<String> comboBoxFileType = (JComboBox<String>) ui.getComponentFromName("ComboBoxFileType");
         return parserNameMap.get(comboBoxFileType.getSelectedItem());
     }
-
+    private static final int MIN_OCTAVE = -1;
+    private static final int MAX_OCTAVE = 1;
     private static void autoTune(){
-
+        UIContext ui = UILoader.UI;
+        if (!selectedMusic.isEmpty()) {
+            File file = new File(fileNameAndPathMap.get(selectedMusic));
+            if (file.exists()) {
+                WebToggleButton octaveSame = (WebToggleButton) ui.getComponentFromName("EveryTrackOctaveSame");
+                WebTextField octaveTF = (WebTextField) ui.getComponentFromName("octave");
+                WebTextField tuneTF = (WebTextField) ui.getComponentFromName("tune");
+                TuneStep bestTune = playController.autoTune(MIN_OCTAVE, MAX_OCTAVE, octaveSame.isSelected());
+                if (octaveSame.isSelected()) {
+                    int octave = bestTune.tune / 12;
+                    int note = bestTune.tune % 12;
+                    octaveTF.setText(String.valueOf(octave));
+                    tuneTF.setText(String.valueOf(note));
+                } else {
+                    tuneTF.setText(String.valueOf(bestTune.tune));
+                    bestTune.trackOctave.forEach((track, best) -> {
+                        tunePanels.get(track).setOctave(best);
+                    });
+                }
+            }
+        }
     }
 
     private static TuneStep getCurrentTune() {
@@ -597,9 +717,23 @@ public class MainFrame extends JFrame {
             });
             return tuneStep;
         }
-
-
     }
 
+    private static KeyMap getSelectedKeyMap(){
+        UIContext ui = UILoader.UI;
+        JComboBox<String> comboBoxFileType = (JComboBox<String>) ui.getComponentFromName("ComboBoxKeyMap");
+        return KeyMapLoader.getInstance().getLoadedKeyMap(comboBoxFileType.getSelectedItem().toString());
+    }
+
+    private static void setSpeed(){
+        UIContext ui = UILoader.UI;
+        JTextField textField = (JTextField) ui.getComponentFromName("speed");
+        playController.setSpeed(Double.parseDouble(textField.getText()));
+        LOGGER.info("Setting speed to :"+playController.getSpeed());
+    }
+
+    public static void updateTuneInfo(){
+        playController.setTuneStep(getCurrentTune());
+    }
 
 }

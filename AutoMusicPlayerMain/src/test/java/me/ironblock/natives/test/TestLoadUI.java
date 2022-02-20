@@ -1,6 +1,7 @@
 package me.ironblock.natives.test;
 
 import com.alee.laf.WebLookAndFeel;
+import com.alee.laf.radiobutton.WebRadioButton;
 import me.ironblock.automusicplayer.playcontroller.MusicParserRegistry;
 import me.ironblock.automusicplayer.resource.ExternalResourceLoaderController;
 import me.ironblock.automusicplayer.ui.ControllerFrame;
@@ -41,14 +42,10 @@ public class TestLoadUI {
                     //Load parsers
                     MusicParserRegistry.init();
                     UILoader.loadUIFromPackage("me.ironblock.automusicplayer.ui.frames");
+                    UILoader.UI.getFrameFromName("mainFrame").setVisible(true);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    MainFrame.LOGGER.fatal("Unhandled exception:",e);
                 }
-                UILoader.UI.getFrameFromName("mainFrame").setVisible(true);
-                // Initialize your application once you're done setting everything up
-
-                // You can also use Web* components to get access to some extended WebLaF features
-                // WebFrame frame = ...
             });
     }
 }
